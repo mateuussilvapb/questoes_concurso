@@ -1,10 +1,15 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+//Angular
 import { provideRouter } from '@angular/router';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 
+//Aplicação
 import { routes } from './app.routes';
-import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
 import { primeNgTranslation } from './i18n/primeng-pt';
+
+//Externos
+import Aura from '@primeuix/themes/aura';
+import { providePrimeNG } from 'primeng/config';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,5 +32,7 @@ export const appConfig: ApplicationConfig = {
         tooltip: 1100, // tooltip
       },
     }),
+    ConfirmationService,
+    MessageService,
   ],
 };

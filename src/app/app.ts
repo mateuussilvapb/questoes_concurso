@@ -1,10 +1,23 @@
+//Angular
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
+
+//Aplicação
+import { Toast } from './shared/components/toast/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ButtonModule],
+  imports: [
+    //Angular
+    RouterOutlet,
+
+    //Aplicação
+    Toast,
+
+    //Externos
+    ConfirmDialogModule,
+  ],
   templateUrl: './app.html',
 })
 export class App {
