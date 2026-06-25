@@ -1,9 +1,11 @@
 //Angular
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 //Aplicação
 import { Toast } from './shared/components/toast/toast';
+
+//Externos
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
@@ -20,6 +22,4 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
   ],
   templateUrl: './app.html',
 })
-export class App {
-  protected readonly title = signal('questoes-concurso');
-}
+export class App {}

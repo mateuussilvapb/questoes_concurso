@@ -10,7 +10,7 @@ export const PRIMENG_PROVIDER = providePrimeNG({
     preset: Aura,
     options: {
       prefix: 'p',
-      darkModeSelector: '.app-dark-mode',
+      darkModeSelector: '.app-dark',
       cssLayer: false,
     },
   },
