@@ -1,0 +1,19 @@
+$white: #ffffff;
+$scale: 14px;
+$transitionDuration: 0.3s;
+$borderRadius: 4px;
+$fontFamily: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+  Roboto, sans-serif;
+
+$gradientStartColor: #E11F47;
+$gradientMidColor: #DD4A27;
+$gradientLastColor: #F59413;
+$gradientApplication: linear-gradient(90deg, $gradientStartColor, $gradientMidColor, $gradientLastColor);
+
+
+//DarkMode
+$gradientStartColorDark: darken($gradientStartColor, 5%);
+$gradientMidColorDark: darken($gradientMidColor, 5%);
+$gradientLastColorDark: darken($gradientLastColor, 5%);
+
+$gradientApplicationDark: linear-gradient(90deg, $gradientStartColorDark, $gradientMidColorDark, $gradientLastColorDark);

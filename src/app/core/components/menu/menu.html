@@ -1,0 +1,23 @@
+<ul class="layout-menu">
+  @for (item of itensMenu(); track $index) {
+    @if (item.separator) {
+      <li class="font-bold my-2">
+        {{ item.label }}
+      </li>
+    }
+    <ul>
+      @for (subItem of item.children; track $index) {
+        <li>
+          <a
+            routerLinkActive="active"
+            [routerLink]="subItem.route"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <i [ngClass]="subItem.icon" class="layout-menuitem-icon"></i>
+            {{ subItem.label }}
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</ul>

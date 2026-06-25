@@ -1,0 +1,90 @@
+@use 'mixins' as *;
+@use 'variables' as *;
+
+.layout-sidebar {
+  position: fixed;
+  width: 300px;
+  height: calc(100vh - 9rem);
+  z-index: 999;
+  overflow-y: auto;
+  -webkit-user-select: none;
+  user-select: none;
+  top: 7rem;
+  left: 2rem;
+  transition: transform $transitionDuration, left $transitionDuration;
+  background-color: var(--p-content-background);
+  border-radius: $borderRadius;
+  padding: 0.5rem 1.5rem;
+  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+    0 1px 3px 0 rgba(0, 0, 0, 0.12);
+}
+
+.layout-menu {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  font-size: 0.8rem;
+  color: var(--p-text-color);
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+
+    a {
+      margin-bottom: 0.5rem !important;
+      -webkit-user-select: none;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      position: relative;
+      outline: 0 none;
+      color: var(--p-text-color);
+      cursor: pointer;
+      padding: 0.75rem 1rem;
+      border-radius: $borderRadius;
+      transition: background $transitionDuration, box-shadow $transitionDuration;
+
+      .layout-menuitem-icon {
+        font-size: small;
+        margin-right: 0.5rem;
+      }
+
+      &:hover {
+        color: black;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      &:focus {
+        @include focused-inset();
+      }
+
+      &.active {
+        color: $white;
+        font-weight: bold;
+        background: $gradientApplication;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+
+        &::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0);
+          transition: background $transitionDuration;
+        }
+
+        &:hover::after {
+          background: rgba(0, 0, 0, 0.05);
+        }
+
+        &:hover {
+          color: black;
+          transition: $transitionDuration;
+        }
+      }
+    }
+  }
+}
