@@ -17,7 +17,7 @@ export const ItensMenu: ItemMenu[] = [
       {
         label: 'Dashboard',
         separator: false,
-        icon: PrimeIcons.CHART_BAR,
+        icon: PrimeIcons.OBJECTS_COLUMN,
         route: '/',
       },
     ],
