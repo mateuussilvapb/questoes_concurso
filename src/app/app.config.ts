@@ -1,37 +1,28 @@
 //Angular
+import {
+  ApplicationConfig,
+  LOCALE_ID,
+  provideBrowserGlobalErrorListeners,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 
 //Aplicação
 import { routes } from './app.routes';
-import { primeNgTranslation } from './i18n/primeng-pt';
+import { PRIMENG_PROVIDER } from './core/config/providers/primeng.provider';
 
 //Externos
-import Aura from '@primeuix/themes/aura';
-import { providePrimeNG } from 'primeng/config';
+import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    providePrimeNG({
-      theme: {
-        preset: Aura,
-        options: {
-          prefix: 'p',
-          darkModeSelector: 'system',
-          cssLayer: false,
-        },
-      },
-      translation: primeNgTranslation,
-      zIndex: {
-        modal: 1100, // dialog, sidebarc
-        overlay: 900, // dropdown, overlaypanel
-        menu: 1000, // overlay menus
-        tooltip: 1100, // tooltip
-      },
-    }),
+    PRIMENG_PROVIDER,
+    { provide: LOCALE_ID, useValue: 'pt-BR' }, // define o locale global
+    DialogService,
     ConfirmationService,
     MessageService,
   ],
