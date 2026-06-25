@@ -1,5 +1,6 @@
 //Angular
-import { inject, Injectable } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { inject, Injectable, signal, computed } from '@angular/core';
 
 //Externos
 import { Subject } from 'rxjs';
@@ -21,51 +22,33 @@ export class LayoutService {
   private readonly menuToggle = new Subject<boolean>();
   public menuToggle$ = this.menuToggle.asObservable();
 
-  public state: LayoutState = {
-    mainMenuVisible: this.isDesktop,
+  private readonly width = toSignal(this.screenSizeService.width$, { initialValue: window.innerWidth });
+
+  public state = signal<LayoutState>({
+    mainMenuVisible: this.width() > 991,
     sidebarMenuOptionsVisible: false,
-  };
-
-  constructor() {
-    this.screenResize();
-  }
-
-  private screenResize() {
-    this.screenSizeService.width$.subscribe((width) => {
-      if (width > 991) {
-        this.state.mainMenuVisible = true;
-      } else {
-        this.state.mainMenuVisible = false;
-      }
-    });
-  }
+  });
 
   showMobileSidebar() {
-    this.state.sidebarMenuOptionsVisible = true;
+    this.state.update((state) => ({ ...state, sidebarMenuOptionsVisible: true }));
   }
 
   onMenuToggle() {
-    this.state.mainMenuVisible = !this.state.mainMenuVisible;
-    this.menuToggle.next(this.state.mainMenuVisible);
+    this.state.update((state) => {
+      const nextState = !state.mainMenuVisible;
+      this.menuToggle.next(nextState); // Mantido caso use esse subject em outro lugar
+      return { ...state, mainMenuVisible: nextState };
+    });
   }
 
-  get isDesktop() {
-    return window.innerWidth > 991;
-  }
+  isDesktop = computed(() => this.width() > 991);
 
-  get isBigDesktop() {
-    return window.innerWidth > 1710;
-  }
+  isBigDesktop = computed(() => this.width() > 1710);
 
-  get isMobile() {
-    return !this.isDesktop;
-  }
+  isMobile = computed(() => this.width() <= 991);
 
-  get mainMenuVisible() {
-    return this.state.mainMenuVisible;
-  }
-
-  set mainMenuVisible(_val: boolean) {
-    this.state.mainMenuVisible = _val;
-  }
+  mainMenuVisible = computed(() => {
+    const desktop = this.isDesktop();
+    return desktop ? true : this.state().mainMenuVisible;
+  });
 }

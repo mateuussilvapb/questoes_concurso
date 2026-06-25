@@ -1,5 +1,5 @@
 //Angular
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 
 //Aplicação
@@ -20,14 +20,14 @@ import { Menu } from './menu/menu';
     Menu,
   ],
   template: `
-    @if (this.layoutService.isDesktop && this.layoutService.mainMenuVisible) {
+    @if (this.layoutService.isDesktop() && this.layoutService.mainMenuVisible()) {
       <div animate.enter="slide-in" animate.leave="slide-out" class="layout-sidebar">
         <app-menu></app-menu>
       </div>
     }
-    @if (this.layoutService.isMobile) {
+    @if (this.layoutService.isMobile()) {
       <div>
-        <p-drawer [showCloseIcon]="false" [(visible)]="this.layoutService.mainMenuVisible">
+        <p-drawer [showCloseIcon]="false" [visible]="this.layoutService.mainMenuVisible()">
           <app-menu></app-menu
         ></p-drawer>
       </div>
@@ -39,20 +39,7 @@ export class Sidebar {
   protected readonly layoutService: LayoutService = inject(LayoutService);
   protected readonly router: Router = inject(Router);
 
-  public get showMenuDesktop() {
-    return this.layoutService.isDesktop && this.layoutService.mainMenuVisible;
-  }
+  showMenuDesktop = computed(() => this.layoutService.isDesktop() && this.layoutService.mainMenuVisible());
 
-  public get showMenuMobile() {
-    debugger;
-    return this.layoutService.isMobile && this.layoutService.mainMenuVisible;
-  }
-
-  set showMenuMobile(_val: boolean) {
-    this.layoutService.mainMenuVisible = _val;
-  }
-
-  set showMenuDesktop(_val: boolean) {
-    this.layoutService.mainMenuVisible = _val;
-  }
+  showMenuMobile = computed(() => this.layoutService.isMobile() && this.layoutService.mainMenuVisible());
 }
