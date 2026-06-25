@@ -1,0 +1,40 @@
+<div class="layout-topbar">
+  <div class="layout-topbar-logo">
+    <a class="layout-topbar-logo-link">
+      <img
+        class="layout-topbar-logo-link-img"
+        src="assets/imgs/logo.png"
+        alt="logo"
+      />
+    </a>
+  </div>
+
+  <button
+    pButton
+    pRipple
+    [text]="true"
+    title="toggle menu"
+    severity="secondary"
+    class="p-link layout-topbar-button"
+    (click)="this.layoutService.onMenuToggle()"
+  >
+    <i class="pi pi-bars"></i>
+  </button>
+
+  <div class="layout-topbar-menu">
+    <app-topbar-menu-options></app-topbar-menu-options>
+
+    <button
+      pButton
+      pRipple
+      [text]="true"
+      class="mobile-menu"
+      severity="secondary"
+      title="sidebar menu"
+      (click)="layoutService.showMobileSidebar()"
+    >
+      <i class="pi pi-ellipsis-v"></i>
+    </button>
+  </div>
+</div>
+<app-sidebar-mobile></app-sidebar-mobile>

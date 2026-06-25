@@ -26,7 +26,11 @@ import { DrawerModule } from 'primeng/drawer';
     }
     @if (this.layoutService.isMobile()) {
       <div>
-        <p-drawer [showCloseIcon]="false" [visible]="this.layoutService.mainMenuVisible()">
+        <p-drawer
+          [showCloseIcon]="false"
+          (visibleChange)="onVisibleChange($event)"
+          [visible]="this.layoutService.mainMenuVisible()"
+        >
           <app-menu></app-menu
         ></p-drawer>
       </div>
@@ -38,7 +42,18 @@ export class Sidebar {
   protected readonly layoutService: LayoutService = inject(LayoutService);
   protected readonly router: Router = inject(Router);
 
-  showMenuDesktop = computed(() => this.layoutService.isDesktop() && this.layoutService.mainMenuVisible());
+  showMenuDesktop = computed(
+    () => this.layoutService.isDesktop() && this.layoutService.mainMenuVisible(),
+  );
 
-  showMenuMobile = computed(() => this.layoutService.isMobile() && this.layoutService.mainMenuVisible());
+  showMenuMobile = computed(
+    () => this.layoutService.isMobile() && this.layoutService.mainMenuVisible(),
+  );
+
+  onVisibleChange(visible: boolean) {
+    this.layoutService.state.update((state) => ({
+      ...state,
+      mainMenuVisible: visible,
+    }));
+  }
 }

@@ -22,7 +22,13 @@ export class LayoutService {
   private readonly menuToggle = new Subject<boolean>();
   public menuToggle$ = this.menuToggle.asObservable();
 
-  private readonly width = toSignal(this.screenSizeService.width$, { initialValue: window.innerWidth });
+  private readonly width = toSignal(this.screenSizeService.width$, {
+    initialValue: window.innerWidth,
+  });
+
+  constructor() {
+    this.state.update((state) => ({ ...state, mainMenuVisible: this.width() > 991 }));
+  }
 
   public state = signal<LayoutState>({
     mainMenuVisible: this.width() > 991,
@@ -47,8 +53,5 @@ export class LayoutService {
 
   isMobile = computed(() => this.width() <= 991);
 
-  mainMenuVisible = computed(() => {
-    const desktop = this.isDesktop();
-    return desktop ? true : this.state().mainMenuVisible;
-  });
+  mainMenuVisible = computed(() => this.state().mainMenuVisible);
 }

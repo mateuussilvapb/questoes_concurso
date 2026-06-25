@@ -1,0 +1,124 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+.layout-topbar {
+  position: fixed;
+  height: 5rem !important;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  padding: 0 2rem;
+  background-color: var(--p-content-background);
+  transition: left $transitionDuration;
+  display: flex;
+  align-items: center;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.02), 0px 0px 2px rgba(0, 0, 0, 0.05),
+    0px 1px 4px rgba(0, 0, 0, 0.08);
+
+  .layout-topbar-logo {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+    width: 300px;
+    border-radius: 12px;
+    justify-content: center;
+    .layout-topbar-logo-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &:focus {
+        @include focused();
+      }
+      .layout-topbar-logo-link-img {
+        width: 5rem;
+      }
+    }
+  }
+
+  .layout-topbar-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 3rem;
+    height: 3rem;
+    cursor: pointer;
+    transition: background-color $transitionDuration;
+    margin-left: 2rem;
+    i {
+      font-size: 1.5rem;
+      background: $gradientApplication;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .layout-topbar-menu {
+    margin: 0 0 0 auto;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    .mobile-menu {
+      display: none;
+    }
+    .menu-buttons {
+      background: $gradientApplication;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: all $transitionDuration;
+      &:hover {
+        background: $gradientApplication !important;
+        -webkit-background-clip: initial;
+        -webkit-text-fill-color: initial;
+        color: white !important;
+      }
+    }
+  }
+}
+
+.layout-config-sidebar {
+  .p-drawer-content {
+    app-topbar-menu-options {
+      .menu-buttons {
+        background: $gradientApplication;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        transition: all $transitionDuration;
+        &:hover {
+          background: $gradientApplication !important;
+          -webkit-background-clip: initial;
+          -webkit-text-fill-color: initial;
+          color: white !important;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 991px) {
+  .layout-topbar {
+    justify-content: space-between;
+  }
+  .layout-topbar .layout-topbar-button {
+    margin-left: 0;
+    order: 1;
+  }
+  .layout-topbar .layout-topbar-logo {
+    width: auto;
+    order: 2;
+  }
+  .layout-topbar .layout-topbar-menu {
+    display: inline-flex;
+    margin-left: 0;
+    order: 3;
+    .menu-buttons {
+      display: none;
+    }
+    .mobile-menu {
+      display: block;
+      color: var(--p-text-color-secondary);
+    }
+  }
+}
