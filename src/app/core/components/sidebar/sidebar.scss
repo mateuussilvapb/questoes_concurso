@@ -1,0 +1,19 @@
+/* Quando o elemento entra em cena */
+.slide-in {
+  animation: slideInEffect 100ms ease-out;
+}
+
+/* Quando o elemento sai de cena */
+.slide-out {
+  animation: slideOutEffect 100ms ease-in;
+}
+
+@keyframes slideInEffect {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideOutEffect {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}

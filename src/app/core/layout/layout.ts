@@ -2,13 +2,13 @@
 import { Component } from '@angular/core';
 
 //Aplicação
-import { Menu } from '../components/menu/menu';
+import { Sidebar } from '../components/sidebar/sidebar';
 
 @Component({
   selector: 'app-layout',
   imports: [
     //Aplicação
-    Menu,
+    Sidebar,
   ],
   templateUrl: './layout.html',
 })
