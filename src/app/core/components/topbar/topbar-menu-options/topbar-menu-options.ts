@@ -5,7 +5,6 @@ import { Component, computed, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 
 //Aplicação
-import { LayoutService } from '../../../services/layout.service';
 import { ThemeService } from './../../../services/theme.service';
 
 @Component({
