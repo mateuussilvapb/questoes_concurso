@@ -1,14 +1,13 @@
 //Angular
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { Component, computed, inject } from '@angular/core';
 
 //Aplicação
+import { Menu } from './menu/menu';
+import { LayoutService } from '../../services/layout.service';
 
 //Externos
-import { filter, Subscription } from 'rxjs';
 import { DrawerModule } from 'primeng/drawer';
-import { LayoutService } from '../../services/layout.service';
-import { Menu } from './menu/menu';
 
 @Component({
   selector: 'app-sidebar',
