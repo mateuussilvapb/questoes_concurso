@@ -7,7 +7,7 @@
     class="layout-main-container"
     [ngClass]="{
       'main-menu-opened-desktop':
-        this.layoutService.isDesktop() && this.layoutService.mainMenuVisible
+        this.layoutService.isDesktop() && this.layoutService.mainMenuVisible()
     }"
   >
     <div class="layout-main">

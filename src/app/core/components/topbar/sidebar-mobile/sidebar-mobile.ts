@@ -1,12 +1,12 @@
 //Angular
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 //Externos
 import { DrawerModule } from 'primeng/drawer';
+
+//Aplicação
 import { LayoutService } from '../../../services/layout.service';
 import { TopbarMenuOptions } from '../topbar-menu-options/topbar-menu-options';
-
-//Internos
 
 @Component({
   selector: 'app-sidebar-mobile',
@@ -14,7 +14,7 @@ import { TopbarMenuOptions } from '../topbar-menu-options/topbar-menu-options';
     //Externos
     DrawerModule,
 
-    //Internos
+    //Aplicação
     TopbarMenuOptions,
   ],
   template: `

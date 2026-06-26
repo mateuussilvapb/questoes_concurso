@@ -1,0 +1,21 @@
+@use 'variables' as *;
+
+.layout-main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: space-between;
+  padding: 7rem 2rem 2rem 4rem;
+  transition: margin-left $transitionDuration;
+  @media (max-width: 990px) {
+    padding: 7rem 2rem 2rem 2rem;
+  }
+}
+
+.layout-main {
+  flex: 1 1 auto;
+}
+
+.main-menu-opened-desktop {
+  margin-left: 19.2rem;
+}
