@@ -1,0 +1,60 @@
+@use '../../../../assets/scss/utils/variables' as *;
+@use '../../../../assets/scss/utils/mixins' as *;
+
+// seu-componente.component.scss
+
+:host ::ng-deep {
+  .p-button {
+    // Estado Padrão (Baseado no seu &.active)
+    background: $gradientApplication !important;
+    color: $white !important;
+    font-weight: bold !important;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+    border-radius: $borderRadius !important;
+    transition:
+      color $transitionDuration,
+      background $transitionDuration,
+      box-shadow $transitionDuration !important;
+
+    position: relative !important;
+    overflow: hidden !important;
+
+    // O pseudo-elemento que cria a camada escura suave no hover
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0);
+      transition: background $transitionDuration;
+      pointer-events: none; // Garante que não interfira no clique do botão
+    }
+
+    // Estado Hover
+    &:hover:not(:disabled) {
+      color: black !important; // Muda o texto para preto conforme seu código
+      background: $gradientApplication !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+
+      &::after {
+        background: rgba(0, 0, 0, 0.05); // Escurece levemente o gradiente
+      }
+    }
+
+    // Estado Focus
+    &:focus {
+      @include focused-inset();
+    }
+  }
+}
+
+// Suporte ao Dark Mode (Caso use a classe .dark no escopo superior)
+:host-context(.dark) ::ng-deep {
+  .p-button {
+    background: $gradientApplicationDark !important;
+
+    &:hover:not(:disabled) {
+      background: $gradientApplicationDark !important;
+    }
+  }
+}
