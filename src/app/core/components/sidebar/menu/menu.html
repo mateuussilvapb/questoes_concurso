@@ -11,7 +11,9 @@
           <a
             routerLinkActive="active"
             [routerLink]="subItem.route"
-            [routerLinkActiveOptions]="{ exact: true }"
+            [routerLinkActiveOptions]="{
+              exact: subItem.route === '/' || subItem.route === '/dashboard',
+            }"
           >
             <i [ngClass]="subItem.icon" class="layout-menuitem-icon"></i>
             {{ subItem.label }}
