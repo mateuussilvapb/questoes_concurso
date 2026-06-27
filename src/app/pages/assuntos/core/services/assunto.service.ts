@@ -3,8 +3,8 @@ import { Injectable, inject } from '@angular/core';
 
 //Aplicação
 import { Assunto } from '../models/assunto.model';
-import { CreateAssuntoDto } from '../models/create-assunto.dto';
-import { UpdateAssuntoDto } from '../models/update-assunto.dto';
+import { CreateAssuntoDto } from '../dtos/create-assunto.dto';
+import { UpdateAssuntoDto } from '../dtos/update-assunto.dto';
 import { StorageService } from '../../../../core/storage/storage.service';
 import { StorageCollection } from '../../../../core/storage/storage.constants';
 import { IntegrityService } from '../../../../core/storage/integrity/integrity.service';
