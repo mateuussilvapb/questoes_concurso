@@ -1,6 +1,6 @@
 //Angular
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 //Externos
@@ -10,12 +10,14 @@ import { TextareaModule } from 'primeng/textarea';
 import { InputTextModule } from 'primeng/inputtext';
 
 //Aplicação
+import { Materia } from '../../core/models/materia.model';
 import { MateriaService } from '../../core/services/materia.service';
 import { Loading } from '../../../../shared/components/loading/loading';
+import { CreateMateriaDto } from '../../core/models/create-materia.dto';
+import { UpdateMateriaDto } from '../../core/models/update-materia.dto';
 import { FormBase } from '../../../../shared/components/form-base/form-base';
 import { FormLabel } from '../../../../shared/components/form-label/form-label';
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
-import { CreateMateriaDto } from '../../core/models/create-materia.dto';
 
 @Component({
   selector: 'app-materias-form-page',
@@ -40,6 +42,8 @@ import { CreateMateriaDto } from '../../core/models/create-materia.dto';
 })
 export class MateriasFormPage extends FormBase implements OnInit {
   private readonly materiaService = inject(MateriaService);
+
+  materia = signal<Materia | null>(null);
 
   title = computed<string>(() => {
     const modes = [
@@ -74,6 +78,9 @@ export class MateriasFormPage extends FormBase implements OnInit {
 
   ngOnInit(): void {
     this.createForm();
+    if (!this.isCreateMode()) {
+      this.getMateriaAndHandle();
+    }
   }
 
   createForm() {
@@ -96,31 +103,80 @@ export class MateriasFormPage extends FormBase implements OnInit {
     });
   }
 
+  getMateriaAndHandle() {
+    this.materia.set(this.materiaService.buscarPorId(this.pageId()));
+    this.patchValueOnForm();
+  }
+
+  patchValueOnForm() {
+    this.form.patchValue({
+      nome: this.materia()?.nome,
+      descricao: this.materia()?.descricao,
+    });
+  }
+
   onSubmit() {
     if (this.form.valid) {
       this.submitting.set(true);
-      const rawValue = this.form.getRawValue();
-      const dto: CreateMateriaDto = {
-        nome: rawValue.nome,
-        descricao: rawValue.descricao,
-      };
-
-      try {
-        this.materiaService.criar(dto);
-        this.submitting.set(false);
-        this.messageService.showSuccess(
-          'Matéria criada com sucesso. Você será redirecionado para listagem.',
-        );
-        this.router.navigate(['materia']);
+      if (this.isCreateMode()) {
+        this.onCreate();
         return;
-      } catch (e) {
-        console.error(e);
-        this.messageService.showError('Erro ao salvar matéria. Tente novamente');
       }
+      this.onUpdate();
+      return;
     }
     this.form.markAllAsDirty();
     this.form.markAllAsTouched();
     this.messageService.showInfo('Formulário inválido. Preencha o formulário corretamente.');
+  }
+
+  onCreate() {
+    const rawValue = this.form.getRawValue();
+    const dto: CreateMateriaDto = {
+      nome: rawValue.nome,
+      descricao: rawValue.descricao,
+    };
+
+    try {
+      this.materiaService.criar(dto);
+      this.submitting.set(false);
+      this.messageService.showSuccess(
+        'Matéria criada com sucesso. Você será redirecionado para listagem.',
+      );
+      this.router.navigate(['materia']);
+      return;
+    } catch (e: any) {
+      console.error(e);
+      const mensagem = e?.message ?? 'Erro ao criar matéria. Tente novamente';
+      this.messageService.showError(mensagem);
+      this.submitting.set(false);
+      return;
+    }
+  }
+
+  onUpdate() {
+    const rawValue = this.form.getRawValue();
+    const dto: UpdateMateriaDto = {
+      id: this.materia()?.id ?? '',
+      nome: rawValue.nome,
+      descricao: rawValue.descricao,
+    };
+
+    try {
+      this.materiaService.atualizar(dto);
+      this.submitting.set(false);
+      this.messageService.showSuccess(
+        'Matéria atualizada com sucesso. Você será redirecionado para listagem.',
+      );
+      this.router.navigate(['materia']);
+      return;
+    } catch (e: any) {
+      console.error(e);
+      const mensagem = e?.message ?? 'Erro ao atualizar matéria. Tente novamente';
+      this.messageService.showError(mensagem);
+      this.submitting.set(false);
+      return;
+    }
   }
 
   onVoltar() {

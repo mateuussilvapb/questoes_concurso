@@ -4,7 +4,7 @@ import { inject, Injectable } from '@angular/core';
 //Externos
 import { MessageService as MessageServicePG } from 'primeng/api';
 
-export type ToastSeverity = 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast';
+export type ToastSeverity = 'success' | 'info' | 'warn' | 'error' | 'secondary' | 'contrast';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +17,7 @@ export class MessageService {
   }
 
   showError(detail: string, summary: string = 'Erro'): void {
-    this.showGeneric(detail, summary, 'danger');
+    this.showGeneric(detail, summary, 'error');
   }
 
   showWarning(detail: string, summary: string = 'Atenção'): void {

@@ -81,9 +81,12 @@ export class MateriasListPage extends ListBase implements OnInit {
       this.materiaService.remover(id);
       this.messageService.showSuccess('Matéria excluída com sucesso!');
       this.ngOnInit();
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      this.messageService.showError('Erro ao excluir uma matéria. Tente novamente');
+      const mensagem = e?.message ?? 'Erro ao excluir uma matéria. Tente novamente';
+      this.messageService.showError(mensagem);
+      this.submitting.set(false);
+      return;
     }
   }
 }
