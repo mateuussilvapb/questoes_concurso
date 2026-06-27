@@ -1,15 +1,81 @@
 <app-layout-base-pages [title]="title()" [subtitle]="subtitle()">
   <p-card>
-    <form onsubmit="submit()">
-      <div class="grid">
-        <div class="col-12">
-          <label for="nome-materia">Nome:</label>
+    @if (form) {
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="grid">
+          <!-- Nome -->
+          <div class="col-12">
+            <app-form-label
+              for="nome-materia"
+              label="Nome da Matéria"
+              [control]="form.controls['nome']"
+              [errorMessages]="errorNomeMessages"
+            >
+              <input
+                pInputText
+                type="text"
+                id="nome-materia"
+                [maxlength]="100"
+                formControlName="nome"
+                [invalid]="isInvalid('nome')"
+                placeholder="Informe o nome da matéria"
+              />
+            </app-form-label>
+          </div>
+          <!-- Descrição -->
+          <div class="col-12">
+            <app-form-label
+              label="Descrição"
+              for="descricao-materia"
+              [control]="form.controls['descricao']"
+              [errorMessages]="errorDescricaoMessages"
+            >
+              <textarea
+                rows="5"
+                cols="30"
+                pTextarea
+                [maxlength]="500"
+                id="descricao-materia"
+                aria-label="Descrição"
+                formControlName="descricao"
+                [invalid]="isInvalid('descricao')"
+                placeholder="Informe a descrição da matéria"
+              ></textarea>
+            </app-form-label>
+          </div>
         </div>
-        <div class="col-12">
-          <label for="nome-materia">Descrição:</label>
+        <!-- Botões -->
+        <div
+          class="pt-2 flex flex-wrap flex-column-reverse md:flex-row justify-content-end gap-2"
+
+        >
+          <div class="col-12 p-0 md:col-2 xl:col-1">
+            <p-button
+              label="Voltar"
+              class="w-full"
+              variant="outlined"
+              styleClass="w-full"
+              severity="contrast"
+              (onClick)="onVoltar()"
+              [disabled]="submitting()"
+            />
+          </div>
+          @if (!isViewMode() && !submitting()) {
+            <div class="col-12 p-0 md:col-2 xl:col-1">
+              <p-button
+                type="submit"
+                styleClass="w-full button-aplicacao-style"
+                class="w-full button-aplicacao-style"
+                [disabled]="form.invalid || submitting()"
+                [label]="isCreateMode() ? 'Adicionar' : 'Atualizar'"
+              />
+            </div>
+          }
+          @if (submitting()) {
+            <app-loading></app-loading>
+          }
         </div>
-        <div class="col-12"></div>
-      </div>
-    </form>
+      </form>
+    }
   </p-card>
 </app-layout-base-pages>
