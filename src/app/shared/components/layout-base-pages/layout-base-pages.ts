@@ -11,7 +11,6 @@ import { ButtonModule } from 'primeng/button';
   selector: 'app-layout-base-pages',
   imports: [ButtonModule],
   templateUrl: './layout-base-pages.html',
-  styleUrl: './layout-base-pages.scss',
 })
 export class LayoutBasePages {
   private readonly themeService = inject(ThemeService);
