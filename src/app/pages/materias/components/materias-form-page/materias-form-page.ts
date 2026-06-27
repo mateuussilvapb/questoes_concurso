@@ -105,15 +105,18 @@ export class MateriasFormPage extends FormBase implements OnInit {
         descricao: rawValue.descricao,
       };
 
-      this.materiaService.criar(dto);
-      this.submitting.set(false);
-      this.messageService.showSuccess(
-        'Matéria criada com sucesso. Você será redirecionado para listagem.',
-      );
-
-      this.router.navigate(['materia']);
-
-      return;
+      try {
+        this.materiaService.criar(dto);
+        this.submitting.set(false);
+        this.messageService.showSuccess(
+          'Matéria criada com sucesso. Você será redirecionado para listagem.',
+        );
+        this.router.navigate(['materia']);
+        return;
+      } catch (e) {
+        console.error(e);
+        this.messageService.showError('Erro ao salvar matéria. Tente novamente');
+      }
     }
     this.form.markAllAsDirty();
     this.form.markAllAsTouched();
