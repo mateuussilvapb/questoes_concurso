@@ -12,4 +12,9 @@ export const CORE_ROUTES: Routes = [
     loadChildren: () =>
       import('../pages/materias/core/materias.routes').then((c) => c.MATERIAS_ROUTES),
   },
+  {
+    path: 'assunto',
+    loadChildren: () =>
+      import('../pages/assuntos/core/assuntos.routes').then((c) => c.ASSUNTOS_ROUTES),
+  },
 ];
