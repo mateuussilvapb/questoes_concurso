@@ -1,1 +1,15 @@
-<p>materias-form-page works!</p>
+<app-layout-base-pages [title]="title()" [subtitle]="subtitle()">
+  <p-card>
+    <form onsubmit="submit()">
+      <div class="grid">
+        <div class="col-12">
+          <label for="nome-materia">Nome:</label>
+        </div>
+        <div class="col-12">
+          <label for="nome-materia">Descrição:</label>
+        </div>
+        <div class="col-12"></div>
+      </div>
+    </form>
+  </p-card>
+</app-layout-base-pages>
