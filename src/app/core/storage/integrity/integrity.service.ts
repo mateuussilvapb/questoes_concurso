@@ -3,11 +3,9 @@ import { Injectable, inject } from '@angular/core';
 import { StorageCollection } from '../storage.constants';
 import { StorageService } from '../storage.service';
 
-// import { Questao } from '../../features/questoes/models/questao.model';
-// import { Historico } from '../../features/historicos/models/historico.model';
-
-import { Assunto } from '../../../pages/assuntos/core/models/assunto.model';
 import { DeleteValidationResult } from './integrity.models';
+import { Assunto } from '../../../pages/assuntos/core/models/assunto.model';
+import { Questao } from '../../../pages/questoes/core/models/questao.model';
 
 @Injectable({
   providedIn: 'root',
@@ -39,24 +37,22 @@ export class IntegrityService {
   // ASSUNTO
   // ==========================================================
 
-  //TODO
-  // validarExclusaoAssunto(idAssunto: string): DeleteValidationResult {
-  //   const questoes = this.storage
-  //     .getAll<Questao>(StorageCollection.QUESTOES)
-  //     .filter((q) => q.idsAssuntos.includes(idAssunto));
+  validarExclusaoAssunto(idAssunto: string): DeleteValidationResult {
+    const questoes = this.storage
+      .getAll<Questao>(StorageCollection.QUESTOES)
+      .filter((q) => q.idsAssuntos.includes(idAssunto));
 
-  //   if (questoes.length > 0) {
-  //     return {
-  //       canDelete: false,
+    if (questoes.length > 0) {
+      return {
+        canDelete: false,
+        message: `Não é possível excluir o assunto porque existem ${questoes.length} questão(ões) vinculadas.`,
+      };
+    }
 
-  //       message: `Não é possível excluir o assunto porque existem ${questoes.length} questão(ões) vinculadas.`,
-  //     };
-  //   }
-
-  //   return {
-  //     canDelete: true,
-  //   };
-  // }
+    return {
+      canDelete: true,
+    };
+  }
 
   // ==========================================================
   // QUESTÃO
