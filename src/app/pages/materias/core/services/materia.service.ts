@@ -1,12 +1,14 @@
-import { IntegrityService } from './../../../../core/storage/integrity/integrity.service';
+//Angular
 import { Injectable, inject } from '@angular/core';
 
+//Aplicação
 import { Materia } from '../models/materia.model';
+import { CreateMateriaDto } from '../dtos/create-materia.dto';
+import { UpdateMateriaDto } from '../dtos/update-materia.dto';
 import { StorageService } from '../../../../core/storage/storage.service';
 import { StorageCollection } from '../../../../core/storage/storage.constants';
-import { CreateMateriaDto } from '../models/create-materia.dto';
-import { UpdateMateriaDto } from '../models/update-materia.dto';
-import { MessageService } from 'primeng/api';
+import { IntegrityService } from './../../../../core/storage/integrity/integrity.service';
+
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +16,6 @@ import { MessageService } from 'primeng/api';
 export class MateriaService {
   private readonly storage = inject(StorageService);
   private readonly integrityService = inject(IntegrityService);
-  private readonly messageService = inject(MessageService);
 
   listar(): Materia[] {
     return this.storage
