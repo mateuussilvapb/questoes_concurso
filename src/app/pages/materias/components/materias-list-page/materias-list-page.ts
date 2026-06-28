@@ -1,3 +1,4 @@
+import { AssuntoService } from './../../../assuntos/core/services/assunto.service';
 // Angular
 import { FormsModule } from '@angular/forms';
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
@@ -16,6 +17,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
+import { MateriaCardPresentation } from '../materia-card-presentation/materia-card-presentation';
+import { Assunto } from '../../../assuntos/core/models/assunto.model';
+import { Questao } from '../../../questoes/core/models/questao.model';
+import { QuestaoService } from '../../../questoes/core/services/questao.service';
 
 @Component({
   selector: 'app-materias-list-page',
@@ -24,6 +29,7 @@ import { TooltipModule } from 'primeng/tooltip';
     FormsModule,
     //Aplicação
     LayoutBasePages,
+    MateriaCardPresentation,
     //Externo
     CardModule,
     TableModule,
@@ -37,6 +43,8 @@ import { TooltipModule } from 'primeng/tooltip';
 })
 export class MateriasListPage extends ListBase implements OnInit {
   private readonly materiaService = inject(MateriaService);
+  private readonly assuntoService = inject(AssuntoService);
+  private readonly questaoService = inject(QuestaoService);
 
   protected searchTerm = signal<string>('');
 
@@ -61,32 +69,10 @@ export class MateriasListPage extends ListBase implements OnInit {
     this.router.navigate(['materia', 'cadastro']);
   }
 
-  onEditar(materia: Materia) {
-    this.router.navigate(['materia', 'edicao', materia.id]);
+  getAssuntosRelacionados(materia: Materia): Assunto[] {
+    return this.assuntoService.buscarPorIdMateria(materia.id);
   }
-
-  onExcluir(materia: Materia) {
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja excluir esta matéria?<br>A ação não poderá ser desfeita.',
-      header: 'Confirma?',
-      icon: 'pi pi-exclamation-triangle',
-      rejectButtonStyleClass: 'p-button-secondary',
-      acceptButtonStyleClass: 'p-button-danger',
-      accept: () => this.excluir(materia.id),
-    });
-  }
-
-  excluir(id: string) {
-    try {
-      this.materiaService.remover(id);
-      this.messageService.showSuccess('Matéria excluída com sucesso!');
-      this.ngOnInit();
-    } catch (e: any) {
-      console.error(e);
-      const mensagem = e?.message ?? 'Erro ao excluir uma matéria. Tente novamente';
-      this.messageService.showError(mensagem);
-      this.submitting.set(false);
-      return;
-    }
+  getQuestoesRelacionadas(materia: Materia): Questao[] {
+    return this.questaoService.listarPorMateria(materia.id);
   }
 }

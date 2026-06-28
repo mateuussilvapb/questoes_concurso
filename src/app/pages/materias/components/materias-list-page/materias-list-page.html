@@ -4,80 +4,30 @@
   [subtitle]="'Gerencie suas matérias'"
   [buttonActionLabel]="'Adicionar Matéria'"
 >
-  <p-card>
-    <!-- Campo de busca -->
-    <p-iconfield>
-      <p-inputicon class="pi pi-search" />
-      <input
-        pInputText
-        type="text"
-        class="w-full"
-        id="nome-materia-list"
-        [(ngModel)]="searchTerm"
-        placeholder="Informe o nome da matéria"
-      />
-    </p-iconfield>
+  <!-- Campo de busca -->
+  <p-iconfield>
+    <p-inputicon class="pi pi-search" />
+    <input
+      pInputText
+      type="text"
+      class="w-full"
+      id="nome-materia-list"
+      [(ngModel)]="searchTerm"
+      placeholder="Informe o nome da matéria"
+    />
+  </p-iconfield>
 
-    <!-- Listagem -->
-    <div class="mt-5">
-      <p-table
-        [rows]="10"
-        size="small"
-        [paginator]="true"
-        [value]="materiasFiltradas()"
-        styleClass="p-datatable-gridlines"
-        [rowsPerPageOptions]="[5, 10, 20]"
-        [tableStyle]="{ 'min-width': '50rem' }"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th id="nome-th" class="text-50 text-center surface-100 text-color" pFrozenColumn>
-              Nome
-            </th>
-            <th id="descricao-th" class="text-50 text-center surface-100 text-color">Descrição</th>
-            <th id="acoes-th" class="text-50 text-center surface-100 text-color">Opções</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-materia>
-          <tr>
-            <td class="text-center" style="width: 45%; min-width: 5rem" pFrozenColumn>
-              {{ getContentFieldOrDefault(materia.nome) }}
-            </td>
-            <td class="text-center" style="width: 45%; min-width: 5rem">
-              {{ getContentFieldOrDefault(materia.descricao) }}
-            </td>
-            <td
-              class="flex flex-row flex-nowrap gap-2 justify-content-center align-items-center w-auto"
-            >
-              <p-button
-                size="small"
-                rounded="true"
-                severity="info"
-                pTooltip="Editar"
-                icon="pi pi-pencil"
-                aria-label="Editar"
-                tooltipPosition="top"
-                (onClick)="onEditar(materia)"
-              />
-              <p-button
-                size="small"
-                rounded="true"
-                severity="danger"
-                icon="pi pi-trash"
-                pTooltip="Excluir"
-                aria-label="Excluir"
-                tooltipPosition="top"
-                (onClick)="onExcluir(materia)"
-              />
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template #emptymessage>
-          <tr>
-            <td class="text-center" colspan="100%">Nenhum registro encontrado...</td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
-  </p-card>
+  <!-- Listagem -->
+  @if (materiasFiltradas().length > 0) {
+    @for (materia of materiasFiltradas(); track $index) {
+      <app-materia-card-presentation
+        [materia]="materia"
+        [assuntosRelacionados]="getAssuntosRelacionados(materia)"
+        [questoesRelacionadas]="getQuestoesRelacionadas(materia)"
+        (exclusaoConcluida)="ngOnInit()"
+      />
+    }
+  } @else {
+    <p class="text-center mt-3" colspan="100%">Nenhum registro encontrado...</p>
+  }
 </app-layout-base-pages>
