@@ -1,12 +1,14 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { StorageCollection } from './storage.constants';
 import { BaseEntity } from '../../shared/models/base-entity';
 import { BackupData, ImportMode, MergeResult } from './backup.models';
+import { IdGeneratorService } from './id-generator/id-generator.service';
 @Injectable({
   providedIn: 'root',
 })
 export class StorageService {
   private readonly backupVersion = 1;
+  private readonly idGeneratorService = inject(IdGeneratorService);
 
   // ============================================================
   // LEITURA
@@ -68,7 +70,10 @@ export class StorageService {
       throw new Error(`Registro ${entity.id} não encontrado.`);
     }
 
-    values[index] = entity;
+    values[index] = {
+      ...entity,
+      dataAtualizacao: new Date().toISOString(),
+    };
 
     this.save(collection, values);
 
@@ -89,6 +94,20 @@ export class StorageService {
     Object.values(StorageCollection).forEach((collection) => this.clear(collection));
   }
 
+  replaceCollection<T>(collection: StorageCollection, values: readonly T[]): void {
+    localStorage.setItem(collection, JSON.stringify(values));
+  }
+
+  removeWhere<T>(collection: StorageCollection, predicate: (item: T) => boolean): number {
+    const values = this.getAll<T>(collection);
+
+    const remaining = values.filter((item) => !predicate(item));
+
+    this.replaceCollection(collection, remaining);
+
+    return values.length - remaining.length;
+  }
+
   // ============================================================
   // IDS
   // ============================================================
@@ -97,7 +116,7 @@ export class StorageService {
     let id: string;
 
     do {
-      id = crypto.randomUUID();
+      id = this.idGeneratorService.generate();
     } while (this.exists(collection, id));
 
     return id;
