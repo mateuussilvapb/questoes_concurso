@@ -32,6 +32,10 @@ export class AssuntoService {
     return assunto;
   }
 
+  buscarPorIdMateria(idMateria: string): Assunto[] {
+    return this.listar().filter((m) => m.idMateria == idMateria);
+  }
+
   pesquisar(texto: string): Assunto[] {
     const filtro = texto.trim().toLowerCase();
 
