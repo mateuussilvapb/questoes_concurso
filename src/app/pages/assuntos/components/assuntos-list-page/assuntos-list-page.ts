@@ -5,20 +5,20 @@ import { FormsModule } from '@angular/forms';
 //Externo
 import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
-import { TableModule } from 'primeng/table';
-import { TooltipModule } from 'primeng/tooltip';
 
 //Aplicação
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
 import { ListBase } from '../../../../shared/components/list-base/list-base';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { MateriaService } from '../../../materias/core/services/materia.service';
+import { Questao } from '../../../questoes/core/models/questao.model';
+import { QuestaoService } from '../../../questoes/core/services/questao.service';
 import { Assunto } from '../../core/models/assunto.model';
 import { AssuntoService } from '../../core/services/assunto.service';
+import { AssuntoCardPresentation } from '../assunto-card-presentation/assunto-card-presentation';
 
 @Component({
   selector: 'app-assuntos-list-page',
@@ -27,11 +27,9 @@ import { AssuntoService } from '../../core/services/assunto.service';
     FormsModule,
     //Aplicação
     LayoutBasePages,
+    AssuntoCardPresentation,
     //Externo
-    CardModule,
-    TableModule,
     ButtonModule,
-    TooltipModule,
     InputIconModule,
     IconFieldModule,
     InputTextModule,
@@ -42,6 +40,7 @@ import { AssuntoService } from '../../core/services/assunto.service';
 export class AssuntosListPage extends ListBase implements OnInit {
   private readonly materiaService = inject(MateriaService);
   private readonly assuntoService = inject(AssuntoService);
+  private readonly questaoService = inject(QuestaoService);
 
   protected materiaSearch = signal<string>('');
   protected materias = signal<Materia[]>([]);
@@ -90,35 +89,6 @@ export class AssuntosListPage extends ListBase implements OnInit {
     this.router.navigate(['assunto', 'cadastro']);
   }
 
-  onEditar(assunto: Assunto) {
-    this.router.navigate(['assunto', 'edicao', assunto.id]);
-  }
-
-  onExcluir(assunto: Assunto) {
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja excluir este Assunto?<br>A ação não poderá ser desfeita.',
-      header: 'Confirma?',
-      icon: 'pi pi-exclamation-triangle',
-      rejectButtonStyleClass: 'p-button-secondary',
-      acceptButtonStyleClass: 'p-button-danger',
-      accept: () => this.excluir(assunto.id),
-    });
-  }
-
-  excluir(id: string) {
-    try {
-      this.assuntoService.remover(id);
-      this.messageService.showSuccess('Assunto excluído com sucesso!');
-      this.ngOnInit();
-    } catch (e: any) {
-      console.error(e);
-      const mensagem = e?.message ?? 'Erro ao excluir um assunto. Tente novamente';
-      this.messageService.showError(mensagem);
-      this.submitting.set(false);
-      return;
-    }
-  }
-
   searchMateria(event: any) {
     this.materiaSearch.set(event?.query);
   }
@@ -139,8 +109,12 @@ export class AssuntosListPage extends ListBase implements OnInit {
     });
   }
 
-  getMateriaNome(assunto: Assunto): string {
-    return this.materiaService.buscarPorId(assunto.idMateria).nome ?? '-';
+  getMateriaPorAssunto(assunto: Assunto): Materia {
+    return this.materiaService.buscarPorId(assunto.idMateria);
+  }
+
+  getQuestoesRelacionadas(assunto: Assunto): Questao[] {
+    return this.questaoService.listarPorAssunto([assunto.id]);
   }
 
   onLimpar() {
