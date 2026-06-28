@@ -4,24 +4,23 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 //Externo
-import { CardModule } from 'primeng/card';
+import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
-import { TextareaModule } from 'primeng/textarea';
+import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
-import { AutoComplete, AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
+import { TextareaModule } from 'primeng/textarea';
 
 //Aplicação
-import { Assunto } from '../../core/models/assunto.model';
-import { AssuntoService } from '../../core/services/assunto.service';
-import { CreateAssuntoDto } from '../../core/dtos/create-assunto.dto';
-import { UpdateAssuntoDto } from '../../core/dtos/update-assunto.dto';
-import { Loading } from '../../../../shared/components/loading/loading';
 import { FormBase } from '../../../../shared/components/form-base/form-base';
 import { FormLabel } from '../../../../shared/components/form-label/form-label';
-import { MateriaService } from '../../../materias/core/services/materia.service';
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
+import { Loading } from '../../../../shared/components/loading/loading';
 import { Materia } from '../../../materias/core/models/materia.model';
-import { required } from '@angular/forms/signals';
+import { MateriaService } from '../../../materias/core/services/materia.service';
+import { CreateAssuntoDto } from '../../core/dtos/create-assunto.dto';
+import { UpdateAssuntoDto } from '../../core/dtos/update-assunto.dto';
+import { Assunto } from '../../core/models/assunto.model';
+import { AssuntoService } from '../../core/services/assunto.service';
 
 @Component({
   selector: 'app-assuntos-form-page',
@@ -55,7 +54,16 @@ export class AssuntosFormPage extends FormBase implements OnInit {
 
   protected materias = signal<Materia[]>([]);
 
-  protected readonly materiasFiltradas = signal<Materia[]>([]);
+  protected materiasFiltradas = computed(() => {
+    const busca = this.searchTerm().toLowerCase().trim();
+    const listaOriginal = this.materias();
+
+    if (!busca) {
+      return listaOriginal;
+    }
+
+    return listaOriginal.filter((materia) => materia.nome.toLowerCase().includes(busca));
+  });
 
   title = computed<string>(() => {
     const modes = [
@@ -211,14 +219,7 @@ export class AssuntosFormPage extends FormBase implements OnInit {
   }
 
   searchMateria(event: any) {
-    const busca = event?.query?.toLowerCase().trim();
-
-    if (!busca) {
-      this.materiasFiltradas.set(this.materias());
-      return;
-    }
-
-    this.materiasFiltradas.set(this.materias().filter((m) => m.nome.toLowerCase().includes(busca)));
+    this.searchTerm.set(event?.query);
   }
 
   abrirAutocomplete(ac: AutoComplete) {
@@ -233,7 +234,7 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     this.searchMateria({ query: '' } as any);
 
     queueMicrotask(() => {
-      ac.hide()
+      ac.hide();
     });
   }
 

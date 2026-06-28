@@ -1,1 +1,122 @@
-<p>assuntos-list-page works!</p>
+<app-layout-base-pages
+  [title]="'Assuntos'"
+  (actionButtonClick)="onAddAssunto()"
+  [subtitle]="'Gerencie seus assuntos'"
+  [buttonActionLabel]="'Adicionar Assunto'"
+>
+  <p-card>
+    <div>
+      <div class="grid">
+        <!-- Buscar por nome -->
+        <div class="col-12 md:col-7">
+          <p-iconfield>
+            <p-inputicon class="pi pi-search" />
+            <input
+              pInputText
+              type="text"
+              class="w-full"
+              id="nome-assunto-list"
+              [(ngModel)]="searchTerm"
+              placeholder="Informe o nome do assunto"
+            />
+          </p-iconfield>
+        </div>
+
+        <!-- Buscar por matéria -->
+        <div class="col-12 md:col-5">
+          <p-autocomplete
+            #ac
+            fluid
+            dataKey="id"
+            [delay]="900"
+            optionLabel="nome"
+            [forceSelection]="true"
+            inputId="materia-assunto"
+            [(ngModel)]="searchMateriaId"
+            (onFocus)="abrirAutocomplete(ac)"
+            (onSelect)="fecharAutocomplete(ac)"
+            [suggestions]="materiasFiltradas()"
+            (completeMethod)="searchMateria($event)"
+            placeholder="Selecione a matéria associada"
+          />
+        </div>
+      </div>
+      <div class="flex flex-row justify-content-end w-full mt-3">
+        <p-button
+          class="w-auto"
+          label="Limpar"
+          styleClass="w-auto"
+          severity="secondary"
+          (onClick)="onLimpar()"
+        />
+      </div>
+    </div>
+
+    <!-- Listagem -->
+    <div class="mt-5">
+      <p-table
+        [rows]="10"
+        [paginator]="true"
+        [value]="assuntosFiltrados()"
+        styleClass="p-datatable-gridlines"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        [tableStyle]="{ 'min-width': '50rem' }"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th id="nome-th" class="text-50 text-center surface-100 text-color" pFrozenColumn>
+              Nome
+            </th>
+            <th id="materia-th" class="text-50 text-center surface-100 text-color">
+              Matéria
+            </th>
+            <th id="descricao-th" class="text-50 text-center surface-100 text-color">Descrição</th>
+            <th id="acoes-th" class="text-50 text-center surface-100 text-color">Opções</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-assunto>
+          <tr>
+            <td class="text-center" style="width: 30%; min-width: 5rem" pFrozenColumn>
+              {{ getContentFieldOrDefault(assunto.nome) }}
+            </td>
+            <td class="text-center" style="width: 20%; min-width: 5rem" pFrozenColumn>
+              {{ getMateriaNome(assunto) }}
+            </td>
+            <td class="text-center" style="width: 40%; min-width: 5rem">
+              {{ getContentFieldOrDefault(assunto.descricao) }}
+            </td>
+            <td
+              class="flex flex-row flex-nowrap gap-2 justify-content-center align-items-center w-auto"
+            >
+              <p-button
+                size="small"
+                rounded="true"
+                severity="info"
+                pTooltip="Editar"
+                icon="pi pi-pencil"
+                aria-label="Editar"
+                tooltipPosition="top"
+                (onClick)="onEditar(assunto)"
+              />
+              <p-button
+                size="small"
+                rounded="true"
+                severity="danger"
+                icon="pi pi-trash"
+                pTooltip="Excluir"
+                aria-label="Excluir"
+                tooltipPosition="top"
+                (onClick)="onExcluir(assunto)"
+              />
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+          <tr>
+            <td class="text-center" colspan="100%">Nenhum registro encontrado...</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </p-card>
+</app-layout-base-pages>
