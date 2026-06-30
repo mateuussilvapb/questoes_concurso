@@ -25,10 +25,10 @@ export class QuestaoRepository {
   find(filter?: QuestaoFilter): Questao[] {
     const predicates: Array<(q: Questao) => boolean> = [];
 
-    if (filter?.declaracao?.trim()) {
-      const texto = filter.declaracao.trim().toLowerCase();
+    if (filter?.enunciado?.trim()) {
+      const texto = filter.enunciado.trim().toLowerCase();
 
-      predicates.push((q) => q.declaracao.toLowerCase().includes(texto));
+      predicates.push((q) => q.enunciado.toLowerCase().includes(texto));
     }
 
     if (filter?.idMateria) {

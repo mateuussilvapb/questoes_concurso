@@ -201,7 +201,7 @@ export class QuestaoService {
 
     const questao: Questao = {
       id: this.idGeneratorService.generate(),
-      declaracao: dto.declaracao.trim(),
+      enunciado: dto.enunciado.trim(),
       idMateria: dto.idMateria,
       idsAssuntos: [...dto.idsAssuntos],
       nivelDificuldade: dto.nivelDificuldade,
@@ -221,7 +221,7 @@ export class QuestaoService {
     this.validator.validarAtualizacao(dto);
     const atualizado: Questao = {
       ...atual,
-      declaracao: dto.declaracao.trim(),
+      enunciado: dto.enunciado.trim(),
       idMateria: dto.idMateria,
       idsAssuntos: [...dto.idsAssuntos],
       nivelDificuldade: dto.nivelDificuldade,

@@ -6,7 +6,7 @@ import { ObservacoesQuestoes } from '../observacoes-questoes/models/observacoes-
 
 export interface UpdateQuestaoDto {
   id: string;
-  declaracao: string;
+  enunciado: string;
   observacao: ObservacoesQuestoes;
   idMateria: string;
   idsAssuntos: string[];

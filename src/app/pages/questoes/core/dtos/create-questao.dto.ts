@@ -5,7 +5,7 @@ import { QuestaoStatus } from '../models/questao-status.model';
 import { ObservacoesQuestoes } from '../observacoes-questoes/models/observacoes-questoes-model';
 
 export interface CreateQuestaoDto {
-  declaracao: string;
+  enunciado: string;
   observacao: ObservacoesQuestoes;
   idMateria: string;
   idsAssuntos: string[];

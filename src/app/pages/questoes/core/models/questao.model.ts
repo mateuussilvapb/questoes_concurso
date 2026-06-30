@@ -6,7 +6,7 @@ import { ObservacoesQuestoes } from '../observacoes-questoes/models/observacoes-
 import { QuestaoStatus } from './questao-status.model';
 
 export interface Questao extends BaseEntity {
-  declaracao: string;
+  enunciado: string;
   observacao: ObservacoesQuestoes;
   idMateria: string;
   idsAssuntos: string[];

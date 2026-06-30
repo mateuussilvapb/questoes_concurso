@@ -1,9 +1,8 @@
-import { Alternativa } from '../../alternativas/core/models/alternativa.model';
 import { NivelDificuldade } from '../enums/nivel-dificuldade.enum';
 import { TipoQuestao } from '../enums/tipo-questao.enum';
 
 export interface QuestaoFilter {
-  declaracao?: string;
+  enunciado?: string;
   observacao?: string;
   idMateria?: string;
   idsAssuntos?: string[];

@@ -24,7 +24,7 @@ export class QuestaoValidatorService {
   // =====================================================
 
   validarCriacao(dto: CreateQuestaoDto): void {
-    this.validarDeclaracao(dto.declaracao);
+    this.validarDeclaracao(dto.enunciado);
 
     this.validarMateria(dto.idMateria);
 
