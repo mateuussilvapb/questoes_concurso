@@ -21,6 +21,7 @@ import { CreateAssuntoDto } from '../../core/dtos/create-assunto.dto';
 import { UpdateAssuntoDto } from '../../core/dtos/update-assunto.dto';
 import { Assunto } from '../../core/models/assunto.model';
 import { AssuntoService } from '../../core/services/assunto.service';
+import { Util } from '../../../../shared/util/util';
 
 @Component({
   selector: 'app-assuntos-form-page',
@@ -224,18 +225,12 @@ export class AssuntosFormPage extends FormBase implements OnInit {
 
   abrirAutocomplete(ac: AutoComplete) {
     this.searchMateria({ query: '' } as any);
-
-    queueMicrotask(() => {
-      ac.show();
-    });
+    Util.forcarAberturaAutocomplete(ac);
   }
 
   fecharAutocomplete(ac: AutoComplete) {
     this.searchMateria({ query: '' } as any);
-
-    queueMicrotask(() => {
-      ac.hide();
-    });
+    Util.forcarFechamentoAutocomplete(ac);
   }
 
   onVoltar() {

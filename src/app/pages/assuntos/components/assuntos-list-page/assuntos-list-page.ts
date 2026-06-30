@@ -19,6 +19,7 @@ import { QuestaoService } from '../../../questoes/core/services/questao.service'
 import { Assunto } from '../../core/models/assunto.model';
 import { AssuntoService } from '../../core/services/assunto.service';
 import { AssuntoCardPresentation } from '../assunto-card-presentation/assunto-card-presentation';
+import { Util } from '../../../../shared/util/util';
 
 @Component({
   selector: 'app-assuntos-list-page',
@@ -95,18 +96,12 @@ export class AssuntosListPage extends ListBase implements OnInit {
 
   abrirAutocomplete(ac: AutoComplete) {
     this.searchMateria({ query: '' } as any);
-
-    queueMicrotask(() => {
-      ac.show();
-    });
+    Util.forcarAberturaAutocomplete(ac);
   }
 
   fecharAutocomplete(ac: AutoComplete) {
     this.searchMateria({ query: '' } as any);
-
-    queueMicrotask(() => {
-      ac.hide();
-    });
+    Util.forcarFechamentoAutocomplete(ac);
   }
 
   getMateriaPorAssunto(assunto: Assunto): Materia {
