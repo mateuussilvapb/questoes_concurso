@@ -20,6 +20,7 @@ import { Assunto } from '../../core/models/assunto.model';
 import { AssuntoService } from '../../core/services/assunto.service';
 import { AssuntoCardPresentation } from '../assunto-card-presentation/assunto-card-presentation';
 import { Util } from '../../../../shared/util/util';
+import { AutocompleteMateria } from '../../../../shared/components/autocomplete-materia/autocomplete-materia';
 
 @Component({
   selector: 'app-assuntos-list-page',
@@ -28,6 +29,7 @@ import { Util } from '../../../../shared/util/util';
     FormsModule,
     //Aplicação
     LayoutBasePages,
+    AutocompleteMateria,
     AssuntoCardPresentation,
     //Externo
     ButtonModule,
@@ -42,19 +44,6 @@ export class AssuntosListPage extends ListBase implements OnInit {
   private readonly materiaService = inject(MateriaService);
   private readonly assuntoService = inject(AssuntoService);
   private readonly questaoService = inject(QuestaoService);
-
-  protected materiaSearch = signal<string>('');
-  protected materias = signal<Materia[]>([]);
-  protected materiasFiltradas = computed(() => {
-    const busca = this.materiaSearch().toLowerCase().trim();
-    const listaOriginal = this.materias();
-
-    if (!busca) {
-      return listaOriginal;
-    }
-
-    return listaOriginal.filter((materia) => materia.nome.toLowerCase().includes(busca));
-  });
 
   protected searchTerm = signal<string>('');
   protected searchMateriaId = signal<Materia | null>(null);
@@ -83,25 +72,10 @@ export class AssuntosListPage extends ListBase implements OnInit {
 
   ngOnInit(): void {
     this.assuntos.set(this.assuntoService.listar());
-    this.materias.set(this.materiaService.listar());
   }
 
   onAddAssunto() {
     this.router.navigate(['assunto', 'cadastro']);
-  }
-
-  searchMateria(event: any) {
-    this.materiaSearch.set(event?.query);
-  }
-
-  abrirAutocomplete(ac: AutoComplete) {
-    this.searchMateria({ query: '' } as any);
-    Util.forcarAberturaAutocomplete(ac);
-  }
-
-  fecharAutocomplete(ac: AutoComplete) {
-    this.searchMateria({ query: '' } as any);
-    Util.forcarFechamentoAutocomplete(ac);
   }
 
   getMateriaPorAssunto(assunto: Assunto): Materia {

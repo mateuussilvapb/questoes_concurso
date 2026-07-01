@@ -23,19 +23,9 @@
 
       <!-- Buscar por matéria -->
       <div class="col-12 md:col-5">
-        <p-autocomplete
-          #ac
-          fluid
-          dataKey="id"
-          [delay]="900"
-          optionLabel="nome"
-          [forceSelection]="true"
-          inputId="materia-assunto"
-          [(ngModel)]="searchMateriaId"
-          (onFocus)="abrirAutocomplete(ac)"
-          (onSelect)="fecharAutocomplete(ac)"
-          [suggestions]="materiasFiltradas()"
-          (completeMethod)="searchMateria($event)"
+        <app-autocomplete-materia
+          idField="materia-assunto"
+          [(materiaSelecionada)]="searchMateriaId"
           placeholder="Selecione a matéria associada"
         />
       </div>

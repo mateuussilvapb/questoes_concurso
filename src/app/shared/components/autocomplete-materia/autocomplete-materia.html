@@ -1,26 +1,45 @@
-<ng-container [formGroup]="form()">
-  <app-form-label
-    [for]="idField()"
-    label="Matéria Associada"
-    [errorMessages]="errorMessages()"
-    [control]="form().controls[controlName()]"
-  >
-    <p-autocomplete
-      #ac
-      fluid
-      dataKey="id"
-      [delay]="900"
-      optionLabel="nome"
-      [inputId]="idField()"
-      [invalid]="isInvalid()"
-      [forceSelection]="true"
-      [placeholder]="placeholder()"
-      [formControlName]="controlName()"
-      (onFocus)="abrirAutocomplete(ac)"
-      (onSelect)="fecharAutocomplete(ac)"
-      [suggestions]="materiasFiltradas()"
-      (completeMethod)="searchMateria($event)"
-      emptyMessage="Nenhuma matéria encontrada"
-    />
-  </app-form-label>
-</ng-container>
+@if (form() && controlName()) {
+  <ng-container [formGroup]="form()!">
+    <app-form-label
+      [for]="idField()"
+      label="Matéria Associada"
+      [control]="controlForm()"
+      [errorMessages]="errorMessages()"
+    >
+      <p-autocomplete
+        #ac
+        fluid
+        dataKey="id"
+        [delay]="900"
+        optionLabel="nome"
+        [inputId]="idField()"
+        [invalid]="isInvalid()"
+        [forceSelection]="true"
+        [placeholder]="placeholder()"
+        (onFocus)="abrirAutocomplete(ac)"
+        [formControlName]="controlName()"
+        (onSelect)="fecharAutocomplete(ac)"
+        [suggestions]="materiasFiltradas()"
+        (completeMethod)="searchMateria($event)"
+        emptyMessage="Nenhuma matéria encontrada"
+      />
+    </app-form-label>
+  </ng-container>
+} @else {
+  <p-autocomplete
+    #ac
+    fluid
+    dataKey="id"
+    [delay]="900"
+    optionLabel="nome"
+    [inputId]="idField()"
+    [forceSelection]="true"
+    [placeholder]="placeholder()"
+    [(ngModel)]="materiaSelecionada"
+    (onFocus)="abrirAutocomplete(ac)"
+    (onSelect)="fecharAutocomplete(ac)"
+    [suggestions]="materiasFiltradas()"
+    (completeMethod)="searchMateria($event)"
+    emptyMessage="Nenhuma matéria encontrada"
+  />
+}

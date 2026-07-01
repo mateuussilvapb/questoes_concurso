@@ -52,21 +52,6 @@ export class AssuntosFormPage extends FormBase implements OnInit {
 
   assunto = signal<Assunto | null>(null);
 
-  protected searchTerm = signal<string>('');
-
-  protected materias = signal<Materia[]>([]);
-
-  protected materiasFiltradas = computed(() => {
-    const busca = this.searchTerm().toLowerCase().trim();
-    const listaOriginal = this.materias();
-
-    if (!busca) {
-      return listaOriginal;
-    }
-
-    return listaOriginal.filter((materia) => materia.nome.toLowerCase().includes(busca));
-  });
-
   title = computed<string>(() => {
     const modes = [
       { active: this.isViewMode(), label: 'Visualizar Assunto' },
@@ -104,7 +89,6 @@ export class AssuntosFormPage extends FormBase implements OnInit {
 
   ngOnInit(): void {
     this.createForm();
-    this.consultarMaterias();
     if (!this.isCreateMode()) {
       this.getAssuntoAndHandle();
     }
@@ -134,10 +118,6 @@ export class AssuntosFormPage extends FormBase implements OnInit {
         [Validators.required],
       ],
     });
-  }
-
-  consultarMaterias() {
-    this.materias.set(this.materiaService.listar());
   }
 
   getAssuntoAndHandle() {
@@ -218,20 +198,6 @@ export class AssuntosFormPage extends FormBase implements OnInit {
       this.submitting.set(false);
       return;
     }
-  }
-
-  searchMateria(event: any) {
-    this.searchTerm.set(event?.query);
-  }
-
-  abrirAutocomplete(ac: AutoComplete) {
-    this.searchMateria({ query: '' } as any);
-    Util.forcarAberturaAutocomplete(ac);
-  }
-
-  fecharAutocomplete(ac: AutoComplete) {
-    this.searchMateria({ query: '' } as any);
-    Util.forcarFechamentoAutocomplete(ac);
   }
 
   onVoltar() {
