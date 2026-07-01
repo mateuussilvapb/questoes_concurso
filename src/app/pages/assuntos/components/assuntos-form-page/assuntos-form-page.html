@@ -24,29 +24,13 @@
           </div>
           <!-- Matéria -->
           <div class="col-12 md:col-5">
-            <app-form-label
-              for="materia-assunto"
-              label="Matéria Associada"
-              [control]="form.controls['materia']"
+            <app-autocomplete-materia
+              [form]="form"
+              controlName="materia"
+              idField="materia-assunto"
               [errorMessages]="errorMateriaMessages"
-            >
-              <p-autocomplete
-                #ac
-                fluid
-                dataKey="id"
-                [delay]="900"
-                optionLabel="nome"
-                [forceSelection]="true"
-                inputId="materia-assunto"
-                formControlName="materia"
-                (onFocus)="abrirAutocomplete(ac)"
-                (onSelect)="fecharAutocomplete(ac)"
-                [suggestions]="materiasFiltradas()"
-                [invalid]="isInvalid('materia')"
-                (completeMethod)="searchMateria($event)"
-                placeholder="Selecione a matéria associada"
-              />
-            </app-form-label>
+              placeholder="Selecione a matéria associada"
+             />
           </div>
           <!-- Descrição -->
           <div class="col-12">

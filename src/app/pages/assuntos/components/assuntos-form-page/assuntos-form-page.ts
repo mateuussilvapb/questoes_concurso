@@ -4,24 +4,25 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 //Externo
-import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
+import { AutoComplete } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 
 //Aplicação
+import { AutocompleteMateria } from '../../../../shared/components/autocomplete-materia/autocomplete-materia';
 import { FormBase } from '../../../../shared/components/form-base/form-base';
 import { FormLabel } from '../../../../shared/components/form-label/form-label';
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
 import { Loading } from '../../../../shared/components/loading/loading';
+import { Util } from '../../../../shared/util/util';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { MateriaService } from '../../../materias/core/services/materia.service';
 import { CreateAssuntoDto } from '../../core/dtos/create-assunto.dto';
 import { UpdateAssuntoDto } from '../../core/dtos/update-assunto.dto';
 import { Assunto } from '../../core/models/assunto.model';
 import { AssuntoService } from '../../core/services/assunto.service';
-import { Util } from '../../../../shared/util/util';
 
 @Component({
   selector: 'app-assuntos-form-page',
@@ -35,13 +36,13 @@ import { Util } from '../../../../shared/util/util';
     Loading,
     FormLabel,
     LayoutBasePages,
+    AutocompleteMateria,
 
     //Externos
     CardModule,
     ButtonModule,
     TextareaModule,
     InputTextModule,
-    AutoCompleteModule,
   ],
   templateUrl: './assuntos-form-page.html',
 })
