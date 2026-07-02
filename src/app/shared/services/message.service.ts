@@ -2,9 +2,8 @@
 import { inject, Injectable } from '@angular/core';
 
 //Externos
+import { ToastSeverity } from '../types/types-const';
 import { MessageService as MessageServicePG } from 'primeng/api';
-
-export type ToastSeverity = 'success' | 'info' | 'warn' | 'error' | 'secondary' | 'contrast';
 
 @Injectable({
   providedIn: 'root',
