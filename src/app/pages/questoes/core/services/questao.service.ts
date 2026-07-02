@@ -213,7 +213,7 @@ export class QuestaoService {
       dataCriacao: new Date().toISOString(),
     };
 
-    return this.repository.insert(questao);
+    return questao;
   }
 
   validateAndMapUpdateToEntity(dto: UpdateQuestaoDto): Questao {
@@ -231,6 +231,6 @@ export class QuestaoService {
       observacao: dto.observacao,
     };
 
-    return this.repository.update(atualizado);
+    return atualizado;
   }
 }
