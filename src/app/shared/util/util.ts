@@ -1,13 +1,14 @@
 import { AutoComplete } from 'primeng/autocomplete';
+import { MultiSelect } from 'primeng/multiselect';
 
 export class Util {
-  static forcarAberturaAutocomplete(ac: AutoComplete) {
+  static forcarAberturaAutocompleteMultiselect(ac: AutoComplete | MultiSelect) {
     queueMicrotask(() => {
       ac.show();
     });
   }
 
-  static forcarFechamentoAutocomplete(ac: AutoComplete) {
+  static forcarFechamentoAutocompleteMultiselect(ac: AutoComplete | MultiSelect) {
     queueMicrotask(() => {
       ac.hide();
     });

@@ -1,11 +1,16 @@
+//Angular
+import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, model, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
-import { Util } from '../../util/util';
+
+//Aplicação
 import { Materia } from '../../../pages/materias/core/models/materia.model';
 import { MateriaService } from '../../../pages/materias/core/services/materia.service';
+import { Util } from '../../util/util';
 import { FormLabel } from '../form-label/form-label';
-import { CommonModule } from '@angular/common';
+
+//Externo
+import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
 
 @Component({
   selector: 'app-autocomplete-materia',
@@ -75,12 +80,12 @@ export class AutocompleteMateria implements OnInit {
 
   abrirAutocomplete(ac: AutoComplete) {
     this.searchMateria({ query: '' } as any);
-    Util.forcarAberturaAutocomplete(ac);
+    Util.forcarAberturaAutocompleteMultiselect(ac);
   }
 
   fecharAutocomplete(ac: AutoComplete) {
     this.searchMateria({ query: '' });
-    Util.forcarFechamentoAutocomplete(ac);
+    Util.forcarFechamentoAutocompleteMultiselect(ac);
   }
 
   controlForm(): FormControl {

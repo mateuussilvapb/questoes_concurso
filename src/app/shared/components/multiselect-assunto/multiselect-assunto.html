@@ -1,0 +1,43 @@
+@if (form() && controlName()) {
+  <ng-container [formGroup]="form()!">
+    <app-form-label
+      [for]="idField()"
+      label="Matéria Associada"
+      [control]="controlForm()"
+      [errorMessages]="errorMessages()"
+      [tooltipMessage]="tooltipMessage()"
+    >
+      <p-multiselect
+        #ac
+        fluid
+        dataKey="id"
+        optionLabel="nome"
+        [inputId]="idField()"
+        [invalid]="isInvalid()"
+        [placeholder]="placeholder()"
+        [options]="assuntosFiltrados()"
+        (onFocus)="abrirMultiselect(ac)"
+        [formControlName]="controlName()"
+        (onSelect)="fecharMultiselect(ac)"
+        (completeMethod)="searchAssunto($event)"
+        emptyMessage="Nenhum assunto encontrado"
+        (onDropdownClick)="abrirMultiselect(ac)"
+      />
+    </app-form-label>
+  </ng-container>
+} @else {
+  <p-multiselect
+    #ac
+    fluid
+    dataKey="id"
+    optionLabel="nome"
+    [inputId]="idField()"
+    [placeholder]="placeholder()"
+    [options]="assuntosFiltrados()"
+    [(ngModel)]="assuntoSelecionado"
+    (onFocus)="abrirMultiselect(ac)"
+    (onSelect)="fecharMultiselect(ac)"
+    (completeMethod)="searchAssunto($event)"
+    emptyMessage="Nenhum assunto encontrado"
+  />
+}

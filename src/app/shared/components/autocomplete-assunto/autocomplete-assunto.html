@@ -5,6 +5,7 @@
       label="Matéria Associada"
       [control]="controlForm()"
       [errorMessages]="errorMessages()"
+      [tooltipMessage]="tooltipMessage()"
     >
       <p-autocomplete
         #ac
@@ -20,10 +21,10 @@
         (onFocus)="abrirAutocomplete(ac)"
         [formControlName]="controlName()"
         (onSelect)="fecharAutocomplete(ac)"
-        [suggestions]="materiasFiltradas()"
+        [suggestions]="assuntosFiltrados()"
+        (completeMethod)="searchAssunto($event)"
+        emptyMessage="Nenhum assunto encontrado"
         (onDropdownClick)="abrirAutocomplete(ac)"
-        (completeMethod)="searchMateria($event)"
-        emptyMessage="Nenhuma matéria encontrada"
       />
     </app-form-label>
   </ng-container>
@@ -33,17 +34,15 @@
     fluid
     dataKey="id"
     [delay]="900"
-    [dropdown]="true"
     optionLabel="nome"
     [inputId]="idField()"
     [forceSelection]="true"
     [placeholder]="placeholder()"
-    [(ngModel)]="materiaSelecionada"
+    [(ngModel)]="assuntoSelecionado"
     (onFocus)="abrirAutocomplete(ac)"
     (onSelect)="fecharAutocomplete(ac)"
-    [suggestions]="materiasFiltradas()"
-    (completeMethod)="searchMateria($event)"
-    (onDropdownClick)="abrirAutocomplete(ac)"
-    emptyMessage="Nenhuma matéria encontrada"
+    [suggestions]="assuntosFiltrados()"
+    (completeMethod)="searchAssunto($event)"
+    emptyMessage="Nenhum assunto encontrado"
   />
 }

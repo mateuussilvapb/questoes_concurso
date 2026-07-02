@@ -3,13 +3,14 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 //Externo
-import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 
 //Aplicação
+import { AutocompleteMateria } from '../../../../shared/components/autocomplete-materia/autocomplete-materia';
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
 import { ListBase } from '../../../../shared/components/list-base/list-base';
 import { Materia } from '../../../materias/core/models/materia.model';
@@ -19,8 +20,6 @@ import { QuestaoService } from '../../../questoes/core/services/questao.service'
 import { Assunto } from '../../core/models/assunto.model';
 import { AssuntoService } from '../../core/services/assunto.service';
 import { AssuntoCardPresentation } from '../assunto-card-presentation/assunto-card-presentation';
-import { Util } from '../../../../shared/util/util';
-import { AutocompleteMateria } from '../../../../shared/components/autocomplete-materia/autocomplete-materia';
 
 @Component({
   selector: 'app-assuntos-list-page',
