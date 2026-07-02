@@ -1,0 +1,32 @@
+<!-- alternativa.html -->
+@if (formGroup(); as group) {
+  <div [formGroup]="group" class="w-full flex flex-row align-items-center gap-2">
+    <p-radiobutton
+      [value]="true"
+      formControlName="correta"
+      [inputId]="'radio-button-{{ index() }}'"
+      (onClick)="onSelectAlternativa($event)"
+    />
+    {{ mapIndexToLetter(index()) }}.
+    <input
+      type="text"
+      pInputText
+      class="w-full"
+      styleClass="w-full"
+      formControlName="texto"
+      placeholder="Digite a alternativa"
+      [id]="'input-alternativa-{{index()}}'"
+      [ngClass]="formGroup().value.correta ? 'bg-green-50' : ''"
+    />
+    @if (qtdAlternativas() > 2) {
+      <p-button
+        size="small"
+        [text]="true"
+        severity="danger"
+        icon="pi pi-trash"
+        class="p-button-rounded p-button-text"
+        (onClick)="removeAlternativa.emit(index())"
+      />
+    }
+  </div>
+}
