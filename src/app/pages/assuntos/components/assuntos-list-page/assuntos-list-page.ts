@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 //Externo
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
@@ -26,12 +28,16 @@ import { AssuntoCardPresentation } from '../assunto-card-presentation/assunto-ca
   imports: [
     //Angular
     FormsModule,
+
     //Aplicação
     LayoutBasePages,
     AutocompleteMateria,
     AssuntoCardPresentation,
+
     //Externo
+    CardModule,
     ButtonModule,
+    DividerModule,
     InputIconModule,
     IconFieldModule,
     InputTextModule,

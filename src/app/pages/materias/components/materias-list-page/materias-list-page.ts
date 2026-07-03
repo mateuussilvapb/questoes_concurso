@@ -6,30 +6,36 @@ import { FormsModule } from '@angular/forms';
 // Aplicação
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
 import { ListBase } from '../../../../shared/components/list-base/list-base';
+import { Assunto } from '../../../assuntos/core/models/assunto.model';
+import { Questao } from '../../../questoes/core/models/questao.model';
+import { QuestaoService } from '../../../questoes/core/services/questao.service';
 import { Materia } from '../../core/models/materia.model';
+import { MateriaCardPresentation } from '../materia-card-presentation/materia-card-presentation';
 import { MateriaService } from './../../core/services/materia.service';
 
 // Externo
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
-import { Assunto } from '../../../assuntos/core/models/assunto.model';
-import { Questao } from '../../../questoes/core/models/questao.model';
-import { QuestaoService } from '../../../questoes/core/services/questao.service';
-import { MateriaCardPresentation } from '../materia-card-presentation/materia-card-presentation';
+import { DividerModule } from 'primeng/divider';
 
 @Component({
   selector: 'app-materias-list-page',
   imports: [
     //Angular
     FormsModule,
+
     //Aplicação
     LayoutBasePages,
     MateriaCardPresentation,
+
     //Externo
+    CardModule,
     ButtonModule,
+    DividerModule,
     TooltipModule,
     InputIconModule,
     IconFieldModule,

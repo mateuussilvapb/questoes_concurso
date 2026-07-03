@@ -4,30 +4,36 @@
   [subtitle]="'Gerencie suas matérias'"
   [buttonActionLabel]="'Adicionar Matéria'"
 >
-  <!-- Campo de busca -->
-  <p-iconfield>
-    <p-inputicon class="pi pi-search" />
-    <input
-      pInputText
-      type="text"
-      class="w-full"
-      id="nome-materia-list"
-      [(ngModel)]="searchTerm"
-      placeholder="Informe o nome da matéria"
-    />
-  </p-iconfield>
-
-  <!-- Listagem -->
-  @if (materiasFiltradas().length > 0) {
-    @for (materia of materiasFiltradas(); track $index) {
-      <app-materia-card-presentation
-        [materia]="materia"
-        [assuntosRelacionados]="getAssuntosRelacionados(materia)"
-        [questoesRelacionadas]="getQuestoesRelacionadas(materia)"
-        (exclusaoConcluida)="ngOnInit()"
+  <p-card header="Filtros">
+    <!-- Campo de busca -->
+    <p-iconfield>
+      <p-inputicon class="pi pi-search" />
+      <input
+        pInputText
+        type="text"
+        class="w-full"
+        id="nome-materia-list"
+        [(ngModel)]="searchTerm"
+        placeholder="Informe o nome da matéria"
       />
+    </p-iconfield>
+  </p-card>
+
+  <p-divider />
+
+  <p-card header="Listagem">
+    <!-- Listagem -->
+    @if (materiasFiltradas().length > 0) {
+      @for (materia of materiasFiltradas(); track $index) {
+        <app-materia-card-presentation
+          [materia]="materia"
+          [assuntosRelacionados]="getAssuntosRelacionados(materia)"
+          [questoesRelacionadas]="getQuestoesRelacionadas(materia)"
+          (exclusaoConcluida)="ngOnInit()"
+        />
+      }
+    } @else {
+      <p class="text-center mt-3 text-secondary" colspan="100%">Nenhum registro encontrado...</p>
     }
-  } @else {
-    <p class="text-center mt-3 text-secondary" colspan="100%">Nenhum registro encontrado...</p>
-  }
+  </p-card>
 </app-layout-base-pages>

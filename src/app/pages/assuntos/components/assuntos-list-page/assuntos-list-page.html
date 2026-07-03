@@ -4,7 +4,7 @@
   [subtitle]="'Gerencie seus assuntos'"
   [buttonActionLabel]="'Adicionar Assunto'"
 >
-  <div>
+  <p-card header="Filtros">
     <div class="grid">
       <!-- Buscar por nome -->
       <div class="col-12 md:col-7">
@@ -39,19 +39,23 @@
         (onClick)="onLimpar()"
       />
     </div>
-  </div>
+  </p-card>
 
-  <!-- Listagem -->
-  @if (assuntosFiltrados().length > 0) {
-    @for (assunto of assuntosFiltrados(); track $index) {
-      <app-assunto-card-presentation
-        [assunto]="assunto"
-        [materia]="getMateriaPorAssunto(assunto)"
-        [questoesRelacionadas]="getQuestoesRelacionadas(assunto)"
-        (exclusaoConcluida)="ngOnInit()"
-      />
+  <p-divider />
+
+  <p-card header="Listagem">
+    <!-- Listagem -->
+    @if (assuntosFiltrados().length > 0) {
+      @for (assunto of assuntosFiltrados(); track $index) {
+        <app-assunto-card-presentation
+          [assunto]="assunto"
+          [materia]="getMateriaPorAssunto(assunto)"
+          [questoesRelacionadas]="getQuestoesRelacionadas(assunto)"
+          (exclusaoConcluida)="ngOnInit()"
+        />
+      }
+    } @else {
+      <p class="text-center mt-3 text-secondary" colspan="100%">Nenhum registro encontrado...</p>
     }
-  } @else {
-    <p class="text-center mt-3 text-secondary" colspan="100%">Nenhum registro encontrado...</p>
-  }
+  </p-card>
 </app-layout-base-pages>
