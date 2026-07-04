@@ -1,20 +1,24 @@
-import { IdGeneratorService } from './../../../../core/storage/id-generator/id-generator.service';
+//Angular
 import { Injectable, inject } from '@angular/core';
 
+//Aplicação
 import { Questao } from '../models/questao.model';
-
-import { QuestaoValidatorService } from './questao-validator.service';
-import { AlternativasFactoryService } from './alternativas-factory.service';
-
-import { IntegrityService } from '../../../../core/storage/integrity/integrity.service';
-import { QuestaoRepository } from '../repositories/questao-repository';
+import { TipoQuestao } from '../enums/tipo-questao.enum';
+import { QuestaoFilter } from '../dtos/filter-questao.dto';
 import { CreateQuestaoDto } from '../dtos/create-questao.dto';
 import { UpdateQuestaoDto } from '../dtos/update-questao.dto';
-import { QuestaoFilter } from '../dtos/filter-questao.dto';
-import { ObservacoesQuestoes } from '../observacoes-questoes/models/observacoes-questoes-model';
-import { TipoQuestao } from '../enums/tipo-questao.enum';
+import { SimNao } from '../../../../shared/enums/sim-nao.enum';
+import { QuestaoValidatorService } from './questao-validator.service';
+import { QuestaoRepository } from '../repositories/questao-repository';
+import { AlternativasFactoryService } from './alternativas-factory.service';
 import { AlternativaDto } from '../../alternativas/core/dtos/alternativa.dto';
 import { Alternativa } from '../../alternativas/core/models/alternativa.model';
+import { IntegrityService } from '../../../../core/storage/integrity/integrity.service';
+import { ObservacoesQuestoes } from '../observacoes-questoes/models/observacoes-questoes-model';
+import { IdGeneratorService } from './../../../../core/storage/id-generator/id-generator.service';
+
+
+
 
 @Injectable({
   providedIn: 'root',
@@ -78,13 +82,13 @@ export class QuestaoService {
 
   listarFavoritas(): Questao[] {
     return this.repository.find({
-      favorita: true,
+      favorita: SimNao.SIM,
     });
   }
 
   listarRevisadas(): Questao[] {
     return this.repository.find({
-      revisada: true,
+      revisada: SimNao.SIM,
     });
   }
 

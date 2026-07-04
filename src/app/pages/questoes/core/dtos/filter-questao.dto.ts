@@ -1,3 +1,4 @@
+import { SimNao } from '../../../../shared/enums/sim-nao.enum';
 import { NivelDificuldade } from '../enums/nivel-dificuldade.enum';
 import { TipoQuestao } from '../enums/tipo-questao.enum';
 
@@ -8,7 +9,7 @@ export interface QuestaoFilter {
   idsAssuntos?: string[];
   tipo?: TipoQuestao;
   nivelDificuldade?: NivelDificuldade;
-  favorita?: boolean;
-  revisada?: boolean;
-  marcadaParaRevisao?: boolean;
+  favorita?: SimNao;
+  revisada?: SimNao;
+  marcadaParaRevisao?: SimNao;
 }

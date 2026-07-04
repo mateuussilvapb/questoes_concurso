@@ -5,6 +5,7 @@ import { Injectable, inject } from '@angular/core';
 import { Questao } from '../models/questao.model';
 import { Util } from '../../../../shared/util/util';
 import { QuestaoFilter } from '../dtos/filter-questao.dto';
+import { SIM_NAO_BOOLEAN } from './../../../../shared/enums/sim-nao.enum';
 import { StorageService } from '../../../../core/storage/storage.service';
 import { StorageCollection } from '../../../../core/storage/storage.constants';
 
@@ -60,15 +61,30 @@ export class QuestaoRepository {
     }
 
     if (filter?.favorita !== undefined && filter?.favorita !== null) {
-      predicates.push((q) => q.status.favorita === filter.favorita);
+      const favorita = filter?.favorita;
+      if (typeof favorita === 'boolean') {
+        predicates.push((q) => q.status.favorita === favorita);
+      } else if (typeof favorita === 'number') {
+        predicates.push((q) => q.status.favorita === SIM_NAO_BOOLEAN[favorita]);
+      }
     }
 
     if (filter?.revisada !== undefined && filter?.revisada !== null) {
-      predicates.push((q) => q.status.revisada === filter.revisada);
+      const revisada = filter?.revisada;
+      if (typeof revisada === 'boolean') {
+        predicates.push((q) => q.status.revisada === revisada);
+      } else if (typeof revisada === 'number') {
+        predicates.push((q) => q.status.revisada === SIM_NAO_BOOLEAN[revisada]);
+      }
     }
 
     if (filter?.marcadaParaRevisao != undefined && filter?.marcadaParaRevisao != null) {
-      predicates.push((q) => q.status.marcadaParaRevisao === filter.marcadaParaRevisao);
+      const marcadaParaRevisao = filter?.marcadaParaRevisao;
+      if (typeof marcadaParaRevisao === 'boolean') {
+        predicates.push((q) => q.status.marcadaParaRevisao === marcadaParaRevisao);
+      } else if (typeof marcadaParaRevisao === 'number') {
+        predicates.push((q) => q.status.marcadaParaRevisao === SIM_NAO_BOOLEAN[marcadaParaRevisao]);
+      }
     }
 
     return this.ordenar(
