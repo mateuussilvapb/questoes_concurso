@@ -137,6 +137,24 @@ export class QuestaoService {
   }
 
   // ======================================================
+  // MARCAR PARA REVISÃO
+  // ======================================================
+
+  marcarParaRevisao(id: string): Questao {
+    return this.atualizarMarcadaParaRevisao(id, true);
+  }
+
+  desmarcarParaRevisao(id: string): Questao {
+    return this.atualizarMarcadaParaRevisao(id, false);
+  }
+
+  toggleMarcadaParaRevisao(id: string): Questao {
+    const questao = this.buscarPorId(id);
+
+    return this.atualizarMarcadaParaRevisao(id, !questao.status.marcadaParaRevisao);
+  }
+
+  // ======================================================
   // ANOTAÇÕES
   // ======================================================
 
@@ -181,6 +199,22 @@ export class QuestaoService {
         ...questao.status,
 
         revisada,
+      },
+    };
+
+    return this.repository.update(atualizado);
+  }
+
+  private atualizarMarcadaParaRevisao(id: string, marcadaParaRevisao: boolean): Questao {
+    const questao = this.buscarPorId(id);
+
+    const atualizado: Questao = {
+      ...questao,
+
+      status: {
+        ...questao.status,
+
+        marcadaParaRevisao,
       },
     };
 

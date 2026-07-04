@@ -55,6 +55,10 @@ export class QuestaoRepository {
       predicates.push((q) => q.status.revisada === filter.revisada);
     }
 
+    if (filter?.marcadaParaRevisao != undefined) {
+      predicates.push((q) => q.status.marcadaParaRevisao === filter.marcadaParaRevisao);
+    }
+
     return this.ordenar(
       this.findAll().filter((q) => predicates.every((predicate) => predicate(q))),
     );

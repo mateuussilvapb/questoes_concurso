@@ -10,4 +10,5 @@ export interface QuestaoFilter {
   nivelDificuldade?: NivelDificuldade;
   favorita?: boolean;
   revisada?: boolean;
+  marcadaParaRevisao?: boolean;
 }
