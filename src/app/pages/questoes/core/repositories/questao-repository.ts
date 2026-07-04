@@ -30,7 +30,7 @@ export class QuestaoRepository {
 
       predicates.push((q) => {
         const onlyTextEnunciado = Util.htmlToText(q.enunciado);
-        return onlyTextEnunciado.includes(texto);
+        return onlyTextEnunciado.trim().toLocaleLowerCase().includes(texto);
       });
     }
 
@@ -39,7 +39,7 @@ export class QuestaoRepository {
 
       predicates.push((q) => {
         const onlyTextObservacao = Util.htmlToText(q.observacao.observacoes);
-        return onlyTextObservacao.includes(texto);
+        return onlyTextObservacao.trim().toLocaleLowerCase().includes(texto);
       });
     }
 
