@@ -53,8 +53,8 @@
       ></div>
       <div class="flex flex-row justify-content-start gap-2 flex-wrap mt-3">
         <p-tag severity="info" class="text-xs" [value]="materia().nome" /> |
-        <p-tag [ngClass]="classByNivelDificuldade()" class="text-xs" [value]="labelDificuldade()" />
-        |
+        <p-tag [ngClass]="classByNivelDificuldade()" class="text-xs" [value]="labelDificuldade()" /> |
+        <p-tag severity="secondary" class="text-xs" [value]="labelTipoQuestao()" /> |
         @for (assunto of assuntosAssociados(); track $index) {
           <p-tag severity="contrast" class="text-xs" [value]="assunto.nome" />
         }

@@ -13,6 +13,7 @@ import { QuestaoService } from '../../core/services/questao.service';
 import { Assunto } from '../../../assuntos/core/models/assunto.model';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { ThemeService } from '../../../../core/services/theme.service';
+import { TIPO_QUESTAO_LABEL } from '../../core/enums/tipo-questao.enum';
 import { ListBase } from '../../../../shared/components/list-base/list-base';
 
 //Externo
@@ -152,4 +153,9 @@ export class QuestaoCardPresentation extends ListBase {
   });
 
   labelDificuldade = computed(() => NIVEL_DIFICULDADE_LABEL[this.dificuldadeQuestao()]);
+
+  // Tag Tipo Questão
+  tipoQuestao = computed(() => this.questao().tipo);
+
+  labelTipoQuestao = computed(() => TIPO_QUESTAO_LABEL[this.tipoQuestao()]);
 }
