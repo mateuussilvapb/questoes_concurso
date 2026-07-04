@@ -8,7 +8,6 @@ import { QuestaoFilter } from '../dtos/filter-questao.dto';
 import { StorageService } from '../../../../core/storage/storage.service';
 import { StorageCollection } from '../../../../core/storage/storage.constants';
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -32,6 +31,15 @@ export class QuestaoRepository {
       predicates.push((q) => {
         const onlyTextEnunciado = Util.htmlToText(q.enunciado);
         return onlyTextEnunciado.includes(texto);
+      });
+    }
+
+    if (filter?.observacao?.trim()) {
+      const texto = filter.observacao.trim().toLowerCase();
+
+      predicates.push((q) => {
+        const onlyTextObservacao = Util.htmlToText(q.observacao.observacoes);
+        return onlyTextObservacao.includes(texto);
       });
     }
 

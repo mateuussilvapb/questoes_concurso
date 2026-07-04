@@ -17,7 +17,7 @@ import { FormLabel } from '../../../../shared/components/form-label/form-label';
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
 import { Loading } from '../../../../shared/components/loading/loading';
 import { MultiselectAssunto } from '../../../../shared/components/multiselect-assunto/multiselect-assunto';
-import { SelectOption } from '../../../../shared/util/util';
+import { SelectOption, Util } from '../../../../shared/util/util';
 import { AssuntoService } from '../../../assuntos/core/services/assunto.service';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { MateriaService } from '../../../materias/core/services/materia.service';
@@ -29,6 +29,7 @@ import { Questao } from '../../core/models/questao.model';
 import { QuestaoService } from '../../core/services/questao.service';
 import { Alternativa } from '../alternativa/alternativa';
 import { minLengthHtmlTextValidator } from '../../../../shared/custom-validators/min-length-html-text-validator';
+import { ObservacoesQuestoes } from '../../core/observacoes-questoes/models/observacoes-questoes-model';
 
 //Externo
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -334,10 +335,11 @@ export class QuestaoFormPage extends FormBase implements OnInit {
 
   onCreate() {
     const rawValue = this.form.getRawValue();
+
     const dto: CreateQuestaoDto = {
       enunciado: rawValue.enunciado,
       idMateria: rawValue.materia?.id ?? '',
-      observacao: { observacoes: rawValue.comentario ?? '', favorita: false },
+      observacao: this.checkAndGetObservacoes(rawValue),
       idsAssuntos: rawValue.assuntos?.map((a: any) => a.id) ?? [],
       nivelDificuldade: rawValue.dificuldade.value ?? null,
       tipo: rawValue.tipoQuestao.value ?? null,
@@ -368,10 +370,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
       id: this.questao()?.id ?? '',
       enunciado: rawValue.enunciado,
       idMateria: rawValue.materia?.id ?? '',
-      observacao: {
-        observacoes: rawValue.comentario ?? '',
-        favorita: this.questao()?.observacao.favorita ?? false,
-      },
+      observacao: this.checkAndGetObservacoes(rawValue),
       idsAssuntos: rawValue.assuntos?.map((a: any) => a.id) ?? [],
       nivelDificuldade: rawValue.dificuldade.value ?? null,
       tipo: rawValue.tipoQuestao.value ?? null,
@@ -398,6 +397,18 @@ export class QuestaoFormPage extends FormBase implements OnInit {
       this.submitting.set(false);
       return;
     }
+  }
+
+  checkAndGetObservacoes(rawValue: any): ObservacoesQuestoes {
+    let obj: ObservacoesQuestoes = { observacoes: '', favorita: false };
+    if (!rawValue.comentario) return obj;
+
+    const checkIfExistsComment = !!Util.htmlToText(rawValue.comentario).length;
+    if (!checkIfExistsComment) return obj;
+
+    obj.observacoes = rawValue.comentario;
+    obj.favorita = this.questao()?.observacao.favorita ?? false;
+    return obj;
   }
 
   onVoltar() {
