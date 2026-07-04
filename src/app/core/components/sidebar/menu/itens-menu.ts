@@ -36,7 +36,7 @@ export const ItensMenu: ItemMenu[] = [
         label: 'Resolver Questões',
         separator: false,
         icon: PrimeIcons.PLAY_CIRCLE,
-        route: '/questao/resolver',
+        route: '/resolver-questoes',
       },
     ],
   },

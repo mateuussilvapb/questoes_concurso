@@ -1,5 +1,5 @@
 //Angular
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 //Aplicação
@@ -40,6 +40,9 @@ import { InputTextModule } from 'primeng/inputtext';
 })
 export class QuestaoFilter {
   form = input.required<FormGroup>();
+  showResolverAction = input<boolean>(false);
+
+  resolverActionClick = output();
 
   readonly tiposQuestao = OPCOES_TIPO_QUESTAO;
   readonly dificuldades = OPCOES_NIVEL_DIFICULDADE;

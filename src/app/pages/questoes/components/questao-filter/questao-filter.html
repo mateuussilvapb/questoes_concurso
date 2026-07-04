@@ -93,11 +93,7 @@
 
       <!-- Revisada -->
       <div class="col-12 md:col-4">
-        <app-form-label
-          for="revisada"
-          label="Revisada?"
-          [control]="form().get('revisada')!"
-        >
+        <app-form-label for="revisada" label="Revisada?" [control]="form().get('revisada')!">
           <p-select
             id="revisada"
             [checkmark]="true"
@@ -112,11 +108,7 @@
 
       <!-- Favorita -->
       <div class="col-12 md:col-4">
-        <app-form-label
-          for="favorita"
-          label="Favorita?"
-          [control]="form().get('favorita')!"
-        >
+        <app-form-label for="favorita" label="Favorita?" [control]="form().get('favorita')!">
           <p-select
             id="favorita"
             [checkmark]="true"
@@ -148,7 +140,7 @@
         </app-form-label>
       </div>
     </div>
-    <div class="flex flex-row justify-content-end w-full mt-3">
+    <div class="flex flex-row justify-content-end w-full mt-3 gap-2">
       <p-button
         class="w-auto"
         label="Limpar"
@@ -156,6 +148,14 @@
         severity="secondary"
         (onClick)="onLimpar()"
       />
+      @if (showResolverAction()) {
+        <p-button
+          label="Resolver"
+          styleClass="w-auto"
+          class="w-auto button-aplicacao-style"
+          (onClick)="resolverActionClick.emit()"
+        />
+      }
     </div>
   </ng-container>
 }
