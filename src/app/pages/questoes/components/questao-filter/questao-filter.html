@@ -1,0 +1,161 @@
+@if (form()) {
+  <ng-container [formGroup]="form()">
+    <div class="grid">
+      <!-- Filtro Enunciado -->
+      <div class="col-12 md:col-6">
+        <app-form-label
+          label="Enunciado"
+          for="enunciado-questao-list"
+          [control]="form().get('enunciado')!"
+        >
+          <input
+            pInputText
+            type="text"
+            class="w-full"
+            id="enunciado-questao-list"
+            formControlName="enunciado"
+            placeholder="Informe o enunciado da questão"
+          />
+        </app-form-label>
+      </div>
+
+      <!-- Filtro Comentário -->
+      <div class="col-12 md:col-6">
+        <app-form-label
+          label="Comentário"
+          for="comentario-questao-list"
+          [control]="form().get('observacao')!"
+        >
+          <input
+            pInputText
+            type="text"
+            class="w-full"
+            id="comentario-questao-list"
+            formControlName="observacao"
+            placeholder="Informe o comentário da questão"
+          />
+        </app-form-label>
+      </div>
+
+      <!-- Filtro Matéria -->
+      <div class="col-12 md:col-6 lg:col-3">
+        <app-autocomplete-materia
+          [form]="form()"
+          controlName="idMateria"
+          idField="materia-questao"
+          placeholder="Selecione a matéria associada"
+        />
+      </div>
+
+      <!-- Filtro Assunto -->
+      <div class="col-12 md:col-6 lg:col-3">
+        <app-multiselect-assunto
+          [form]="form()"
+          controlName="idsAssuntos"
+          idField="assuntos-questao"
+          placeholder="Selecione o assunto associado"
+        />
+      </div>
+
+      <!-- Filtro Tipo de Questão -->
+      <div class="col-12 md:col-6 lg:col-3">
+        <app-form-label for="tipo-questao" label="Tipo de Questão" [control]="form().get('tipo')!">
+          <p-select
+            id="tipo-questao"
+            [checkmark]="true"
+            optionLabel="label"
+            [showClear]="true"
+            formControlName="tipo"
+            [options]="tiposQuestao"
+            placeholder="Selecione o tipo de questão"
+          />
+        </app-form-label>
+      </div>
+
+      <!-- Nível de Dificuldade -->
+      <div class="col-12 md:col-6 lg:col-3">
+        <app-form-label
+          for="nivel-dificuldade"
+          label="Nível de Dificuldade"
+          [control]="form().get('nivelDificuldade')!"
+        >
+          <p-select
+            [checkmark]="true"
+            [showClear]="true"
+            optionLabel="label"
+            id="nivel-dificuldade"
+            [options]="dificuldades"
+            formControlName="nivelDificuldade"
+            placeholder="Selecione o nível da questão"
+          />
+        </app-form-label>
+      </div>
+
+      <!-- Revisada -->
+      <div class="col-12 md:col-4">
+        <app-form-label
+          for="revisada"
+          label="Revisada?"
+          [control]="form().get('revisada')!"
+        >
+          <p-select
+            id="revisada"
+            [checkmark]="true"
+            [showClear]="true"
+            optionLabel="label"
+            [options]="simNao"
+            placeholder="Selecione"
+            formControlName="revisada"
+          />
+        </app-form-label>
+      </div>
+
+      <!-- Favorita -->
+      <div class="col-12 md:col-4">
+        <app-form-label
+          for="favorita"
+          label="Favorita?"
+          [control]="form().get('favorita')!"
+        >
+          <p-select
+            id="favorita"
+            [checkmark]="true"
+            [showClear]="true"
+            optionLabel="label"
+            [options]="simNao"
+            placeholder="Selecione"
+            formControlName="favorita"
+          />
+        </app-form-label>
+      </div>
+
+      <!-- Marcada para Revisão -->
+      <div class="col-12 md:col-4">
+        <app-form-label
+          for="marcadaParaRevisao"
+          label="Marcada para Revisão?"
+          [control]="form().get('marcadaParaRevisao')!"
+        >
+          <p-select
+            [checkmark]="true"
+            [showClear]="true"
+            optionLabel="label"
+            [options]="simNao"
+            id="marcadaParaRevisao"
+            placeholder="Selecione"
+            formControlName="marcadaParaRevisao"
+          />
+        </app-form-label>
+      </div>
+    </div>
+    <div class="flex flex-row justify-content-end w-full mt-3">
+      <p-button
+        class="w-auto"
+        label="Limpar"
+        styleClass="w-auto"
+        severity="secondary"
+        (onClick)="onLimpar()"
+      />
+    </div>
+  </ng-container>
+}
