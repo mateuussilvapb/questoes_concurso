@@ -6,3 +6,15 @@
 @use 'utils/topbar.scss';
 @use 'utils/content.scss';
 @use 'primeNG/button.scss';
+
+body {
+    transition: background .25s;
+}
+
+html:not(.app-dark) body {
+    background: #fafafa;
+}
+
+html.app-dark body {
+    background: #101010;
+}

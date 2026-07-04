@@ -16,7 +16,7 @@
       formControlName="texto"
       placeholder="Digite a alternativa"
       [id]="'input-alternativa-{{index()}}'"
-      [ngClass]="formGroup().value.correta ? 'bg-green-50' : ''"
+      [ngClass]="backgroundColorAlternativaCorreta()"
     />
     @if (qtdAlternativas() > 2) {
       <p-button
