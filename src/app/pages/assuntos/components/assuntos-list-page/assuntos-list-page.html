@@ -46,13 +46,16 @@
   <p-card header="Listagem">
     <!-- Listagem -->
     @if (assuntosFiltrados().length > 0) {
-      @for (assunto of assuntosFiltrados(); track $index) {
+      @for (assunto of assuntosFiltrados(); track $index; let isLast = $last) {
         <app-assunto-card-presentation
           [assunto]="assunto"
           [materia]="getMateriaPorAssunto(assunto)"
           [questoesRelacionadas]="getQuestoesRelacionadas(assunto)"
           (exclusaoConcluida)="ngOnInit()"
         />
+        @if (!isLast) {
+          <p-divider />
+        }
       }
     } @else {
       <p class="text-center mt-3 text-secondary" colspan="100%">Nenhum registro encontrado...</p>
