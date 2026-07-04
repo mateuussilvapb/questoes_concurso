@@ -1,12 +1,13 @@
+//Angular
 import { Injectable, inject } from '@angular/core';
 
-import { StorageCollection } from '../../../../core/storage/storage.constants';
-import { StorageService } from '../../../../core/storage/storage.service';
-
+//Aplicação
 import { Questao } from '../models/questao.model';
-import { TipoQuestao } from '../enums/tipo-questao.enum';
-import { NivelDificuldade } from '../enums/nivel-dificuldade.enum';
+import { Util } from '../../../../shared/util/util';
 import { QuestaoFilter } from '../dtos/filter-questao.dto';
+import { StorageService } from '../../../../core/storage/storage.service';
+import { StorageCollection } from '../../../../core/storage/storage.constants';
+
 
 @Injectable({
   providedIn: 'root',
@@ -28,18 +29,21 @@ export class QuestaoRepository {
     if (filter?.enunciado?.trim()) {
       const texto = filter.enunciado.trim().toLowerCase();
 
-      predicates.push((q) => q.enunciado.toLowerCase().includes(texto));
+      predicates.push((q) => {
+        const onlyTextEnunciado = Util.htmlToText(q.enunciado);
+        return onlyTextEnunciado.includes(texto);
+      });
     }
 
     if (filter?.idMateria) {
       predicates.push((q) => q.idMateria === filter.idMateria);
     }
 
-    if (filter?.idsAssuntos) {
-      predicates.push((q) => q.idsAssuntos.some((id) => q.idsAssuntos.includes(id)));
+    if (filter?.idsAssuntos?.length) {
+      predicates.push((q) => filter.idsAssuntos!.some((id) => q.idsAssuntos.includes(id)));
     }
 
-    if (filter?.nivelDificuldade !== undefined) {
+    if (filter?.nivelDificuldade) {
       predicates.push((q) => q.nivelDificuldade === filter.nivelDificuldade);
     }
 
@@ -47,15 +51,15 @@ export class QuestaoRepository {
       predicates.push((q) => q.tipo === filter.tipo);
     }
 
-    if (filter?.favorita !== undefined) {
+    if (filter?.favorita !== undefined && filter?.favorita !== null) {
       predicates.push((q) => q.status.favorita === filter.favorita);
     }
 
-    if (filter?.revisada !== undefined) {
+    if (filter?.revisada !== undefined && filter?.revisada !== null) {
       predicates.push((q) => q.status.revisada === filter.revisada);
     }
 
-    if (filter?.marcadaParaRevisao != undefined) {
+    if (filter?.marcadaParaRevisao != undefined && filter?.marcadaParaRevisao != null) {
       predicates.push((q) => q.status.marcadaParaRevisao === filter.marcadaParaRevisao);
     }
 
