@@ -14,6 +14,8 @@ import { Assunto } from '../../../assuntos/core/models/assunto.model';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { ThemeService } from '../../../../core/services/theme.service';
 import { TIPO_QUESTAO_LABEL } from '../../core/enums/tipo-questao.enum';
+import { DialogComentario } from '../dialog-comentario/dialog-comentario';
+import { LayoutService } from './../../../../core/services/layout.service';
 import { ListBase } from '../../../../shared/components/list-base/list-base';
 
 //Externo
@@ -39,6 +41,7 @@ import { ButtonModule, ButtonSeverity } from 'primeng/button';
 })
 export class QuestaoCardPresentation extends ListBase {
   private readonly themeService = inject(ThemeService);
+  private readonly layoutService = inject(LayoutService);
   private readonly questaoService = inject(QuestaoService);
 
   questao = input.required<Questao>();
@@ -75,6 +78,20 @@ export class QuestaoCardPresentation extends ListBase {
       this.submitting.set(false);
       return;
     }
+  }
+
+  // Botão Comentário
+  onViewComentario() {
+    this.dialogService.open(DialogComentario, {
+      width: '50vw',
+      closeOnEscape: true,
+      data: { comentario: this.questao().observacao?.observacoes ?? '' },
+      contentStyle: { overflow: 'auto' },
+      maximizable: this.layoutService.isMobile(),
+      header: `Comentário`,
+      draggable: false,
+      closable: true,
+    });
   }
 
   //Botão Revisão

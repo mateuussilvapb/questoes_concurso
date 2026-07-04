@@ -8,11 +8,13 @@ import { MessageService } from '../../services/message.service';
 
 //Externo
 import { ConfirmationService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @Directive({})
 export class ListBase {
   protected readonly router = inject(Router);
   protected readonly fb = inject(FormBuilder);
+  protected readonly dialogService = inject(DialogService);
   protected readonly messageService = inject(MessageService);
   protected readonly confirmationService = inject(ConfirmationService);
 

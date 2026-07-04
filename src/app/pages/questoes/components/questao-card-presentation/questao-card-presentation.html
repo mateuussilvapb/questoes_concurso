@@ -2,6 +2,19 @@
   <p-card>
     <div class="flex flex-column">
       <div class="flex flex-row justify-content-end align-items-center gap-2">
+        @if (this.questao().observacao.observacoes) {
+          <p-button
+            size="small"
+            variant="text"
+            rounded="true"
+            severity="contrast"
+            icon="pi pi-comment"
+            tooltipPosition="top"
+            (onClick)="onViewComentario()"
+            pTooltip="Visualizar Comentário"
+            aria-label="Visualizar Comentário"
+          />
+        }
         <p-button
           size="small"
           variant="text"
@@ -10,8 +23,8 @@
           tooltipPosition="top"
           (onClick)="onToggleFavoritar()"
           [pTooltip]="labelBtnFavoritar()"
-          [severity]="severityBtnFavoritar()"
           [aria-label]="labelBtnFavoritar()"
+          [severity]="severityBtnFavoritar()"
         />
         <p-button
           size="small"
@@ -53,8 +66,8 @@
       ></div>
       <div class="flex flex-row justify-content-start gap-2 flex-wrap mt-3">
         <p-tag severity="info" class="text-xs" [value]="materia().nome" /> |
-        <p-tag [ngClass]="classByNivelDificuldade()" class="text-xs" [value]="labelDificuldade()" /> |
-        <p-tag severity="secondary" class="text-xs" [value]="labelTipoQuestao()" /> |
+        <p-tag [ngClass]="classByNivelDificuldade()" class="text-xs" [value]="labelDificuldade()" />
+        | <p-tag severity="secondary" class="text-xs" [value]="labelTipoQuestao()" /> |
         @for (assunto of assuntosAssociados(); track $index) {
           <p-tag severity="contrast" class="text-xs" [value]="assunto.nome" />
         }
