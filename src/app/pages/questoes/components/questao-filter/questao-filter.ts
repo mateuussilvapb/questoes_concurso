@@ -3,6 +3,7 @@ import { Component, input } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 //Aplicação
+import { OPCOES_SIM_NAO } from '../../../../shared/enums/sim-nao.enum';
 import { OPCOES_TIPO_QUESTAO } from '../../core/enums/tipo-questao.enum';
 import { FormLabel } from '../../../../shared/components/form-label/form-label';
 import { OPCOES_NIVEL_DIFICULDADE } from '../../core/enums/nivel-dificuldade.enum';
@@ -15,7 +16,6 @@ import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
-import { OPCOES_SIM_NAO } from '../../../../shared/enums/sim-nao.enum';
 
 @Component({
   selector: 'app-questao-filter',

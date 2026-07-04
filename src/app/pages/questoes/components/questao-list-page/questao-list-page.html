@@ -1,0 +1,32 @@
+<app-layout-base-pages
+  [title]="'Questões'"
+  (actionButtonClick)="onAddQuestao()"
+  [subtitle]="'Gerencie suas questões'"
+  [buttonActionLabel]="'Adicionar Questão'"
+>
+  <p-card header="Filtros">
+    <app-questao-filter [form]="form" />
+  </p-card>
+
+  <p-divider />
+
+  <p-card header="Listagem">
+    <!-- Listagem -->
+    @if (questoes().length > 0) {
+      @for (questao of questoes(); track $index; let isLast = $last) {
+        <app-questao-card-presentation
+          [questao]="questao"
+          [materia]="getMateriaPorQuestao(questao)"
+          [assuntosAssociados]="getAssuntosAssociados(questao)"
+          (toogleStatus)="form.updateValueAndValidity()"
+          (exclusaoConcluida)="form.updateValueAndValidity()"
+        />
+        @if (!isLast) {
+          <p-divider />
+        }
+      }
+    } @else {
+      <p class="text-center mt-3 text-secondary" colspan="100%">Nenhum registro encontrado...</p>
+    }
+  </p-card>
+</app-layout-base-pages>

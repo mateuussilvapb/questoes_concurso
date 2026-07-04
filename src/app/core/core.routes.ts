@@ -17,4 +17,9 @@ export const CORE_ROUTES: Routes = [
     loadChildren: () =>
       import('../pages/assuntos/core/assuntos.routes').then((c) => c.ASSUNTOS_ROUTES),
   },
+  {
+    path: 'questao',
+    loadChildren: () =>
+      import('../pages/questoes/core/questoes.routes').then((c) => c.QUESTAO_ROUTES),
+  },
 ];
