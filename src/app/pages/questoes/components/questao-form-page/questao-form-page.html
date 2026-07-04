@@ -1,0 +1,180 @@
+<app-layout-base-pages [title]="title()" [subtitle]="subtitle()">
+  <p-card>
+    @if (form) {
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="grid">
+          <!-- Enunciado -->
+          <div class="col-12">
+            <app-form-label
+              label="Enunciado"
+              for="enunciado-questao"
+              [control]="enunciadoControl"
+              [errorMessages]="errorEnunciadoMessages"
+            >
+              <p-editor
+                formControlName="enunciado"
+                [style]="{ height: '320px' }"
+                [invalid]="isInvalid('enunciado')"
+                placeholder="Digite o enunciado da questão"
+              />
+            </app-form-label>
+          </div>
+
+          <!-- Matéria -->
+          <div class="col-12 md:col-6 lg:col-4">
+            <app-autocomplete-materia
+              [form]="form"
+              controlName="materia"
+              idField="materia-questao"
+              [errorMessages]="errorMateriaMessages"
+              placeholder="Selecione a matéria associada"
+            />
+          </div>
+
+          <!-- Assuntos -->
+          <div class="col-12 md:col-6 lg:col-4">
+            <app-multiselect-assunto
+              [form]="form"
+              controlName="assuntos"
+              idField="assunto-questao"
+              [errorMessages]="errorAssuntoMessages"
+              placeholder="Selecione o assunto associado"
+              [searchTermIdMateria]="materiaSelecionada()"
+              tooltipMessage="Selecione uma matéria para habilitar este campo"
+            />
+          </div>
+
+          <!-- Dificuldade -->
+          <div class="col-12 md:col-6 lg:col-4">
+            <app-form-label
+              label="Dificuldade"
+              for="dificuldade-questao"
+              [control]="dificuldadeControl"
+              [errorMessages]="errorDificuldadeMessages"
+            >
+              <p-select
+                [checkmark]="true"
+                optionLabel="label"
+                [showClear]="false"
+                [options]="dificuldades"
+                formControlName="dificuldade"
+                placeholder="Selecione a dificuldade"
+              />
+            </app-form-label>
+          </div>
+
+          <!-- Tipo de Questão -->
+          <div class="col-12 md:col-6 lg:col-4">
+            <app-form-label
+              for="tipo-questao"
+              label="Tipo de Questão"
+              [control]="tipoQuestaoControl"
+              [errorMessages]="errorTipoQuestaoMessages"
+            >
+              <p-select
+                [checkmark]="true"
+                optionLabel="label"
+                [showClear]="false"
+                [options]="tiposQuestao"
+                formControlName="tipoQuestao"
+                placeholder="Selecione o tipo de questão"
+              />
+            </app-form-label>
+          </div>
+
+          <!-- Alternativas -->
+          <div class="col-12">
+            <app-form-label
+              label="Alternativas"
+              for="alternativa-questao"
+              [control]="form.controls['alternativas']"
+              [errorMessages]="errorAlternativasMessages"
+            >
+              <!-- Botão para adicionar alternativa -->
+              <div class="flex flex-row w-full justify-content-end mb-2">
+                <p-button
+                  size="small"
+                  icon="pi pi-plus"
+                  severity="secondary"
+                  label="Adicionar Alternativa"
+                  (onClick)="adicionarAlternativa()"
+                  [disabled]="disableAdicionarAlternativa()"
+                  pTooltip="Para adicionar uma alternativa, selecione o tipo de questão"
+                  tooltipPosition="left"
+                />
+              </div>
+              <!-- Iterar sobre o FormArray de alternativas -->
+              @for (
+                altControl of alternativasFormArray.controls;
+                track $index;
+                let index = $index
+              ) {
+                <!-- Passamos o FormGroup e o input isFantasma -->
+                <app-alternativa
+                  class="mb-2"
+                  [index]="index"
+                  [formGroup]="asFormGroup(altControl)"
+                  (removeAlternativa)="removerAlternativa($event)"
+                  (selectAlternativa)="selecionarAlternativaCorreta($event)"
+                  [qtdAlternativas]="alternativasFormArray.length"
+                  [tipoQuestaoMultiplaEscolha]="tipoQuestaoMultiplaEscolha()"
+                />
+              }
+
+              <!-- Feedback visual se estiver visualizando e não houver alternativas -->
+              @if (isViewMode() && alternativasFormArray.length === 0) {
+                <p class="p-4 text-center text-gray-500">Nenhuma alternativa cadastrada.</p>
+              }
+            </app-form-label>
+          </div>
+
+          <!-- Comentário -->
+          <div class="col-12">
+            <app-form-label
+              label="Comentários"
+              for="comentario-questao"
+              [control]="comentarioControl"
+              [errorMessages]="errorComentariosMessages"
+            >
+              <p-editor
+                formControlName="comentario"
+                [style]="{ height: '320px' }"
+                [invalid]="isInvalid('comentario')"
+                placeholder="Digite os comentários da questão"
+              />
+            </app-form-label>
+          </div>
+        </div>
+
+        <!-- Botões -->
+        <div class="pt-2 flex flex-wrap flex-column-reverse md:flex-row justify-content-end gap-2">
+          <div class="col-12 p-0 md:col-2 xl:col-1">
+            <p-button
+              label="Voltar"
+              class="w-full"
+              variant="outlined"
+              styleClass="w-full"
+              severity="contrast"
+              (onClick)="onVoltar()"
+              [disabled]="submitting()"
+            />
+          </div>
+          @if (!isViewMode() && !submitting()) {
+            <div class="col-12 p-0 md:col-2 xl:col-1">
+              <p-button
+                type="submit"
+                styleClass="w-full button-aplicacao-style"
+                class="w-full button-aplicacao-style"
+                [disabled]="form.invalid || submitting()"
+                [label]="isCreateMode() ? 'Adicionar' : 'Atualizar'"
+              />
+            </div>
+          }
+          @if (submitting()) {
+            <app-loading></app-loading>
+          }
+        </div>
+      </form>
+    }
+  </p-card>
+</app-layout-base-pages>
