@@ -1,0 +1,64 @@
+<div class="mt-3">
+  <p-card>
+    <div class="flex flex-column">
+      <div class="flex flex-row justify-content-end align-items-center gap-2">
+        <p-button
+          size="small"
+          variant="text"
+          rounded="true"
+          icon="pi pi-star"
+          tooltipPosition="top"
+          (onClick)="onToggleFavoritar()"
+          [pTooltip]="labelBtnFavoritar()"
+          [severity]="severityBtnFavoritar()"
+          [aria-label]="labelBtnFavoritar()"
+        />
+        <p-button
+          size="small"
+          variant="text"
+          rounded="true"
+          icon="pi pi-bookmark"
+          tooltipPosition="top"
+          (onClick)="onToggleRevisao()"
+          [pTooltip]="labelBtnRevisao()"
+          [severity]="severityBtnRevisao()"
+          [aria-label]="labelBtnRevisao()"
+        />
+        <p-button
+          size="small"
+          variant="text"
+          rounded="true"
+          severity="info"
+          pTooltip="Editar"
+          icon="pi pi-pencil"
+          aria-label="Editar"
+          tooltipPosition="top"
+          (onClick)="onEditar()"
+        />
+        <p-button
+          size="small"
+          rounded="true"
+          variant="text"
+          severity="danger"
+          icon="pi pi-trash"
+          pTooltip="Excluir"
+          aria-label="Excluir"
+          tooltipPosition="top"
+          (onClick)="onExcluir()"
+        />
+      </div>
+      <div
+        class="text-lg font-medium flex-1 conteudo-enunciado"
+        [innerHTML]="questao().enunciado"
+      ></div>
+      <div class="flex flex-row justify-content-start gap-2 flex-wrap mt-3">
+        <p-tag severity="info" class="text-xs" [value]="materia().nome" /> |
+        <p-tag [ngClass]="classByNivelDificuldade()" class="text-xs" [value]="labelDificuldade()" />
+        |
+        @for (assunto of assuntosAssociados(); track $index) {
+          <p-tag severity="contrast" class="text-xs" [value]="assunto.nome" />
+        }
+      </div>
+    </div>
+  </p-card>
+</div>
