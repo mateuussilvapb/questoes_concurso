@@ -1,4 +1,5 @@
 //Angular
+import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, output } from '@angular/core';
 
 //Aplicação
@@ -9,15 +10,16 @@ import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-layout-base-pages',
-  imports: [ButtonModule],
+  imports: [CommonModule, ButtonModule],
   templateUrl: './layout-base-pages.html',
 })
 export class LayoutBasePages {
   private readonly themeService = inject(ThemeService);
 
-  title = input.required<string>();
   subtitle = input<string>();
+  title = input.required<string>();
   buttonActionLabel = input<string>();
+  buttonSeverity = input<'aplicattion' | 'secondary'>('aplicattion');
 
   actionButtonClick = output();
 
@@ -28,6 +30,8 @@ export class LayoutBasePages {
   colorSubtitle = computed<string>(() => {
     return this.themeService.isDarkMode() ? 'text-white-alpha-80' : 'text-gray-600';
   });
+
+  isButtonSeverityApplication = computed(() => this.buttonSeverity() == 'aplicattion');
 
   onButtonActionClick() {
     this.actionButtonClick.emit();
