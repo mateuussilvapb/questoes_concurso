@@ -1,5 +1,9 @@
 //Angular
-import { Component, inject, signal } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Component, computed, inject, signal } from '@angular/core';
+
+//Aplicação
+import { Util } from '../../../../shared/util/util';
 
 //Externo
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -7,9 +11,10 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 @Component({
   selector: 'app-dialog-comentario',
   imports: [],
-  template: `<div class="ml-3" [innerHTML]="comentario()"></div> `,
+  template: `<div class="editor-content" [innerHTML]="comentarioBypassSanitizer()"></div> `,
 })
 export class DialogComentario {
+  private readonly sanitizer = inject(DomSanitizer);
   private readonly dialogRef = inject(DynamicDialogRef);
   private readonly dialogService = inject(DialogService);
 
@@ -23,4 +28,8 @@ export class DialogComentario {
     const dataRef = this.dialogService.getInstance(this.dialogRef)?.data;
     this.comentario.set(dataRef?.comentario ?? '');
   }
+
+  comentarioBypassSanitizer = computed(() =>
+    Util.bypassSanitizerHtml(this.comentario(), this.sanitizer),
+  );
 }
