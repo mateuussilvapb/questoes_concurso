@@ -1,0 +1,156 @@
+/* ==========================================================================
+   Quill - Content Only
+   Apenas estilos necessários para renderizar o HTML salvo pelo Quill.
+   ========================================================================== */
+
+/* Alinhamento */
+.ql-align-center {
+  text-align: center;
+}
+
+.ql-align-right {
+  text-align: right;
+}
+
+.ql-align-justify {
+  text-align: justify;
+}
+
+/* Direção do texto */
+.ql-direction-rtl {
+  direction: rtl;
+  text-align: inherit;
+}
+
+/* Indentação */
+.ql-indent-1 {
+  padding-left: 3em;
+}
+
+.ql-indent-2 {
+  padding-left: 6em;
+}
+
+.ql-indent-3 {
+  padding-left: 9em;
+}
+
+.ql-indent-4 {
+  padding-left: 12em;
+}
+
+.ql-indent-5 {
+  padding-left: 15em;
+}
+
+.ql-indent-6 {
+  padding-left: 18em;
+}
+
+.ql-indent-7 {
+  padding-left: 21em;
+}
+
+.ql-indent-8 {
+  padding-left: 24em;
+}
+
+/* RTL + Indentação */
+.ql-direction-rtl.ql-indent-1 {
+  padding-right: 3em;
+  padding-left: 0;
+}
+
+.ql-direction-rtl.ql-indent-2 {
+  padding-right: 6em;
+  padding-left: 0;
+}
+
+.ql-direction-rtl.ql-indent-3 {
+  padding-right: 9em;
+  padding-left: 0;
+}
+
+.ql-direction-rtl.ql-indent-4 {
+  padding-right: 12em;
+  padding-left: 0;
+}
+
+.ql-direction-rtl.ql-indent-5 {
+  padding-right: 15em;
+  padding-left: 0;
+}
+
+.ql-direction-rtl.ql-indent-6 {
+  padding-right: 18em;
+  padding-left: 0;
+}
+
+.ql-direction-rtl.ql-indent-7 {
+  padding-right: 21em;
+  padding-left: 0;
+}
+
+.ql-direction-rtl.ql-indent-8 {
+  padding-right: 24em;
+  padding-left: 0;
+}
+
+/* Blockquote */
+blockquote {
+  border-left: 4px solid #ccc;
+  margin: 0 0 1rem;
+  padding-left: 1rem;
+  font-style: italic;
+}
+
+/* Código */
+pre {
+  background: #f5f5f5;
+  border-radius: 4px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+code {
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 3px;
+  padding: 0.15rem 0.35rem;
+  font-family: Consolas, Monaco, monospace;
+}
+
+/* Fórmulas (KaTeX) */
+.ql-formula {
+  display: inline-block;
+}
+
+/* Vídeos */
+.ql-video {
+  display: block;
+  max-width: 100%;
+}
+
+/* Imagens */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Checklist */
+ul[data-checked='true'],
+ul[data-checked='false'] {
+  list-style: none;
+  padding-left: 1.5rem;
+}
+
+ul[data-checked='true'] > li::before {
+  content: "☑";
+  margin-left: -1.5rem;
+  margin-right: .5rem;
+}
+
+ul[data-checked='false'] > li::before {
+  content: "☐";
+  margin-left: -1.5rem;
+  margin-right: .5rem;
+}

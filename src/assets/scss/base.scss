@@ -8,13 +8,17 @@
 @use 'primeNG/button.scss';
 
 body {
-    transition: background .25s;
+  transition: background 0.25s;
 }
 
 html:not(.app-dark) body {
-    background: #fafafa;
+  background: #fafafa;
 }
 
 html.app-dark body {
-    background: #101010;
+  background: #101010;
+}
+
+.question-content {
+  @import 'utils/quill-content';
 }
