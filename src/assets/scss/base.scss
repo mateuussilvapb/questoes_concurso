@@ -19,6 +19,13 @@ html.app-dark body {
   background: #101010;
 }
 
-.question-content {
+.editor-content {
   @import 'utils/quill-content';
+}
+
+.question-content {
+  padding: 0.5rem;
+  border: 1px solid;
+  border-radius: 0.5rem !important;
+  @extend .editor-content;
 }

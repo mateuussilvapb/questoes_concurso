@@ -1,3 +1,4 @@
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AutoComplete } from 'primeng/autocomplete';
 import { MultiSelect } from 'primeng/multiselect';
 
@@ -54,7 +55,7 @@ export class Util {
    * Método utilitário para converter um texto em HTML para texto puro, removendo tags e espaços extras.
    *
    * @param html O texto em html
-   * @returns
+   * @returns Texto sem tags HTML
    */
   static htmlToText(html: string | null | undefined): string {
     if (!html) {
@@ -68,5 +69,30 @@ export class Util {
       .replaceAll('\u00A0', ' ')
       .replaceAll(/\s+/g, ' ')
       .trim();
+  }
+
+  /**
+   * Método para ordenar aleatoriamente arrays
+   *
+   * @param array O array de itens para ordenação
+   * @returns Array ordenado aleatoriamente
+   */
+  static shuffle<T>(items: readonly T[]): T[] {
+    const array = [...items];
+
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+
+    return array;
+  }
+
+  /**
+   * Método de bypass de sanitização do html afim de manter exatamente o mesmo conteúdo
+   */
+  static bypassSanitizerHtml(text: string, sanitizer: DomSanitizer): SafeHtml {
+    return sanitizer.bypassSecurityTrustHtml(text);
   }
 }

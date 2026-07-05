@@ -61,8 +61,8 @@
         />
       </div>
       <div
-        class="text-lg font-medium flex-1 conteudo-enunciado"
-        [innerHTML]="questao().enunciado"
+        [innerHTML]="enunciadoBypassSanitizer()"
+        class="question-content conteudo-enunciado"
       ></div>
       <div class="flex flex-row justify-content-start gap-2 flex-wrap mt-3">
         <p-tag severity="info" class="text-xs" [value]="materia().nome" /> |

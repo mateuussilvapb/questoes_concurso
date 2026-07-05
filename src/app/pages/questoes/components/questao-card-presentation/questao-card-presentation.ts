@@ -1,5 +1,6 @@
 //Angular
 import { CommonModule } from '@angular/common';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Component, computed, inject, input, output } from '@angular/core';
 
 //Aplicação
@@ -8,6 +9,7 @@ import {
   STYLE_CLASS_TAG_DIFICULDADE_DARK,
   STYLE_CLASS_TAG_DIFICULDADE_LIGHT,
 } from './../../core/enums/nivel-dificuldade.enum';
+import { Util } from '../../../../shared/util/util';
 import { Questao } from '../../core/models/questao.model';
 import { QuestaoService } from '../../core/services/questao.service';
 import { Assunto } from '../../../assuntos/core/models/assunto.model';
@@ -40,6 +42,7 @@ import { ButtonModule, ButtonSeverity } from 'primeng/button';
   styleUrls: ['./questao-card-presentation.scss'],
 })
 export class QuestaoCardPresentation extends ListBase {
+  private readonly sanitizer = inject(DomSanitizer);
   private readonly themeService = inject(ThemeService);
   private readonly layoutService = inject(LayoutService);
   private readonly questaoService = inject(QuestaoService);
@@ -79,6 +82,10 @@ export class QuestaoCardPresentation extends ListBase {
       return;
     }
   }
+
+  enunciadoBypassSanitizer = computed(() =>
+    Util.bypassSanitizerHtml(this.questao().enunciado, this.sanitizer),
+  );
 
   // Botão Comentário
   onViewComentario() {
