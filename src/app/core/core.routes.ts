@@ -22,4 +22,9 @@ export const CORE_ROUTES: Routes = [
     loadChildren: () =>
       import('../pages/questoes/core/questoes.routes').then((c) => c.QUESTAO_ROUTES),
   },
+  {
+    path: 'resolver-questoes',
+    loadChildren: () =>
+      import('../pages/resolver-questoes/core/resolver-questoes.routes').then((c) => c.RESOLVER_QUESTOES_ROUTES),
+  },
 ];

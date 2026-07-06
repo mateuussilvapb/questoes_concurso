@@ -1,0 +1,19 @@
+@if (!resolverMode()) {
+  <app-layout-base-pages [title]="'Resolver Questões'">
+    <p-card header="Filtros">
+      <app-questao-filter
+        [form]="form"
+        [showResolverAction]="true"
+        (resolverActionClick)="onResolverAction()"
+      />
+      <span class="text-xs">{{ textQuantidadeQuestoes() }}</span>
+    </p-card>
+  </app-layout-base-pages>
+} @else if (resolverMode() && questoesResolucao().length) {
+  <app-resolver-questoes-component
+    (encerrar)="onEncerrar()"
+    (finalizar)="onFinalizar()"
+    (respondeu)="onRespondeu($event)"
+    [questoes]="questoesResolucao()"
+  />
+}

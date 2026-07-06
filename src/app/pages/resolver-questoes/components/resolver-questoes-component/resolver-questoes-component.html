@@ -1,0 +1,17 @@
+<app-layout-base-pages
+  [title]="title()"
+  [buttonSeverity]="'secondary'"
+  [buttonActionLabel]="'Encerrar'"
+  (actionButtonClick)="onEncerrar()"
+>
+  <app-resolver-questao-card
+    [questao]="questaoAtual()"
+    [finalizado]="finalizado()"
+    [ultimaQuestao]="ultimaQuestao()"
+    [primeiraQuestao]="primeiraQuestao()"
+    (proximaQuestao)="proximaQuestao()"
+    (questaoAnterior)="questaoAnterior()"
+    (finalizarRespostas)="finalizar.emit()"
+    (respondeu)="onRespondeu($event)"
+  />
+</app-layout-base-pages>
