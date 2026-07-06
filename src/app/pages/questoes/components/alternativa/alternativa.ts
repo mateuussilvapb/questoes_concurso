@@ -5,6 +5,7 @@ import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Component, computed, effect, inject, input, output } from '@angular/core';
 
 //Aplicação
+import { Util } from '../../../../shared/util/util';
 import { ThemeService } from '../../../../core/services/theme.service';
 
 // Externo
@@ -55,8 +56,7 @@ export class Alternativa {
   }
 
   mapIndexToLetter(index: number): string {
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    return letters[index] || '';
+    return Util.mapIndexToLetter(index);
   }
 
   onSelectAlternativa(event: RadioButtonClickEvent) {

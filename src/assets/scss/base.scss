@@ -24,8 +24,5 @@ html.app-dark body {
 }
 
 .question-content {
-  padding: 0.5rem;
-  border: 1px solid;
-  border-radius: 0.5rem !important;
   @extend .editor-content;
 }

@@ -8,6 +8,8 @@ export interface SelectOption<T> {
 }
 
 export class Util {
+  private static readonly LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
   /**
    * Força a abertura de um autocomplete ou multiselect.
    *
@@ -94,5 +96,18 @@ export class Util {
    */
   static bypassSanitizerHtml(text: string, sanitizer: DomSanitizer): SafeHtml {
     return sanitizer.bypassSecurityTrustHtml(text);
+  }
+
+  /**
+   * Método para mapeamento de índice para letra.
+   * Caso 'index' == 0, retorna letra 'A'.
+   * Caso 'index' == 1, retorna letra 'B'.
+   * etc
+   *
+   * @param index índice de um array
+   * @returns Letra correspondente ao índice
+   */
+  static mapIndexToLetter(index: number): string {
+    return this.LETTERS[index] || '';
   }
 }
