@@ -6,7 +6,7 @@ export enum TipoQuestao {
 }
 
 export const TIPO_QUESTAO_LABEL: Record<TipoQuestao, string> = {
-  [TipoQuestao.MULTIPLA_ESCOLHA]: 'Multipla Escolha',
+  [TipoQuestao.MULTIPLA_ESCOLHA]: 'Múltipla Escolha',
   [TipoQuestao.VF]: 'Verdadeiro/Falso',
 };
 
