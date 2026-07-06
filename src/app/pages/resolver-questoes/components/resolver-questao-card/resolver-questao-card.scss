@@ -1,0 +1,15 @@
+.descartar-alternativa-button {
+  opacity: 0;
+  transition: opacity 300ms;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+
+.word-wrap-text {
+  overflow-wrap: break-word;
+  word-break: break-all; /* Garante a quebra mesmo em strings contínuas gigantes */
+  hyphens: auto;
+}
