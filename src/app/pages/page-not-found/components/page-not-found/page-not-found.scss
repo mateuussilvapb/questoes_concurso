@@ -1,0 +1,33 @@
+:host {
+  display: block;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-home {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #3f51b5;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+  box-shadow: 0 4px 6px rgba(63, 81, 181, 0.2);
+}
+
+.btn-home:hover {
+  background-color: #303f9f;
+  transform: translateY(-1px);
+}
+
+.btn-home:active {
+  transform: translateY(0);
+}

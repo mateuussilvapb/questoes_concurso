@@ -25,6 +25,15 @@ export const CORE_ROUTES: Routes = [
   {
     path: 'resolver-questoes',
     loadChildren: () =>
-      import('../pages/resolver-questoes/core/resolver-questoes.routes').then((c) => c.RESOLVER_QUESTOES_ROUTES),
+      import('../pages/resolver-questoes/core/resolver-questoes.routes').then(
+        (c) => c.RESOLVER_QUESTOES_ROUTES,
+      ),
+  },
+  {
+    path: '**',
+    loadComponent: () =>
+      import('../../app/pages/page-not-found/components/page-not-found/page-not-found').then(
+        (c) => c.PageNotFound,
+      ),
   },
 ];
