@@ -36,8 +36,8 @@
   </div>
   @if (this.questao().resolvida) {
     <div
+      class="w-full p-3 border-round-lg mt-3 flex flex-row justify-content-between"
       [ngClass]="isDarkMode() ? `bg-${feedback()?.bg}-800` : `bg-${feedback()?.bg}-200`"
-      class="w-full p-3 border-round-lg mt-3"
     >
       <div
         class="flex flex-row gap-3 align-items-center font-bold"
@@ -45,6 +45,21 @@
       >
         <em [class]="`${feedback()?.icon} font-bold`"></em>
         <span>{{ feedback()?.text }}</span>
+      </div>
+      <div>
+        @if (this.questao().questao.observacao.observacoes) {
+          <p-button
+            size="small"
+            variant="text"
+            rounded="true"
+            severity="contrast"
+            icon="pi pi-comment"
+            tooltipPosition="top"
+            (onClick)="onViewComentario()"
+            pTooltip="Visualizar Comentário"
+            aria-label="Visualizar Comentário"
+          />
+        }
       </div>
     </div>
   }

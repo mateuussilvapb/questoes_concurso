@@ -90,7 +90,7 @@ export class QuestaoCardPresentation extends ListBase {
   // Botão Comentário
   onViewComentario() {
     this.dialogService.open(DialogComentario, {
-      width: '50vw',
+      width: this.layoutService.isMobile() ? '100vw' : '50vw',
       closeOnEscape: true,
       data: { comentario: this.questao().observacao?.observacoes ?? '' },
       contentStyle: { overflow: 'auto' },

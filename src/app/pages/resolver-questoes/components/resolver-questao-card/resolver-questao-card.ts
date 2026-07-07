@@ -1,3 +1,4 @@
+import { LayoutService } from './../../../../core/services/layout.service';
 //Angular
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
@@ -20,6 +21,8 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
+import { DialogService } from 'primeng/dynamicdialog';
+import { DialogComentario } from '../../../questoes/components/dialog-comentario/dialog-comentario';
 
 export interface AlternativaResolucao extends Alternativa {
   eliminada: boolean;
@@ -52,6 +55,8 @@ export enum EstadoAlternativa {
 export class ResolverQuestaoCard {
   private readonly sanitizer = inject(DomSanitizer);
   protected readonly themeService = inject(ThemeService);
+  private readonly dialogService = inject(DialogService);
+  private readonly layoutService = inject(LayoutService);
   private readonly materiaService = inject(MateriaService);
 
   finalizado = input.required<boolean>();
@@ -180,5 +185,18 @@ export class ResolverQuestaoCard {
 
   anterior() {
     this.questaoAnterior.emit();
+  }
+
+  onViewComentario() {
+    this.dialogService.open(DialogComentario, {
+      width: this.layoutService.isMobile() ? '100vw' : '50vw',
+      closeOnEscape: true,
+      data: { comentario: this.questao().questao.observacao?.observacoes ?? '' },
+      contentStyle: { overflow: 'auto' },
+      maximizable: this.layoutService.isMobile(),
+      header: `Comentário`,
+      draggable: false,
+      closable: true,
+    });
   }
 }
