@@ -1,25 +1,6 @@
 .conteudo-enunciado {
-  white-space: normal !important;
-  overflow-wrap: break-word !important;
-  word-wrap: break-word !important;
-  word-break: break-word !important; /* Força a quebra mesmo se for uma palavra gigante sem espaços */
-  min-width: 0; /* Essencial para funcionar dentro de layouts Flexbox */
-
   display: -webkit-box;
   -webkit-line-clamp: 5; /* Quantidade máxima de linhas */
   -webkit-box-orient: vertical;
   overflow: hidden; /* Esconde o texto que passar do limite */
-
-  /* Mantém as quebras configuradas*/
-  white-space: normal;
-  word-break: break-word;
-}
-
-/*
-  Garante que qualquer parágrafo ou tag injetada pelo innerHTML
-  também herde o comportamento de quebra
-*/
-.conteudo-enunciado :dynamic,
-.conteudo-enunciado * {
-  word-break: break-word !important;
 }

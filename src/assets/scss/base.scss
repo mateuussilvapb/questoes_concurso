@@ -24,11 +24,10 @@ html.app-dark body {
 }
 
 .question-content {
-  white-space: normal !important;
-  overflow-wrap: break-word !important;
-  word-wrap: break-word !important;
-  word-break: break-word !important; /* Força a quebra mesmo se for uma palavra gigante sem espaços */
-  min-width: 0; /* Essencial para funcionar dentro de layouts Flexbox */
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: manual;
 
   @extend .editor-content;
 }

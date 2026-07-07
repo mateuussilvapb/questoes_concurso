@@ -95,7 +95,10 @@ export class Util {
    * Método de bypass de sanitização do html afim de manter exatamente o mesmo conteúdo
    */
   static bypassSanitizerHtml(text: string, sanitizer: DomSanitizer): SafeHtml {
-    return sanitizer.bypassSecurityTrustHtml(text);
+    const html = text.replaceAll('&nbsp;', ' ')
+      .replaceAll('\u00A0', ' ');
+
+    return sanitizer.bypassSecurityTrustHtml(html);
   }
 
   /**
