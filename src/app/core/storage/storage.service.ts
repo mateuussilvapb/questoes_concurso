@@ -3,12 +3,14 @@ import { StorageCollection } from './storage.constants';
 import { BaseEntity } from '../../shared/models/base-entity';
 import { BackupData, ImportMode, MergeResult } from './backup.models';
 import { IdGeneratorService } from './id-generator/id-generator.service';
+import { BackupValidatorService } from '../../pages/configuracoes/core/services/backup-validator.service';
+import { BACKUP_VERSION } from '../../shared/types/types-const';
 @Injectable({
   providedIn: 'root',
 })
 export class StorageService {
-  private readonly backupVersion = 1;
   private readonly idGeneratorService = inject(IdGeneratorService);
+  private readonly backupValidator = inject(BackupValidatorService);
 
   // ============================================================
   // LEITURA
@@ -128,7 +130,7 @@ export class StorageService {
 
   exportBackup(): BackupData {
     return {
-      versao: this.backupVersion,
+      versao: BACKUP_VERSION,
 
       exportadoEm: new Date().toISOString(),
 
@@ -143,7 +145,7 @@ export class StorageService {
   }
 
   importBackup(backup: BackupData, mode: ImportMode): MergeResult {
-    this.validateBackup(backup);
+    this.backupValidator.validate(backup);
 
     if (mode === ImportMode.REPLACE) {
       this.replaceAll(backup);
@@ -217,31 +219,5 @@ export class StorageService {
 
       ignored: ignoredCount,
     };
-  }
-
-  private validateBackup(backup: BackupData): void {
-    if (!backup) {
-      throw new Error('Backup inválido.');
-    }
-
-    if (backup.versao !== this.backupVersion) {
-      throw new Error('Versão do backup incompatível.');
-    }
-
-    if (!Array.isArray(backup.materias)) {
-      throw new Error('Matérias inválidas.');
-    }
-
-    if (!Array.isArray(backup.assuntos)) {
-      throw new Error('Assuntos inválidos.');
-    }
-
-    if (!Array.isArray(backup.questoes)) {
-      throw new Error('Questões inválidas.');
-    }
-
-    if (!Array.isArray(backup.historicos)) {
-      throw new Error('Históricos inválidos.');
-    }
   }
 }

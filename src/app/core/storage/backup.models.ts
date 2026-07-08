@@ -1,13 +1,16 @@
-import { BaseEntity } from "../../shared/models/base-entity";
+import { Assunto } from '../../pages/assuntos/core/models/assunto.model';
+import { Historico } from '../../pages/estatisticas/core/models/historico.model';
+import { Materia } from '../../pages/materias/core/models/materia.model';
+import { Questao } from '../../pages/questoes/core/models/questao.model';
 
 export interface BackupData {
   versao: number;
   exportadoEm: string;
 
-  materias: BaseEntity[];
-  assuntos: BaseEntity[];
-  questoes: BaseEntity[];
-  historicos: BaseEntity[];
+  materias: Materia[];
+  assuntos: Assunto[];
+  questoes: Questao[];
+  historicos: Historico[];
 }
 
 export enum ImportMode {

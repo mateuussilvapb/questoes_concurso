@@ -1,3 +1,4 @@
+import { CONFIGURACOES_ROUTES } from './../pages/configuracoes/core/assuntos.routes';
 //Angular
 import { Routes } from '@angular/router';
 
@@ -28,6 +29,11 @@ export const CORE_ROUTES: Routes = [
       import('../pages/resolver-questoes/core/resolver-questoes.routes').then(
         (c) => c.RESOLVER_QUESTOES_ROUTES,
       ),
+  },
+  {
+    path: 'configuracoes',
+    loadChildren: () =>
+      import('../pages/configuracoes/core/assuntos.routes').then((c) => c.CONFIGURACOES_ROUTES),
   },
   {
     path: '**',
