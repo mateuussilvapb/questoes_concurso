@@ -1,10 +1,14 @@
 import { inject, Injectable } from '@angular/core';
-import { StorageCollection } from './storage.constants';
+import { Assunto } from '../../pages/assuntos/core/models/assunto.model';
+import { BackupValidatorService } from '../../pages/configuracoes/core/services/backup-validator.service';
+import { Historico } from '../../pages/estatisticas/core/models/historico.model';
+import { Materia } from '../../pages/materias/core/models/materia.model';
+import { Questao } from '../../pages/questoes/core/models/questao.model';
 import { BaseEntity } from '../../shared/models/base-entity';
+import { BACKUP_VERSION } from '../../shared/types/types-const';
 import { BackupData, ImportMode, MergeResult } from './backup.models';
 import { IdGeneratorService } from './id-generator/id-generator.service';
-import { BackupValidatorService } from '../../pages/configuracoes/core/services/backup-validator.service';
-import { BACKUP_VERSION } from '../../shared/types/types-const';
+import { StorageCollection } from './storage.constants';
 @Injectable({
   providedIn: 'root',
 })
@@ -36,6 +40,17 @@ export class StorageService {
 
   exists(collection: StorageCollection, id: string): boolean {
     return this.getAll<BaseEntity>(collection).some((item) => item.id === id);
+  }
+
+  existAnyData(): boolean {
+    const materias = this.getAll<Materia>(StorageCollection.MATERIAS);
+    const assuntos = this.getAll<Assunto>(StorageCollection.ASSUNTOS);
+    const questoes = this.getAll<Questao>(StorageCollection.QUESTOES);
+    const historicos = this.getAll<Historico>(StorageCollection.HISTORICOS);
+
+    return (
+      materias.length > 0 || assuntos.length > 0 || questoes.length > 0 || historicos.length > 0
+    );
   }
 
   // ============================================================
