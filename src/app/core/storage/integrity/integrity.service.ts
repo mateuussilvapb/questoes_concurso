@@ -1,13 +1,13 @@
+//Angular
 import { Injectable, inject } from '@angular/core';
 
-import { StorageCollection } from '../storage.constants';
+//Aplicação
 import { StorageService } from '../storage.service';
-
+import { StorageCollection } from '../storage.constants';
 import { DeleteValidationResult } from './integrity.models';
-
 import { Assunto } from '../../../pages/assuntos/core/models/assunto.model';
 import { Questao } from '../../../pages/questoes/core/models/questao.model';
-import { Historico } from '../../../pages/estatisticas/core/models/historico.model';
+import { HistoricoQuestao } from '../../../pages/historico/core/models/historico-questao.model';
 
 @Injectable({
   providedIn: 'root',
@@ -79,7 +79,7 @@ export class IntegrityService {
    * pertencentes à questão.
    */
   removerHistoricosDaQuestao(idQuestao: string): number {
-    const historicos = this.storage.getAll<Historico>(StorageCollection.HISTORICOS);
+    const historicos = this.storage.getAll<HistoricoQuestao>(StorageCollection.HISTORICOS);
 
     const restantes = historicos.filter((h) => h.idQuestao !== idQuestao);
 
@@ -112,9 +112,9 @@ export class IntegrityService {
       .filter((q) => q.idsAssuntos.includes(idAssunto));
   }
 
-  obterHistoricosDaQuestao(idQuestao: string): Historico[] {
+  obterHistoricosDaQuestao(idQuestao: string): HistoricoQuestao[] {
     return this.storage
-      .getAll<Historico>(StorageCollection.HISTORICOS)
+      .getAll<HistoricoQuestao>(StorageCollection.HISTORICOS)
       .filter((h) => h.idQuestao === idQuestao);
   }
 

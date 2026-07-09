@@ -1,7 +1,7 @@
 import { Assunto } from '../../pages/assuntos/core/models/assunto.model';
-import { Historico } from '../../pages/estatisticas/core/models/historico.model';
 import { Materia } from '../../pages/materias/core/models/materia.model';
 import { Questao } from '../../pages/questoes/core/models/questao.model';
+import { HistoricoQuestao } from '../../pages/historico/core/models/historico-questao.model';
 
 export interface BackupData {
   versao: number;
@@ -10,7 +10,7 @@ export interface BackupData {
   materias: Materia[];
   assuntos: Assunto[];
   questoes: Questao[];
-  historicos: Historico[];
+  historicos: HistoricoQuestao[];
 }
 
 export enum ImportMode {

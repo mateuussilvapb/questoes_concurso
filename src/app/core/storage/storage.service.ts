@@ -1,14 +1,17 @@
+//Angular
 import { inject, Injectable } from '@angular/core';
-import { Assunto } from '../../pages/assuntos/core/models/assunto.model';
-import { BackupValidatorService } from '../../pages/configuracoes/core/services/backup-validator.service';
-import { Historico } from '../../pages/estatisticas/core/models/historico.model';
-import { Materia } from '../../pages/materias/core/models/materia.model';
-import { Questao } from '../../pages/questoes/core/models/questao.model';
+
+//Aplicação
+import { StorageCollection } from './storage.constants';
 import { BaseEntity } from '../../shared/models/base-entity';
 import { BACKUP_VERSION } from '../../shared/types/types-const';
 import { BackupData, ImportMode, MergeResult } from './backup.models';
+import { Assunto } from '../../pages/assuntos/core/models/assunto.model';
+import { Materia } from '../../pages/materias/core/models/materia.model';
 import { IdGeneratorService } from './id-generator/id-generator.service';
-import { StorageCollection } from './storage.constants';
+import { Questao } from '../../pages/questoes/core/models/questao.model';
+import { HistoricoQuestao } from '../../pages/historico/core/models/historico-questao.model';
+import { BackupValidatorService } from '../../pages/configuracoes/core/services/backup-validator.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -46,7 +49,7 @@ export class StorageService {
     const materias = this.getAll<Materia>(StorageCollection.MATERIAS);
     const assuntos = this.getAll<Assunto>(StorageCollection.ASSUNTOS);
     const questoes = this.getAll<Questao>(StorageCollection.QUESTOES);
-    const historicos = this.getAll<Historico>(StorageCollection.HISTORICOS);
+    const historicos = this.getAll<HistoricoQuestao>(StorageCollection.HISTORICOS);
 
     return (
       materias.length > 0 || assuntos.length > 0 || questoes.length > 0 || historicos.length > 0

@@ -1,11 +1,14 @@
+//Angular
 import { Injectable } from '@angular/core';
+
+//Aplicação
+import { BaseEntity } from '../../../../shared/models/base-entity';
 import { BackupData } from '../../../../core/storage/backup.models';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { Assunto } from '../../../assuntos/core/models/assunto.model';
 import { Questao } from '../../../questoes/core/models/questao.model';
-import { Historico } from '../../../estatisticas/core/models/historico.model';
-import { BaseEntity } from '../../../../shared/models/base-entity';
 import { BACKUP_VERSION } from '../../../../shared/types/types-const';
+import { HistoricoQuestao } from '../../../historico/core/models/historico-questao.model';
 
 @Injectable({
   providedIn: 'root',
@@ -85,7 +88,7 @@ export class BackupValidatorService {
     materias: Materia[],
     assuntos: Assunto[],
     questoes: Questao[],
-    historicos: Historico[],
+    historicos: HistoricoQuestao[],
   ): void {
     const materiaIds = new Set(materias.map((m) => m.id));
     const assuntoIds = new Set(assuntos.map((a) => a.id));
