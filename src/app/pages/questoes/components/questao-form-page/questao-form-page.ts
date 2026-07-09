@@ -353,7 +353,16 @@ export class QuestaoFormPage extends FormBase implements OnInit {
       this.messageService.showSuccess(
         'Questão criada com sucesso. Você será redirecionado para listagem.',
       );
-      this.onVoltar();
+      this.confirmationService.confirm({
+        message: 'Deseja continuar adicionando questões?',
+        header: 'Questão criada com sucesso!',
+        icon: 'pi pi-exclamation-triangle',
+        acceptButtonStyleClass: 'p-button-primary',
+        rejectButtonStyleClass: 'p-button-secondary',
+        acceptLabel: 'Continuar',
+        rejectLabel: 'Voltar para listagem',
+        reject: () => this.onVoltar(),
+      });
       return;
     } catch (e: any) {
       console.error(e);
