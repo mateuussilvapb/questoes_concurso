@@ -366,6 +366,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
           this.alternativasFormArray.controls.forEach((alternativa) => {
             alternativa.get('texto')?.setValue('');
           });
+          this.marcarTodasAlternativasFalsas();
         },
         reject: () => this.onVoltar(),
       });
