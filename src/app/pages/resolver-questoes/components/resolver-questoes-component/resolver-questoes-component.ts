@@ -1,10 +1,15 @@
-import { ConfirmationService } from 'primeng/api';
+//Angular
 import { Component, computed, inject, input, output, signal } from '@angular/core';
+
+//Aplicação
 import { ResolverQuestoes } from '../../core/models/resolver-questoes.model';
-import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
+import { TimerService } from './../../../../core/timer/service/timer.service';
 import { ResolverQuestaoCard } from '../resolver-questao-card/resolver-questao-card';
 import { ResultadosResolucao } from '../resolver-questoes-page/resolver-questoes-page';
+import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
 
+//Externo
+import { ConfirmationService } from 'primeng/api';
 @Component({
   selector: 'app-resolver-questoes-component',
   imports: [
@@ -15,6 +20,7 @@ import { ResultadosResolucao } from '../resolver-questoes-page/resolver-questoes
   templateUrl: './resolver-questoes-component.html',
 })
 export class ResolverQuestoesComponent {
+  private readonly timerService = inject(TimerService);
   private readonly confirmationService = inject(ConfirmationService);
 
   questoes = input.required<ResolverQuestoes[]>();
@@ -52,6 +58,10 @@ export class ResolverQuestoesComponent {
   readonly podeVoltar = computed(() => !this.primeiraQuestao());
   readonly podeEncerrar = computed(() => this.totalQuestoesResolvidas() == this.questoes().length);
 
+  constructor() {
+    this.timerService.startStopwatchDisabled();
+  }
+
   private alterarIndice(indice: number) {
     if (indice < 0 || indice >= this.questoes().length) {
       return;
@@ -75,6 +85,7 @@ export class ResolverQuestoesComponent {
   onEncerrar() {
     if (this.podeEncerrar()) {
       this.encerrar.emit();
+      this.timerService.stop();
     } else {
       this.confirmarEncerrar();
     }
@@ -87,7 +98,10 @@ export class ResolverQuestoesComponent {
       icon: 'pi pi-exclamation-triangle',
       rejectButtonStyleClass: 'p-button-secondary',
       acceptButtonStyleClass: 'p-button-danger',
-      accept: () => this.encerrar.emit(),
+      accept: () => {
+        this.encerrar.emit();
+        this.timerService.stop();
+      },
     });
   }
 
@@ -100,12 +114,13 @@ export class ResolverQuestoesComponent {
   }
 
   onFinalizarRespostas() {
+    const tempoGasto = this.timerService.state().elapsedSeconds;
     this.finalizar.emit({
       totalQuestoesResolvidas: this.totalQuestoesResolvidas(),
       totalQuestoesCorretas: this.totalQuestoesCorretas(),
       totalQuestoesIncorretas: this.totalQuestoesIncorretas(),
-      //TODO: implementar cronômetro
-      tempoGasto: 0
+      tempoGasto: tempoGasto,
     });
+    this.timerService.stop();
   }
 }

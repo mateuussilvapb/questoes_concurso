@@ -1,0 +1,34 @@
+@if (state().visible) {
+  <div class="timer" cdkDrag cdkDragBoundary="body">
+    <i class="pi pi-clock"></i>
+
+    <span>{{ formattedTime() }}</span>
+
+    <p-button
+      size="small"
+      variant="text"
+      rounded="true"
+      icon="pi pi-pause"
+      [disabled]="disabled()"
+      (onClick)="timer.pause()"
+    />
+
+    <p-button
+      size="small"
+      variant="text"
+      rounded="true"
+      icon="pi pi-play"
+      [disabled]="disabled()"
+      (onClick)="timer.resume()"
+    />
+
+    <p-button
+      size="small"
+      variant="text"
+      rounded="true"
+      icon="pi pi-times"
+      [disabled]="disabled()"
+      (onClick)="timer.stop()"
+    />
+  </div>
+}

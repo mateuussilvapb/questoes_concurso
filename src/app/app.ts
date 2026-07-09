@@ -4,6 +4,7 @@ import { RouterOutlet } from '@angular/router';
 
 //Aplicação
 import { Toast } from './shared/components/toast/toast';
+import { FloatingTimer } from './core/timer/components/floating-timer/floating-timer';
 
 //Externos
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -16,6 +17,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
     //Aplicação
     Toast,
+    FloatingTimer,
 
     //Externos
     ConfirmDialogModule,
