@@ -3,6 +3,7 @@ import { Component, computed, inject, input, output, signal } from '@angular/cor
 import { ResolverQuestoes } from '../../core/models/resolver-questoes.model';
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
 import { ResolverQuestaoCard } from '../resolver-questao-card/resolver-questao-card';
+import { ResultadosResolucao } from '../resolver-questoes-page/resolver-questoes-page';
 
 @Component({
   selector: 'app-resolver-questoes-component',
@@ -19,7 +20,7 @@ export class ResolverQuestoesComponent {
   questoes = input.required<ResolverQuestoes[]>();
 
   encerrar = output();
-  finalizar = output();
+  finalizar = output<ResultadosResolucao>();
   respondeu = output<{ questaoId: string; alternativaId: string; correta: boolean }>();
 
   readonly indiceAtual = signal<number>(0);
@@ -95,6 +96,16 @@ export class ResolverQuestoesComponent {
       questaoId: this.questaoAtual().questao.id,
       alternativaId: event.alternativaId,
       correta: event.correta,
+    });
+  }
+
+  onFinalizarRespostas() {
+    this.finalizar.emit({
+      totalQuestoesResolvidas: this.totalQuestoesResolvidas(),
+      totalQuestoesCorretas: this.totalQuestoesCorretas(),
+      totalQuestoesIncorretas: this.totalQuestoesIncorretas(),
+      //TODO: implementar cronômetro
+      tempoGasto: 0
     });
   }
 }

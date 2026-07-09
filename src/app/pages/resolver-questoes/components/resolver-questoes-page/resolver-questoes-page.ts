@@ -9,6 +9,7 @@ import { ResolverQuestoes } from '../../core/models/resolver-questoes.model';
 import { ListBase } from '../../../../shared/components/list-base/list-base';
 import { QuestaoFilter } from '../../../questoes/core/dtos/filter-questao.dto';
 import { QuestaoService } from './../../../questoes/core/services/questao.service';
+import { ResultadosResolucaoComponent } from '../resultados-resolucao/resultados-resolucao';
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
 import { ResolverQuestoesComponent } from '../resolver-questoes-component/resolver-questoes-component';
 import { QuestaoFilter as QuestaoFilterComponent } from '../../../questoes/components/questao-filter/questao-filter';
@@ -17,6 +18,13 @@ import { QuestaoFilter as QuestaoFilterComponent } from '../../../questoes/compo
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
 
+export interface ResultadosResolucao {
+  totalQuestoesResolvidas: number;
+  totalQuestoesCorretas: number;
+  totalQuestoesIncorretas: number;
+  tempoGasto: number;
+}
+
 @Component({
   selector: 'app-resolver-questoes-page',
   imports: [
@@ -24,6 +32,7 @@ import { DividerModule } from 'primeng/divider';
     LayoutBasePages,
     QuestaoFilterComponent,
     ResolverQuestoesComponent,
+    ResultadosResolucaoComponent,
 
     //Externo
     CardModule,
@@ -35,7 +44,9 @@ export class ResolverQuestoesPage extends ListBase {
   private readonly questaoService = inject(QuestaoService);
 
   protected readonly resolverMode = signal<boolean>(false);
+  protected readonly resultadosMode = signal<boolean>(false);
   protected readonly questoesResolucao = signal<ResolverQuestoes[]>([]);
+  protected readonly resultadoResolucao = signal<ResultadosResolucao | null>(null);
 
   constructor() {
     super();
@@ -128,8 +139,17 @@ export class ResolverQuestoesPage extends ListBase {
     );
   }
 
-  onFinalizar() {
-    //TODO: implementar lógica de persistência de histórico
+  onFinalizar(resultados: ResultadosResolucao) {
+    this.resultadoResolucao.set(resultados);
+    this.resultadosMode.set(true);
+  }
+
+  onEncerrarVisualizacaoResultados() {
+    //TODO: Implementar persistência de histórico
+    this.form.reset();
+    this.form.updateValueAndValidity();
+    this.resultadoResolucao.set(null);
+    this.resultadosMode.set(false);
     this.resolverMode.set(false);
   }
 }

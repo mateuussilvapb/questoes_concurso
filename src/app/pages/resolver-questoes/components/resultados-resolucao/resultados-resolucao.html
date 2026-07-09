@@ -1,0 +1,26 @@
+<app-layout-base-pages
+  [title]="'Resultados'"
+  [buttonSeverity]="'secondary'"
+  [buttonActionLabel]="'Encerrar'"
+  (actionButtonClick)="encerrar.emit()"
+  [subtitle]="'Confira os seus resultados'"
+>
+  <div class="w-full grid justify-content-center">
+    @for (card of cards(); track $index) {
+      <div class="col-12 lg:col-4 xl:col-3">
+        <p-card [class]="`${card.backGroundColorCard} ${card.textColorCard} font-bold`">
+          <ng-template #title>
+            <div class="w-full flex flex-row gap-2 align-items-center m-0 p-0 text-sm">
+              <em [class]="`${card.icon} font-bold`"></em>
+              <h2 class="m-0 p-0">{{ card.titleCard }}</h2>
+            </div>
+          </ng-template>
+
+          <span class="text-xl">
+            {{ card.textCard }}
+          </span>
+        </p-card>
+      </div>
+    }
+  </div>
+</app-layout-base-pages>
