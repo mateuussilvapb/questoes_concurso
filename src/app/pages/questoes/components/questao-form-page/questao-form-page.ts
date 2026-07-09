@@ -356,11 +356,17 @@ export class QuestaoFormPage extends FormBase implements OnInit {
       this.confirmationService.confirm({
         message: 'Deseja continuar adicionando questões?',
         header: 'Questão criada com sucesso!',
-        icon: 'pi pi-exclamation-triangle',
+        icon: 'pi pi-check-circle',
         acceptButtonStyleClass: 'p-button-primary',
         rejectButtonStyleClass: 'p-button-secondary',
         acceptLabel: 'Continuar',
         rejectLabel: 'Voltar para listagem',
+        accept: () => {
+          this.form.get('enunciado')?.setValue('');
+          this.alternativasFormArray.controls.forEach((alternativa) => {
+            alternativa.get('texto')?.setValue('');
+          });
+        },
         reject: () => this.onVoltar(),
       });
       return;
