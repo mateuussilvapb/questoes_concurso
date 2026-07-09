@@ -356,7 +356,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
       this.confirmationService.confirm({
         message: 'Deseja continuar adicionando questões?',
         header: 'Questão criada com sucesso!',
-        icon: 'pi pi-check-circle',
+        icon: 'pi pi-question-circle',
         acceptButtonStyleClass: 'p-button-primary',
         rejectButtonStyleClass: 'p-button-secondary',
         acceptLabel: 'Continuar',
