@@ -363,6 +363,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
         rejectLabel: 'Voltar para listagem',
         accept: () => {
           this.form.get('enunciado')?.setValue('');
+          this.form.get('comentario')?.setValue('');
           if (this.form.get('tipoQuestao')?.value?.value == TipoQuestao.MULTIPLA_ESCOLHA) {
             this.alternativasFormArray.controls.forEach((alternativa) => {
               alternativa.get('texto')?.setValue('');
