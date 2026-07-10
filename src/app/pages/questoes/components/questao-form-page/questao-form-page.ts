@@ -350,30 +350,8 @@ export class QuestaoFormPage extends FormBase implements OnInit {
     try {
       this.questaoService.criar(dto);
       this.submitting.set(false);
-      this.messageService.showSuccess(
-        'Questão criada com sucesso. Você será redirecionado para listagem.',
-      );
-      this.confirmationService.confirm({
-        message: 'Deseja continuar adicionando questões?',
-        header: 'Questão criada com sucesso!',
-        icon: 'pi pi-question-circle',
-        acceptButtonStyleClass: 'p-button-primary',
-        rejectButtonStyleClass: 'p-button-secondary',
-        acceptLabel: 'Continuar',
-        rejectLabel: 'Voltar para listagem',
-        accept: () => {
-          this.form.get('enunciado')?.setValue('');
-          this.form.get('comentario')?.setValue('');
-          if (this.form.get('tipoQuestao')?.value?.value == TipoQuestao.MULTIPLA_ESCOLHA) {
-            this.alternativasFormArray.controls.forEach((alternativa) => {
-              alternativa.get('texto')?.setValue('');
-            });
-          }
-          this.marcarTodasAlternativasFalsas();
-        },
-        reject: () => this.onVoltar(),
-      });
-      return;
+      this.messageService.showSuccess('Questão criada com sucesso.');
+      this.continuarAdicionandoOuVoltar();
     } catch (e: any) {
       console.error(e);
       const mensagem = e?.message ?? 'Erro ao criar questão. Tente novamente';
@@ -381,6 +359,33 @@ export class QuestaoFormPage extends FormBase implements OnInit {
       this.submitting.set(false);
       return;
     }
+  }
+
+  private continuarAdicionandoOuVoltar() {
+    this.confirmationService.confirm({
+      message: 'Deseja continuar adicionando questões?',
+      header: 'Questão criada com sucesso!',
+      icon: 'pi pi-question-circle',
+      acceptButtonStyleClass: 'p-button-primary',
+      rejectButtonStyleClass: 'p-button-secondary',
+      acceptLabel: 'Continuar',
+      rejectLabel: 'Voltar para listagem',
+      accept: () => {
+        this.onAceitarContinuarAdicionando();
+      },
+      reject: () => this.onVoltar(),
+    });
+  }
+
+  onAceitarContinuarAdicionando() {
+    this.enunciadoControl?.setValue('');
+    this.comentarioControl?.setValue('');
+    if (this.tipoQuestaoControl?.value?.value == TipoQuestao.MULTIPLA_ESCOLHA) {
+      this.alternativasFormArray.controls.forEach((alternativa) => {
+        alternativa.get('texto')?.setValue('');
+      });
+    }
+    this.marcarTodasAlternativasFalsas();
   }
 
   onUpdate() {
