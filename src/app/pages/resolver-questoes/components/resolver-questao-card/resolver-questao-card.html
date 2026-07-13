@@ -29,7 +29,7 @@
           class="w-full border-2 border-round-lg p-2 flex flex-row gap-2 min-w-0"
         >
           <div>{{ mapIndexToLetter(index) }}.</div>
-          <div class="word-wrap-text">{{ alternativa.texto }}</div>
+          <div class="question-content" [innerHTML]="alternativaBypassSanitizer(alternativa.texto)"></div>
         </div>
       </div>
     }

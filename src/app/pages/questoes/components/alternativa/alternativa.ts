@@ -10,8 +10,9 @@ import { ThemeService } from '../../../../core/services/theme.service';
 
 // Externo
 import { ButtonModule } from 'primeng/button';
-import { of, startWith, switchMap } from 'rxjs';
+import { EditorModule } from 'primeng/editor';
 import { InputTextModule } from 'primeng/inputtext';
+import { map, of, startWith, switchMap } from 'rxjs';
 import { RadioButtonClickEvent, RadioButtonModule } from 'primeng/radiobutton';
 
 @Component({
@@ -24,10 +25,12 @@ import { RadioButtonClickEvent, RadioButtonModule } from 'primeng/radiobutton';
 
     // Externo
     ButtonModule,
+    EditorModule,
     InputTextModule,
     RadioButtonModule,
   ],
   templateUrl: './alternativa.html',
+  styleUrls: ['./alternativa.scss'],
 })
 export class Alternativa {
   private readonly themeService = inject(ThemeService);
@@ -83,8 +86,34 @@ export class Alternativa {
 
     const isDarkMode = this.themeService.isDarkMode();
     if (isDarkMode) {
-      return 'bg-green-700 text-0 font-bold';
+      return 'style-correta-dark';
     }
-    return 'bg-green-50 font-bold';
+    return 'style-correta-light';
   });
+
+  readonly alternativaDisabled = computed(() => {
+    return this.isTextoDisabledSignal();
+  });
+
+  private readonly isTextoDisabledSignal = toSignal(
+    toObservable(this.formGroup).pipe(
+      switchMap((form) => {
+        const control = form.get('texto');
+        if (!control) return of(true);
+
+        return control.statusChanges.pipe(
+          startWith(control.status),
+          map(() => control.disabled),
+        );
+      }),
+    ),
+    { initialValue: false },
+  );
+
+  handleOnTextChange() {
+    if (!this.alternativaDisabled) {
+      return;
+    }
+    this.formGroup().get('texto')?.setValue(null);
+  }
 }

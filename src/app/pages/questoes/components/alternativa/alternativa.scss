@@ -1,0 +1,41 @@
+/* Se estiver usando SCSS */
+.alternativa-editor.p-editor {
+  border-radius: var(--p-inputtext-border-radius);
+  ::ng-deep .p-editor-toolbar {
+    display: none !important;
+  }
+
+  ::ng-deep .p-editor-content {
+    border: 1px solid var(--p-editor-content-border-color);
+    border-radius: var(--p-inputtext-border-radius);
+  }
+
+  ::ng-deep .ql-editor {
+    border-radius: var(--p-inputtext-border-radius);
+  }
+}
+
+.alternativa-desabilitada.p-editor {
+  ::ng-deep {
+    .p-editor-content .ql-editor {
+      opacity: 1;
+      background: var(--p-inputtext-disabled-background);
+      color: var(--p-inputtext-disabled-color);
+      border-radius: var(--p-inputtext-border-radius);
+    }
+  }
+}
+
+.style-correta-light.p-editor {
+  ::ng-deep .ql-editor {
+    font-weight: bold;
+    background-color: var(--p-green-50) !important;
+  }
+}
+
+.style-correta-dark.p-editor {
+  ::ng-deep .ql-editor {
+    font-weight: bold;
+    background-color: var(--p-green-700) !important;
+  }
+}

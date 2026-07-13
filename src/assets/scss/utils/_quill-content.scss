@@ -3,6 +3,8 @@
    Apenas estilos necessários para renderizar o HTML salvo pelo Quill.
    ========================================================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
 /* Alinhamento */
 .ql-align-center {
   text-align: center;
@@ -116,7 +118,7 @@ code {
   background: rgba(0, 0, 0, 0.06);
   border-radius: 3px;
   padding: 0.15rem 0.35rem;
-  font-family: Consolas, Monaco, monospace;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Fórmulas (KaTeX) */
@@ -144,13 +146,18 @@ ul[data-checked='false'] {
 }
 
 ul[data-checked='true'] > li::before {
-  content: "☑";
+  content: '☑';
   margin-left: -1.5rem;
-  margin-right: .5rem;
+  margin-right: 0.5rem;
 }
 
 ul[data-checked='false'] > li::before {
-  content: "☐";
+  content: '☐';
   margin-left: -1.5rem;
-  margin-right: .5rem;
+  margin-right: 0.5rem;
+}
+
+//Fonte do editor
+.ql-editor {
+  font-family: 'Inter', sans-serif !important;
 }

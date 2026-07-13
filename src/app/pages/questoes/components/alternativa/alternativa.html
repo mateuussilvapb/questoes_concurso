@@ -8,16 +8,19 @@
       (onClick)="onSelectAlternativa($event)"
     />
     {{ mapIndexToLetter(index()) }}.
-    <input
-      type="text"
-      pInputText
-      class="w-full"
-      styleClass="w-full"
+    <p-editor
+      [disabled]="true"
       formControlName="texto"
+      [readonly]="alternativaDisabled()"
+      class="w-full alternativa-editor"
       placeholder="Digite a alternativa"
       [id]="'input-alternativa-{{index()}}'"
-      [ngClass]="backgroundColorAlternativaCorreta()"
-    />
+      [ngClass]="[
+        backgroundColorAlternativaCorreta(),
+        alternativaDisabled() ? 'alternativa-desabilitada' : '',
+      ]"
+    >
+    </p-editor>
     @if (qtdAlternativas() > 2) {
       <p-button
         size="small"

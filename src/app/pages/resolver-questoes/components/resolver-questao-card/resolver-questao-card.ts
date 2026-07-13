@@ -102,6 +102,10 @@ export class ResolverQuestaoCard {
     Util.bypassSanitizerHtml(this.questao().questao.enunciado, this.sanitizer),
   );
 
+  alternativaBypassSanitizer(textoAlternativa: string) {
+    return Util.bypassSanitizerHtml(textoAlternativa, this.sanitizer);
+  }
+
   alternativas = signal<AlternativaResolucao[]>([]);
 
   constructor() {
