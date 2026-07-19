@@ -1,6 +1,6 @@
 import { Table } from 'dexie';
 
-import { AppDatabase } from '../../database/app.database'; // ajuste o caminho conforme sua estrutura
+import { AppDatabase } from '../../database/app.database';
 import { RepositoryPredicate } from '../interfaces/repository-predicate';
 import { EntityRepository } from './entity-repository';
 
@@ -8,10 +8,10 @@ export abstract class BaseRepository<T extends object> implements EntityReposito
   protected readonly table: Table<any, string>;
 
   constructor(
-    protected readonly database: AppDatabase, // <- era Dexie, agora é AppDatabase
+    protected readonly database: AppDatabase,
     tableName: string,
   ) {
-    this.table = database.table(tableName);
+    this.table = database.table(tableName) as Table<T, string>;
   }
 
   async findAll(): Promise<T[]> {
@@ -20,6 +20,12 @@ export abstract class BaseRepository<T extends object> implements EntityReposito
 
   async findById(id: string): Promise<T | undefined> {
     return this.table.get(id);
+  }
+
+  async findByIds(ids: string[]): Promise<T[]> {
+    const result = await this.table.bulkGet(ids);
+
+    return result.filter((item): item is T => item !== undefined);
   }
 
   async findByPredicate(predicate: RepositoryPredicate<T>): Promise<T[]> {
@@ -43,21 +49,69 @@ export abstract class BaseRepository<T extends object> implements EntityReposito
       .toArray();
   }
 
+  async findOne(predicate: RepositoryPredicate<T>): Promise<T | undefined> {
+    return this.table.filter(predicate).first();
+  }
+
+  async first(predicate?: RepositoryPredicate<T>): Promise<T | undefined> {
+    if (!predicate) {
+      return this.table.toCollection().first();
+    }
+
+    return this.table.filter(predicate).first();
+  }
+
+  async last(predicate?: RepositoryPredicate<T>): Promise<T | undefined> {
+    if (!predicate) {
+      return this.table.toCollection().last();
+    }
+
+    return this.table.filter(predicate).last();
+  }
+
+  async exists(value: string | RepositoryPredicate<T>): Promise<boolean> {
+    if (typeof value === 'string') {
+      return (await this.table.get(value)) !== undefined;
+    }
+
+    return (await this.table.filter(value).count()) > 0;
+  }
+
   async save(entity: T): Promise<T> {
     await this.table.put(entity);
 
     return entity;
   }
 
+  async saveAll(entities: T[]): Promise<void> {
+    await this.table.bulkPut(entities);
+  }
+
   async update(id: string, changes: Partial<T>): Promise<void> {
     await this.table.update(id, changes);
+  }
+
+  async updateAll(ids: string[], changes: Partial<T>): Promise<void> {
+    await Promise.all(ids.map((id) => this.table.update(id, changes)));
   }
 
   async delete(id: string): Promise<void> {
     await this.table.delete(id);
   }
 
-  async count(): Promise<number> {
-    return this.table.count();
+  async deleteAll(ids: string[]): Promise<void> {
+    await this.table.bulkDelete(ids);
+  }
+
+  async clear(): Promise<void> {
+    await this.table.clear();
+  }
+
+  async count(predicate?: RepositoryPredicate<T>): Promise<number> {
+    if (!predicate) {
+      return this.table.count();
+    }
+
+    return this.table.filter(predicate).count();
   }
 }
