@@ -3,7 +3,7 @@ import { Table } from '../decorators/table.decorator';
 import { PersistentEntity } from './persistent-entity';
 
 @Table('assunto')
-export class Assunto extends PersistentEntity {
+export class AssuntoEntity extends PersistentEntity {
   @Index({ unique: true })
   nome!: string;
 

@@ -1,8 +1,8 @@
-import { Alternativa } from '../entities/alternativa-entity';
-import { Assunto } from '../entities/assunto-entity';
-import { Banca } from '../entities/banca-entity';
-import { Historico } from '../entities/historico-entity';
-import { Materia } from '../entities/materia-entity';
-import { Questao } from '../entities/questao-entity';
+import { AlternativaEntity } from '../entities/alternativa-entity';
+import { AssuntoEntity } from '../entities/assunto-entity';
+import { BancaEntity } from '../entities/banca-entity';
+import { HistoricoEntity } from '../entities/historico-entity';
+import { MateriaEntity } from '../entities/materia-entity';
+import { QuestaoEntity } from '../entities/questao-entity';
 
-export const ENTITY_REGISTRY = [Materia, Assunto, Questao, Alternativa, Banca, Historico];
+export const ENTITY_REGISTRY = [MateriaEntity, AssuntoEntity, QuestaoEntity, AlternativaEntity, BancaEntity, HistoricoEntity];

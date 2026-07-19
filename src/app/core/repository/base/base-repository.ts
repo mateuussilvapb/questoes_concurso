@@ -1,19 +1,25 @@
-import Dexie, { Table, UpdateSpec } from 'dexie';
-import { EntityRepository } from './entity.repository';
-import { RepositoryPredicate } from '../interfaces/repository-predicate';
+import { Table } from 'dexie';
 
-export abstract class BaseRepository<T extends { id: string }> implements EntityRepository<T> {
-  protected readonly table: Table<T, string>;
+import { AppDatabase } from '../../database/app.database'; // ajuste o caminho conforme sua estrutura
+import { RepositoryPredicate } from '../interfaces/repository-predicate';
+import { EntityRepository } from './entity-repository';
+
+export abstract class BaseRepository<T extends object> implements EntityRepository<T> {
+  protected readonly table: Table<any, string>;
 
   constructor(
-    protected readonly database: Dexie,
+    protected readonly database: AppDatabase, // <- era Dexie, agora é AppDatabase
     tableName: string,
   ) {
-    this.table = database.table<T, string>(tableName);
+    this.table = database.table(tableName);
   }
 
   async findAll(): Promise<T[]> {
     return this.table.toArray();
+  }
+
+  async findById(id: string): Promise<T | undefined> {
+    return this.table.get(id);
   }
 
   async findByPredicate(predicate: RepositoryPredicate<T>): Promise<T[]> {
@@ -37,17 +43,13 @@ export abstract class BaseRepository<T extends { id: string }> implements Entity
       .toArray();
   }
 
-  async findById(id: string): Promise<T | undefined> {
-    return this.table.get(id);
-  }
-
   async save(entity: T): Promise<T> {
     await this.table.put(entity);
 
     return entity;
   }
 
-  async update(id: string, changes: UpdateSpec<T>): Promise<void> {
+  async update(id: string, changes: Partial<T>): Promise<void> {
     await this.table.update(id, changes);
   }
 
