@@ -1,16 +1,18 @@
+import 'reflect-metadata';
+
 import { IndexOptions } from '../interfaces/index-options';
-import { MetadataStorage } from '../metadata/metadata.storage';
+import { MetadataStorage } from '../storage/metadata-storage';
 
-export function Index(options?: IndexOptions) {
-  return function (target: any, property: string) {
-    const metadata = MetadataStorage.getEntities().find((e) => e.target === target.constructor);
+export function Index(options: IndexOptions = {}): PropertyDecorator {
+  return (target, propertyKey) => {
+    const column = MetadataStorage.getOrCreateColumn(target.constructor, propertyKey.toString());
 
-    if (!metadata) return;
+    column.indexed = true;
 
-    metadata.indexes.push({
-      property,
-      unique: options?.unique,
-      multiEntry: options?.multiEntry,
-    });
+    column.unique = options.unique ?? false;
+
+    column.multiEntry = options.multiEntry ?? false;
+
+    column.reflectedType = Reflect.getMetadata('design:type', target, propertyKey);
   };
 }

@@ -1,10 +1,14 @@
-import { MetadataStorage } from '../metadata/metadata.storage';
+import 'reflect-metadata';
+import { MetadataStorage } from '../storage/metadata-storage';
 
-export function PrimaryKey(autoIncrement = false) {
-  return function (target: any, property: string) {
-    const metadata = MetadataStorage.getEntities().find((e) => e.target === target.constructor);
-    if (!metadata) return;
-    metadata.primaryKey = property;
-    metadata.autoIncrement = autoIncrement;
+export function PrimaryKey(autoIncrement = false): PropertyDecorator {
+  return (target, propertyKey) => {
+    const column = MetadataStorage.getOrCreateColumn(target.constructor, propertyKey.toString());
+
+    column.primaryKey = true;
+
+    column.autoIncrement = autoIncrement;
+
+    column.reflectedType = Reflect.getMetadata('design:type', target, propertyKey);
   };
 }

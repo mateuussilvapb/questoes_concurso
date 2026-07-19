@@ -1,11 +1,7 @@
-import { MetadataStorage } from '../metadata/metadata.storage';
+import { MetadataStorage } from '../storage/metadata-storage';
 
-export function Table(name: string) {
-  return function (constructor: Function) {
-    MetadataStorage.addEntity({
-      table: name,
-      target: constructor,
-      indexes: [],
-    });
+export function Table(name: string): ClassDecorator {
+  return (target) => {
+    MetadataStorage.setTable(target, name);
   };
 }
