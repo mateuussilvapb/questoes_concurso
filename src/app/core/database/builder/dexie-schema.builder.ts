@@ -1,5 +1,5 @@
 import { ColumnMetadata } from '../metadata/column-metadata';
-import { MetadataResolver } from '../resolver/metadara-resolver';
+import { MetadataResolver } from '../resolver/metadata-resolver';
 import { MetadataStorage } from '../storage/metadata-storage';
 
 export class DexieSchemaBuilder {
