@@ -77,7 +77,7 @@ export class BancaService {
     return this.loadingOverlay.wrap(async () => {
       await this.buscarEntidadePorId(id);
 
-      const validation = this.integrityService.validarExclusaoBanca(id);
+      const validation = await this.integrityService.validarExclusaoBanca(id);
 
       if (!validation.canDelete) {
         throw new Error(validation.message);

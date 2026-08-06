@@ -127,17 +127,18 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 | Arquivo a migrar | Substituto | Status em 06/08 |
 |---|---|---|
 | `pages/materias/core/services/materia.service.ts` | `MateriaRepository` | ✅ Migrado — 100% assíncrono, com `LoadingOverlayService`. Consumidores atualizados em `materias/*`, `assuntos-list-page.ts`, `assuntos-form-page.ts`, `questao-list-page.ts`, `questao-form-page.ts`, `resolver-questao-card.ts` (9 pontos de chamada) |
+| `pages/bancas/core/services/banca.service.ts` | `BancaRepository` | ✅ Módulo novo, criado direto sobre Dexie em 06/08 (CRUD nome+descrição, igual a `materia`); nunca existiu em `StorageService` |
 | `pages/assuntos/core/services/assunto.service.ts` | `AssuntoRepository` | ✅ Migrado — 100% assíncrono, com `LoadingOverlayService`. `AssuntoEntity` ganhou o campo `idMateria` (ausente até então). Consumidores atualizados em `assuntos/*`, `materias-list-page.ts`, `questao-form-page.ts`, `questao-list-page.ts`, `multiselect-assunto.ts`, `autocomplete-assunto.ts` (chamadas por item de lista viraram `Map` pré-carregado) |
-| `pages/questoes/core/repositories/questao-repository.ts` | `QuestaoRepository` | ❌ Ainda usa `StorageService` |
+| `pages/questoes/core/repositories/questao-repository.ts` | `QuestaoRepository` | ✅ Migrado — arquivo legado removido; `questao.service.ts` 100% assíncrono, com `LoadingOverlayService`. `QuestaoEntity` completada (`idMateria`, `idsAssuntos` com `@Index({multiEntry:true})`, `idBanca?`, `nivelDificuldade`, `tipo`, `alternativas`, `status`, `observacao` — antes só tinha `enunciado` + FKs singulares erradas). Consumidores atualizados: `questao-form-page.ts`, `questao-card-presentation.ts`, `questao-list-page.ts`/`resolver-questoes-page.ts` (computed síncrono → `signal`+`effect()`), `materias-list-page.ts`/`assuntos-list-page.ts`/`bancas-list-page.ts` (chamadas por item de lista → `Map` pré-carregado) |
 | `pages/historico/core/repositories/historico-repository.ts` | `HistoricoRepository` | ❌ Ainda usa `StorageService` |
-| `pages/questoes/core/services/questao-validator.service.ts` | Adaptar a queries Dexie | ❌ Ainda usa `StorageService` |
+| `pages/questoes/core/services/questao-validator.service.ts` | Adaptar a queries Dexie | ✅ Migrado (junto da correção do bug de criação de questão em 06/08) — valida matéria/assunto/banca via `MateriaRepository`/`AssuntoRepository`/`BancaRepository` (Dexie) |
 | `pages/historico/core/services/historico-validator.service.ts` | Adaptar a queries Dexie | 🔴 Rascunho novo adicionado, mas **inteiramente comentado**; código incompleto/inconsistente (tipos não importados: `Materia`, `Assunto`, `HistoricoQuestao`, `UpdateHistoricoQuestao`) |
 | `pages/historico/core/services/historico.service.ts` | `HistoricoRepository` | 🔴 Arquivo novo adicionado, mas **inteiramente comentado** — cópia do módulo `questoes` (classe ainda chamada `QuestaoService`, referencia `Alternativa`/`TipoQuestao`/`AlternativasFactoryService`, que não pertencem ao domínio de histórico) |
 | `pages/configuracoes/core/services/backup.service.ts` | Nova camada de backup via Dexie | ❌ Ainda usa `StorageService` |
 | `pages/configuracoes/components/backup-restauracao/backup-restauracao.ts` | Via `backup.service` novo | ❌ Ainda usa `StorageService` |
-| `core/storage/integrity/integrity.service.ts` | Adaptar verificações a queries Dexie | ❌ Ainda usa `StorageService` |
+| `core/storage/integrity/integrity.service.ts` | Adaptar verificações a queries Dexie | 🟡 Parcial — verificações de matéria/assunto/banca/questão migradas para `AssuntoRepository`/`QuestaoRepository` (Dexie); apenas históricos (`obterHistoricosDaQuestao`, `removerHistoricosDaQuestao`) ainda em `StorageService`, pois `historico` não migrou |
 
-> Nenhuma página foi de fato migrada ainda. O trabalho em `historico` iniciado em 06/08 criou DTOs (`create-historico.dto.ts`, `update-historico.dto.ts`) e dois arquivos de serviço, mas ambos os serviços estão comentados por inteiro e não compilam — tratar como rascunho, não como progresso funcional.
+> `materia`, `assunto` e `questao` estão migrados (100% assíncrono + `LoadingOverlayService`). `banca` é um módulo novo, criado direto sobre Dexie (nunca existiu em `StorageService`). Resta apenas `historico`: o trabalho iniciado em 06/08 criou DTOs (`create-historico.dto.ts`, `update-historico.dto.ts`) e dois arquivos de serviço, mas ambos os serviços estão comentados por inteiro e não compilam — tratar como rascunho, não como progresso funcional.
 
 ### Prioridade 6 — Backup/Exportação
 
@@ -165,6 +166,7 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 | ~~4~~ | ~~`AlternativaEntity` sem FK `idQuestao` e sem campo `correta`~~ | ✅ Resolvido em 06/08 |
 | ~~6~~ | ~~`PersistentEntity` chamava `inject(IdGeneratorService)` em field initializer, fora de contexto de injeção Angular — `new XEntity()` fora de um construtor gerenciado pelo DI lançava `NG0203`~~ | ✅ Resolvido em 06/08 ao migrar `materia` — `id` agora gerado com `crypto.randomUUID()` direto, sem `inject()` |
 | 15 | `historico.service.ts` e `historico-validator.service.ts` foram adicionados inteiramente comentados, com referências a tipos/serviços que não existem no domínio de histórico (código copiado de `questoes` sem adaptar) — se descomentados como estão, não compilam | `pages/historico/core/services/historico.service.ts`, `historico-validator.service.ts` |
+| ~~16~~ | ~~`BaseRepository.findAll/findById/findByPredicate/...` retornavam os registros crus do Dexie (structured clone), sem a prototype chain da entidade — qualquer chamada a um método de instância (ex.: `entidade.touch()`) lançava `TypeError: entidade.touch is not a function`. Afetava **todo** `atualizar()` de todo módulo migrado (`materia`, `assunto`, `banca`, `questao`) — só não havia sido percebido porque o fluxo de edição não tinha sido testado ponta a ponta após a migração de `materia`~~ | ✅ Resolvido em 06/08 ao migrar `questao` — `BaseRepository` reanexa o prototype (`Object.setPrototypeOf`) em toda leitura, sem reexecutar o construtor |
 
 ### 🟡 Moderados
 
@@ -208,7 +210,7 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 
 [x] 12. Migrar assunto.service.ts → AssuntoRepository                (concluído 06/08 — cascata async)
 
-[ ] 13. Migrar questao-repository.ts (legado) → QuestaoRepository
+[x] 13. Migrar questao-repository.ts (legado) → QuestaoRepository        (concluído 06/08 — cascata async)
 
 [ ] 14. Migrar historico-repository.ts (legado) → HistoricoRepository
 
@@ -217,7 +219,7 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
           e com referências a tipos que não existem no domínio de histórico
           (código copiado de questoes sem adaptar)
 
-[ ] 15. Migrar questao-validator.service.ts → queries Dexie
+[x] 15. Migrar questao-validator.service.ts → queries Dexie              (concluído 06/08)
 
 [ ] 16. Migrar historico-validator.service.ts → queries Dexie
 
@@ -226,7 +228,7 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 
 [ ] 18. Migrar backup-restauracao.ts para o novo backup.service
 
-[ ] 19. Migrar integrity.service.ts → queries Dexie
+[~] 19. Migrar integrity.service.ts → queries Dexie                      (parcial 06/08 — matéria/assunto/banca/questão migrados; históricos seguem em StorageService até `historico` migrar)
 
 [ ] 20. Remover StorageService, StorageCollection e legado
 
@@ -239,7 +241,7 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 [ ] 23. Revisar updateAll para usar transação Dexie (db.transaction())
 ```
 
-**Próximo passo recomendado:** item 13 (`questao-repository.ts` legado → `QuestaoRepository`), seguindo o mesmo padrão estabelecido em `materia.service.ts`/`assunto.service.ts` (100% assíncrono + `LoadingOverlayService`).
+**Próximo passo recomendado:** item 14 (`historico-repository.ts` legado → `HistoricoRepository`), junto com o item 14b (o rascunho atual de `historico.service.ts`/`historico-validator.service.ts` precisa ser descartado e reescrito do zero — está inteiramente comentado e referencia tipos que não existem no domínio de histórico). É o último módulo de página pendente; depois dele restam apenas os itens transversais (backup, limpeza do legado, itens 🟢 menores).
 
 > Existe agora uma skill reutilizável para conduzir essas migrações módulo a módulo:
 > `.claude/skills/migrate-module-to-dexie/SKILL.md`. Invocar como "analise/migre o módulo de assunto" (ou questao/historico/banca).

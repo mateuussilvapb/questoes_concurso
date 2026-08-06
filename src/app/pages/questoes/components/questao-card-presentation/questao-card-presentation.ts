@@ -71,9 +71,9 @@ export class QuestaoCardPresentation extends ListBase {
     });
   }
 
-  excluir() {
+  async excluir() {
     try {
-      this.questaoService.remover(this.questao().id);
+      await this.questaoService.remover(this.questao().id);
       this.messageService.showSuccess('Questão excluída com sucesso!');
       this.exclusaoConcluida.emit(true);
     } catch (e: any) {
@@ -106,10 +106,10 @@ export class QuestaoCardPresentation extends ListBase {
   //Botão Revisão
   isQuestaoMarcadaParaRevisao = computed<boolean>(() => this.questao().status.marcadaParaRevisao);
 
-  onToggleRevisao() {
+  async onToggleRevisao() {
     try {
-      this.questaoService.toggleMarcadaParaRevisao(this.questao().id);
       const statusMarcadaParaRevisaoAtual = this.questao().status.marcadaParaRevisao;
+      await this.questaoService.toggleMarcadaParaRevisao(this.questao().id);
       this.toogleStatus.emit(this.questao().id);
       const message = statusMarcadaParaRevisaoAtual
         ? 'Questão desmarcada para revisão!'
@@ -140,10 +140,10 @@ export class QuestaoCardPresentation extends ListBase {
   //Botão Favoritar
   isQuestaoMarcadaComoFavorita = computed<boolean>(() => this.questao().status.favorita);
 
-  onToggleFavoritar() {
+  async onToggleFavoritar() {
     try {
-      this.questaoService.toggleFavorita(this.questao().id);
       const statusFavoritaAtual = this.questao().status.favorita;
+      await this.questaoService.toggleFavorita(this.questao().id);
       this.toogleStatus.emit(this.questao().id);
       const message = statusFavoritaAtual ? 'Questão desfavoritada!' : 'Questão favoritada!';
       this.messageService.showSuccess(message, 'Sucesso!');

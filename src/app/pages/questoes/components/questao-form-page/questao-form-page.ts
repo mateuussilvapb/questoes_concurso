@@ -278,7 +278,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
   }
 
   async getQuestaoAndHandle(): Promise<void> {
-    this.questao.set(this.questaoService.buscarPorId(this.pageId()));
+    this.questao.set(await this.questaoService.buscarPorId(this.pageId()));
     await this.patchValueOnForm();
   }
 

@@ -1,6 +1,6 @@
 //Angular
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 
 //Aplicação
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
@@ -61,6 +61,24 @@ export class QuestaoListPage extends ListBase implements OnInit {
     this.formValue = toSignal(this.form.valueChanges, {
       initialValue: this.form.getRawValue(),
     });
+
+    effect(() => {
+      const value = this.formValue();
+
+      const filtro: QuestaoFilter = {
+        ...value,
+        tipo: value.tipo?.value,
+        favorita: value.favorita?.value,
+        revisada: value.revisada?.value,
+        nivelDificuldade: value.nivelDificuldade?.value,
+        marcadaParaRevisao: value.marcadaParaRevisao?.value,
+        idMateria: value.idMateria?.id,
+        idsAssuntos: value.idsAssuntos?.map((a: Assunto) => a.id),
+        idBanca: value.idBanca?.id,
+      };
+
+      this.questaoService.pesquisar(filtro).then((questoes) => this.questoes.set(questoes));
+    });
   }
 
   async ngOnInit(): Promise<void> {
@@ -73,23 +91,7 @@ export class QuestaoListPage extends ListBase implements OnInit {
     initialValue: this.form.getRawValue(),
   });
 
-  protected questoes = computed(() => {
-    const value = this.formValue();
-
-    const filtro: QuestaoFilter = {
-      ...value,
-      tipo: value.tipo?.value,
-      favorita: value.favorita?.value,
-      revisada: value.revisada?.value,
-      nivelDificuldade: value.nivelDificuldade?.value,
-      marcadaParaRevisao: value.marcadaParaRevisao?.value,
-      idMateria: value.idMateria?.id,
-      idsAssuntos: value.idsAssuntos?.map((a: Assunto) => a.id),
-      idBanca: value.idBanca?.id,
-    };
-
-    return this.questaoService.pesquisar(filtro);
-  });
+  protected questoes = signal<Questao[]>([]);
 
   createForm() {
     this.form = this.fb.group({

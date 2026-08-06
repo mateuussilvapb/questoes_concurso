@@ -85,7 +85,7 @@ export class AssuntoService {
     return this.loadingOverlay.wrap(async () => {
       await this.buscarEntidadePorId(id);
 
-      const validation = this.integrityService.validarExclusaoAssunto(id);
+      const validation = await this.integrityService.validarExclusaoAssunto(id);
 
       if (!validation.canDelete) {
         throw new Error(validation.message);

@@ -45,6 +45,19 @@ export class BancasListPage extends ListBase implements OnInit {
 
   protected searchTerm = signal<string>('');
   protected bancas = signal<Banca[]>([]);
+  protected questoes = signal<Questao[]>([]);
+  protected questoesPorBanca = computed(() => {
+    const mapa = new Map<string, Questao[]>();
+    for (const questao of this.questoes()) {
+      if (!questao.idBanca) {
+        continue;
+      }
+      const lista = mapa.get(questao.idBanca) ?? [];
+      lista.push(questao);
+      mapa.set(questao.idBanca, lista);
+    }
+    return mapa;
+  });
 
   protected bancasFiltradas = computed(() => {
     const busca = this.searchTerm().toLowerCase().trim();
@@ -59,6 +72,7 @@ export class BancasListPage extends ListBase implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.bancas.set(await this.bancaService.listar());
+    this.questoes.set(await this.questaoService.listar());
   }
 
   onAddBanca() {
@@ -66,6 +80,6 @@ export class BancasListPage extends ListBase implements OnInit {
   }
 
   getQuestoesRelacionadas(banca: Banca): Questao[] {
-    return this.questaoService.listarPorBanca(banca.id);
+    return this.questoesPorBanca().get(banca.id) ?? [];
   }
 }

@@ -1,10 +1,11 @@
 //Angular
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 
 //Aplicação
 import { Util } from '../../../../shared/util/util';
 import { Assunto } from '../../../assuntos/core/models/assunto.model';
+import { Questao } from '../../../questoes/core/models/questao.model';
 import { ResolverQuestoes } from '../../core/models/resolver-questoes.model';
 import { ListBase } from '../../../../shared/components/list-base/list-base';
 import { QuestaoFilter } from '../../../questoes/core/dtos/filter-questao.dto';
@@ -56,28 +57,30 @@ export class ResolverQuestoesPage extends ListBase {
     this.formValue = toSignal(this.form.valueChanges, {
       initialValue: this.form.getRawValue(),
     });
+
+    effect(() => {
+      const value = this.formValue();
+
+      const filtro: QuestaoFilter = {
+        ...value,
+        tipo: value.tipo?.value,
+        favorita: value.favorita?.value,
+        revisada: value.revisada?.value,
+        nivelDificuldade: value.nivelDificuldade?.value,
+        marcadaParaRevisao: value.marcadaParaRevisao?.value,
+        idMateria: value.idMateria?.id,
+        idsAssuntos: value.idsAssuntos?.map((a: Assunto) => a.id),
+      };
+
+      this.questaoService.pesquisar(filtro).then((questoes) => this.questoes.set(questoes));
+    });
   }
 
   protected formValue = toSignal(this.form.valueChanges, {
     initialValue: this.form.getRawValue(),
   });
 
-  protected questoes = computed(() => {
-    const value = this.formValue();
-
-    const filtro: QuestaoFilter = {
-      ...value,
-      tipo: value.tipo?.value,
-      favorita: value.favorita?.value,
-      revisada: value.revisada?.value,
-      nivelDificuldade: value.nivelDificuldade?.value,
-      marcadaParaRevisao: value.marcadaParaRevisao?.value,
-      idMateria: value.idMateria?.id,
-      idsAssuntos: value.idsAssuntos?.map((a: Assunto) => a.id),
-    };
-
-    return this.questaoService.pesquisar(filtro);
-  });
+  protected questoes = signal<Questao[]>([]);
 
   createForm() {
     this.form = this.fb.group({

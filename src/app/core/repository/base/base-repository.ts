@@ -18,21 +18,21 @@ export abstract class BaseRepository<T extends object> implements EntityReposito
   }
 
   async findAll(): Promise<T[]> {
-    return this.table.toArray();
+    return this.hydrateAll(await this.table.toArray());
   }
 
   async findById(id: string): Promise<T | undefined> {
-    return this.table.get(id);
+    return this.hydrate(await this.table.get(id));
   }
 
   async findByIds(ids: string[]): Promise<T[]> {
     const result = await this.table.bulkGet(ids);
 
-    return result.filter((item): item is T => item !== undefined);
+    return this.hydrateAll(result.filter((item): item is T => item !== undefined));
   }
 
   async findByPredicate(predicate: RepositoryPredicate<T>): Promise<T[]> {
-    return this.table.filter(predicate).toArray();
+    return this.hydrateAll(await this.table.filter(predicate).toArray());
   }
 
   async findPaginated(
@@ -46,30 +46,50 @@ export abstract class BaseRepository<T extends object> implements EntityReposito
       collection = collection.filter(predicate);
     }
 
-    return collection
-      .offset(page * size)
-      .limit(size)
-      .toArray();
+    return this.hydrateAll(
+      await collection
+        .offset(page * size)
+        .limit(size)
+        .toArray(),
+    );
   }
 
   async findOne(predicate: RepositoryPredicate<T>): Promise<T | undefined> {
-    return this.table.filter(predicate).first();
+    return this.hydrate(await this.table.filter(predicate).first());
   }
 
   async first(predicate?: RepositoryPredicate<T>): Promise<T | undefined> {
     if (!predicate) {
-      return this.table.toCollection().first();
+      return this.hydrate(await this.table.toCollection().first());
     }
 
-    return this.table.filter(predicate).first();
+    return this.hydrate(await this.table.filter(predicate).first());
   }
 
   async last(predicate?: RepositoryPredicate<T>): Promise<T | undefined> {
     if (!predicate) {
-      return this.table.toCollection().last();
+      return this.hydrate(await this.table.toCollection().last());
     }
 
-    return this.table.filter(predicate).last();
+    return this.hydrate(await this.table.filter(predicate).last());
+  }
+
+  /**
+   * O IndexedDB (via Dexie) desserializa registros como objetos planos,
+   * sem a prototype chain da entidade — métodos como `touch()` não existem
+   * no objeto retornado. Reanexamos o prototype da classe original sem
+   * reexecutar o construtor (evita regerar `id`/`dataCriacao`).
+   */
+  private hydrate(raw: T | undefined): T | undefined {
+    if (!raw) {
+      return raw;
+    }
+
+    return Object.setPrototypeOf(raw, this.entityType.prototype);
+  }
+
+  private hydrateAll(raw: T[]): T[] {
+    return raw.map((item) => this.hydrate(item)!);
   }
 
   async exists(value: string | RepositoryPredicate<T>): Promise<boolean> {
