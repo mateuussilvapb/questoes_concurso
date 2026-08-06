@@ -2,22 +2,21 @@
 import { Injectable, inject } from '@angular/core';
 
 //Aplicação
-import { StorageService } from '../storage.service';
-import { StorageCollection } from '../storage.constants';
 import { DeleteValidationResult } from './integrity.models';
-import { HistoricoQuestao } from '../../../pages/historico/core/models/historico-questao.model';
 import { AssuntoRepository } from '../../repository/repositories/assunto-repository/assunto.repository';
 import { AssuntoEntity } from '../../database/entities/assunto-entity';
 import { QuestaoRepository } from '../../repository/repositories/questao-repository/questao.repository';
 import { QuestaoEntity } from '../../database/entities/questao-entity';
+import { HistoricoRepository } from '../../repository/repositories/historico-repository/historico.repository';
+import { HistoricoEntity } from '../../database/entities/historico-entity';
 
 @Injectable({
   providedIn: 'root',
 })
 export class IntegrityService {
-  private readonly storage = inject(StorageService);
   private readonly assuntoRepository = inject(AssuntoRepository);
   private readonly questaoRepository = inject(QuestaoRepository);
+  private readonly historicoRepository = inject(HistoricoRepository);
 
   // ==========================================================
   // MATÉRIA
@@ -89,8 +88,8 @@ export class IntegrityService {
   // QUESTÃO
   // ==========================================================
 
-  validarExclusaoQuestao(idQuestao: string): DeleteValidationResult {
-    const historicos = this.obterHistoricosDaQuestao(idQuestao);
+  async validarExclusaoQuestao(idQuestao: string): Promise<DeleteValidationResult> {
+    const historicos = await this.obterHistoricosDaQuestao(idQuestao);
 
     return {
       canDelete: true,
@@ -104,16 +103,12 @@ export class IntegrityService {
    * Remove todos os históricos
    * pertencentes à questão.
    */
-  removerHistoricosDaQuestao(idQuestao: string): number {
-    const historicos = this.storage.getAll<HistoricoQuestao>(StorageCollection.HISTORICOS);
+  async removerHistoricosDaQuestao(idQuestao: string): Promise<number> {
+    const historicos = await this.obterHistoricosDaQuestao(idQuestao);
 
-    const restantes = historicos.filter((h) => h.idQuestao !== idQuestao);
+    await this.historicoRepository.deleteAll(historicos.map((h) => h.id));
 
-    const removidos = historicos.length - restantes.length;
-
-    this.storage.replaceCollection(StorageCollection.HISTORICOS, restantes);
-
-    return removidos;
+    return historicos.length;
   }
 
   // ==========================================================
@@ -136,10 +131,8 @@ export class IntegrityService {
     return this.questaoRepository.findByPredicate((q) => q.idBanca === idBanca);
   }
 
-  obterHistoricosDaQuestao(idQuestao: string): HistoricoQuestao[] {
-    return this.storage
-      .getAll<HistoricoQuestao>(StorageCollection.HISTORICOS)
-      .filter((h) => h.idQuestao === idQuestao);
+  async obterHistoricosDaQuestao(idQuestao: string): Promise<HistoricoEntity[]> {
+    return this.historicoRepository.findByPredicate((h) => h.idQuestao === idQuestao);
   }
 
   // ==========================================================
@@ -158,7 +151,7 @@ export class IntegrityService {
     return (await this.obterQuestoesDaBanca(idBanca)).length > 0;
   }
 
-  possuiHistoricos(idQuestao: string): boolean {
-    return this.obterHistoricosDaQuestao(idQuestao).length > 0;
+  async possuiHistoricos(idQuestao: string): Promise<boolean> {
+    return (await this.obterHistoricosDaQuestao(idQuestao)).length > 0;
   }
 }

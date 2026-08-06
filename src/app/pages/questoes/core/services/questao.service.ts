@@ -71,13 +71,13 @@ export class QuestaoService {
     return this.loadingOverlay.wrap(async () => {
       await this.buscarEntidadePorId(id);
 
-      const validation = this.integrity.validarExclusaoQuestao(id);
+      const validation = await this.integrity.validarExclusaoQuestao(id);
 
       if (!validation.canDelete) {
         throw new Error(validation.message);
       }
 
-      this.integrity.removerHistoricosDaQuestao(id);
+      await this.integrity.removerHistoricosDaQuestao(id);
 
       await this.repository.delete(id);
     });
