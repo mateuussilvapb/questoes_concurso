@@ -6,4 +6,12 @@ import { PersistentEntity } from './persistent-entity';
 export class AlternativaEntity extends PersistentEntity {
   @Index()
   texto!: string;
+
+  @Index()
+  idQuestao!: string;
+
+  @Index()
+  correta!: boolean;
+
+  ordem!: number;
 }

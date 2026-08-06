@@ -6,4 +6,10 @@ import { PersistentEntity } from './persistent-entity';
 export class QuestaoEntity extends PersistentEntity {
   @Index()
   enunciado!: string;
+
+  @Index()
+  idAssunto!: string;
+
+  @Index()
+  idBanca!: string;
 }

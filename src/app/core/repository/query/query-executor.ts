@@ -143,16 +143,20 @@ export class QueryExecutor<T extends object> {
         return value !== condition.value;
 
       case QueryOperator.GREATER_THAN:
-        return value !== undefined && value !== null && value > condition.value;
+        return value !== undefined && value !== null && (value as any) > (condition.value as any);
 
       case QueryOperator.GREATER_THAN_OR_EQUAL:
-        return value !== undefined && value !== null && value >= condition.value;
+        return (
+          value !== undefined && value !== null && (value as any) >= (condition.value as any)
+        );
 
       case QueryOperator.LESS_THAN:
-        return value !== undefined && value !== null && value < condition.value;
+        return value !== undefined && value !== null && (value as any) < (condition.value as any);
 
       case QueryOperator.LESS_THAN_OR_EQUAL:
-        return value !== undefined && value !== null && value <= condition.value;
+        return (
+          value !== undefined && value !== null && (value as any) <= (condition.value as any)
+        );
 
       case QueryOperator.BETWEEN:
         return this.isBetween(value, condition.value, condition.secondValue);
@@ -176,7 +180,7 @@ export class QueryExecutor<T extends object> {
       return false;
     }
 
-    return value >= start && value <= end;
+    return (value as any) >= (start as any) && (value as any) <= (end as any);
   }
 
   private isContains(value: unknown, search: unknown): boolean {
