@@ -6,6 +6,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 //Aplicação
 import { Util } from '../../../../shared/util/util';
+import { Materia } from '../../../materias/core/models/materia.model';
 import { MateriaService } from '../../../materias/core/services/materia.service';
 import { Alternativa } from '../../../questoes/alternativas/core/models/alternativa.model';
 import {
@@ -74,7 +75,7 @@ export class ResolverQuestaoCard {
   isDarkMode = computed(() => this.themeService.isDarkMode());
   dificuldadeQuestao = computed(() => this.questao().questao.nivelDificuldade);
   labelDificuldade = computed(() => NIVEL_DIFICULDADE_LABEL[this.dificuldadeQuestao()]);
-  materia = computed(() => this.materiaService.buscarPorId(this.questao().questao.idMateria));
+  materia = signal<Materia | null>(null);
 
   feedback = computed(() => {
     if (!this.questao().resolvida) return null;
@@ -110,6 +111,7 @@ export class ResolverQuestaoCard {
 
   constructor() {
     this.configureAlternativas();
+    this.configureMateria();
   }
 
   configureAlternativas() {
@@ -121,6 +123,14 @@ export class ResolverQuestaoCard {
           selecionada: false,
         })),
       );
+    });
+  }
+
+  configureMateria() {
+    effect(() => {
+      const idMateria = this.questao().questao.idMateria;
+
+      this.materiaService.buscarPorId(idMateria).then((materia) => this.materia.set(materia));
     });
   }
 

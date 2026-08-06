@@ -5,26 +5,100 @@ import { Injectable, inject } from '@angular/core';
 import { Materia } from '../models/materia.model';
 import { CreateMateriaDto } from '../dtos/create-materia.dto';
 import { UpdateMateriaDto } from '../dtos/update-materia.dto';
-import { StorageService } from '../../../../core/storage/storage.service';
-import { StorageCollection } from '../../../../core/storage/storage.constants';
-import { IntegrityService } from './../../../../core/storage/integrity/integrity.service';
-
+import { MateriaEntity } from '../../../../core/database/entities/materia-entity';
+import { MateriaRepository } from '../../../../core/repository/repositories/materia-repository/materia.repository';
+import { IntegrityService } from '../../../../core/storage/integrity/integrity.service';
+import { LoadingOverlayService } from '../../../../shared/services/loading-overlay.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MateriaService {
-  private readonly storage = inject(StorageService);
+  private readonly repository = inject(MateriaRepository);
   private readonly integrityService = inject(IntegrityService);
+  private readonly loadingOverlay = inject(LoadingOverlayService);
 
-  listar(): Materia[] {
-    return this.storage
-      .getAll<Materia>(StorageCollection.MATERIAS)
-      .sort((a, b) => a.nome.localeCompare(b.nome));
+  async listar(): Promise<Materia[]> {
+    return this.loadingOverlay.wrap(async () => {
+      const materias = await this.repository.findAll();
+
+      return materias.map((m) => this.mapToModel(m)).sort((a, b) => a.nome.localeCompare(b.nome));
+    });
   }
 
-  buscarPorId(id: string): Materia {
-    const materia = this.storage.getById<Materia>(StorageCollection.MATERIAS, id);
+  async buscarPorId(id: string): Promise<Materia> {
+    return this.loadingOverlay.wrap(async () => {
+      const materia = await this.buscarEntidadePorId(id);
+
+      return this.mapToModel(materia);
+    });
+  }
+
+  async pesquisar(texto: string): Promise<Materia[]> {
+    const filtro = texto.trim().toLowerCase();
+    const materias = await this.listar();
+
+    return materias.filter((m) => m.nome.toLowerCase().includes(filtro));
+  }
+
+  async criar(dto: CreateMateriaDto): Promise<Materia> {
+    return this.loadingOverlay.wrap(async () => {
+      this.validarNome(dto.nome);
+      await this.validarDuplicidade(dto.nome);
+
+      const entidade = new MateriaEntity();
+      entidade.nome = dto.nome.trim();
+      entidade.descricao = dto.descricao.trim();
+
+      const salva = await this.repository.save(entidade);
+
+      return this.mapToModel(salva);
+    });
+  }
+
+  async atualizar(dto: UpdateMateriaDto): Promise<Materia> {
+    return this.loadingOverlay.wrap(async () => {
+      const entidade = await this.buscarEntidadePorId(dto.id);
+
+      this.validarNome(dto.nome);
+      await this.validarDuplicidade(dto.nome, dto.id);
+
+      entidade.nome = dto.nome.trim();
+      entidade.descricao = dto.descricao.trim();
+      entidade.touch();
+
+      const salva = await this.repository.save(entidade);
+
+      return this.mapToModel(salva);
+    });
+  }
+
+  async remover(id: string): Promise<void> {
+    return this.loadingOverlay.wrap(async () => {
+      await this.buscarEntidadePorId(id);
+
+      const validation = this.integrityService.validarExclusaoMateria(id);
+
+      if (!validation.canDelete) {
+        throw new Error(validation.message);
+      }
+
+      await this.repository.delete(id);
+    });
+  }
+
+  async existe(id: string): Promise<boolean> {
+    return this.repository.exists(id);
+  }
+
+  async quantidade(): Promise<number> {
+    return this.repository.count();
+  }
+
+  // ======================================================
+
+  private async buscarEntidadePorId(id: string): Promise<MateriaEntity> {
+    const materia = await this.repository.findById(id);
 
     if (!materia) {
       throw new Error('Matéria não encontrada.');
@@ -33,74 +107,32 @@ export class MateriaService {
     return materia;
   }
 
-  pesquisar(texto: string): Materia[] {
-    const filtro = texto.trim().toLowerCase();
-
-    return this.listar().filter((m) => m.nome.toLowerCase().includes(filtro));
-  }
-
-  criar(dto: CreateMateriaDto): Materia {
-    this.validarNome(dto.nome);
-
-    this.validarDuplicidade(dto.nome);
-
-    return this.storage.insert<Materia>(StorageCollection.MATERIAS, {
-      nome: dto.nome.trim(),
-      descricao: dto.descricao.trim(),
-    });
-  }
-
-  atualizar(dto: UpdateMateriaDto): Materia {
-    const materia = this.buscarPorId(dto.id);
-
-    this.validarNome(dto.nome);
-
-    this.validarDuplicidade(dto.nome, dto.id);
-
-    return this.storage.update<Materia>(StorageCollection.MATERIAS, {
-      ...materia,
-      nome: dto.nome.trim(),
-      descricao: dto.descricao.trim(),
-    });
-  }
-
-  remover(id: string): void {
-    this.buscarPorId(id);
-
-    const validation = this.integrityService.validarExclusaoMateria(id);
-
-    if (!validation.canDelete) {
-      throw new Error(validation.message);
-    }
-
-    this.storage.delete(StorageCollection.MATERIAS, id);
-  }
-
-  existe(id: string): boolean {
-    return this.storage.exists(StorageCollection.MATERIAS, id);
-  }
-
-  quantidade(): number {
-    return this.listar().length;
-  }
-
-  // ======================================================
-
   private validarNome(nome: string): void {
     if (!nome?.trim()) {
       throw new Error('Informe o nome da matéria.');
     }
   }
 
-  private validarDuplicidade(nome: string, idIgnorado?: string): void {
+  private async validarDuplicidade(nome: string, idIgnorado?: string): Promise<void> {
     const nomeNormalizado = nome.trim().toLowerCase();
+    const materias = await this.repository.findAll();
 
-    const existe = this.listar().some(
+    const existe = materias.some(
       (m) => m.id !== idIgnorado && m.nome.trim().toLowerCase() === nomeNormalizado,
     );
 
     if (existe) {
       throw new Error('Já existe uma matéria com esse nome.');
     }
+  }
+
+  private mapToModel(entity: MateriaEntity): Materia {
+    return {
+      id: entity.id,
+      nome: entity.nome,
+      descricao: entity.descricao,
+      dataCriacao: entity.dataCriacao.toISOString(),
+      dataAtualizacao: entity.dataAtualizacao?.toISOString(),
+    };
   }
 }

@@ -56,9 +56,9 @@ export class MateriaCardPresentation extends ListBase {
     });
   }
 
-  excluir() {
+  async excluir(): Promise<void> {
     try {
-      this.materiaService.remover(this.materia().id);
+      await this.materiaService.remover(this.materia().id);
       this.messageService.showSuccess('Matéria excluída com sucesso!');
       this.exclusaoConcluida.emit(true);
     } catch (e: any) {

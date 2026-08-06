@@ -87,10 +87,10 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     required: 'A matéria é obrigatória',
   };
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.createForm();
     if (!this.isCreateMode()) {
-      this.getAssuntoAndHandle();
+      await this.getAssuntoAndHandle();
     }
   }
 
@@ -120,13 +120,13 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     });
   }
 
-  getAssuntoAndHandle() {
+  async getAssuntoAndHandle(): Promise<void> {
     this.assunto.set(this.assuntoService.buscarPorId(this.pageId()));
-    this.patchValueOnForm();
+    await this.patchValueOnForm();
   }
 
-  patchValueOnForm() {
-    const materia = this.materiaService.buscarPorId(this.assunto()?.idMateria ?? '');
+  async patchValueOnForm(): Promise<void> {
+    const materia = await this.materiaService.buscarPorId(this.assunto()?.idMateria ?? '');
     this.form.patchValue({
       nome: this.assunto()?.nome,
       descricao: this.assunto()?.descricao,

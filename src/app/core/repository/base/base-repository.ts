@@ -1,7 +1,9 @@
 import { Table } from 'dexie';
 
 import { AppDatabase } from '../../database/app.database';
+import { MetadataResolver } from '../../database/resolver/metadata-resolver';
 import { RepositoryPredicate } from '../interfaces/repository-predicate';
+import { QueryBuilder } from '../query/query-builder';
 import { EntityRepository } from './entity-repository';
 
 export abstract class BaseRepository<T extends object> implements EntityRepository<T> {
@@ -9,7 +11,8 @@ export abstract class BaseRepository<T extends object> implements EntityReposito
 
   constructor(
     protected readonly database: AppDatabase,
-    tableName: string,
+    protected readonly tableName: string,
+    protected readonly entityType: Function,
   ) {
     this.table = database.table(tableName) as Table<T, string>;
   }
@@ -113,5 +116,9 @@ export abstract class BaseRepository<T extends object> implements EntityReposito
     }
 
     return this.table.filter(predicate).count();
+  }
+
+  query(): QueryBuilder<T> {
+    return new QueryBuilder(this.table, MetadataResolver.resolve(this.entityType));
   }
 }

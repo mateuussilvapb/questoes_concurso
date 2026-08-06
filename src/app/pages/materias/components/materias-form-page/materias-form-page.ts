@@ -76,10 +76,10 @@ export class MateriasFormPage extends FormBase implements OnInit {
     maxlength: 'A descrição deve ter, no máximo, 500 caracteres',
   };
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.createForm();
     if (!this.isCreateMode()) {
-      this.getMateriaAndHandle();
+      await this.getMateriaAndHandle();
     }
   }
 
@@ -103,8 +103,8 @@ export class MateriasFormPage extends FormBase implements OnInit {
     });
   }
 
-  getMateriaAndHandle() {
-    this.materia.set(this.materiaService.buscarPorId(this.pageId()));
+  async getMateriaAndHandle(): Promise<void> {
+    this.materia.set(await this.materiaService.buscarPorId(this.pageId()));
     this.patchValueOnForm();
   }
 
@@ -130,7 +130,7 @@ export class MateriasFormPage extends FormBase implements OnInit {
     this.messageService.showInfo('Formulário inválido. Preencha o formulário corretamente.');
   }
 
-  onCreate() {
+  async onCreate(): Promise<void> {
     const rawValue = this.form.getRawValue();
     const dto: CreateMateriaDto = {
       nome: rawValue.nome,
@@ -138,7 +138,7 @@ export class MateriasFormPage extends FormBase implements OnInit {
     };
 
     try {
-      this.materiaService.criar(dto);
+      await this.materiaService.criar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
         'Matéria criada com sucesso. Você será redirecionado para listagem.',
@@ -154,7 +154,7 @@ export class MateriasFormPage extends FormBase implements OnInit {
     }
   }
 
-  onUpdate() {
+  async onUpdate(): Promise<void> {
     const rawValue = this.form.getRawValue();
     const dto: UpdateMateriaDto = {
       id: this.materia()?.id ?? '',
@@ -163,7 +163,7 @@ export class MateriasFormPage extends FormBase implements OnInit {
     };
 
     try {
-      this.materiaService.atualizar(dto);
+      await this.materiaService.atualizar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
         'Matéria atualizada com sucesso. Você será redirecionado para listagem.',

@@ -65,8 +65,8 @@ export class AutocompleteMateria implements OnInit {
     );
   }
 
-  consultarMaterias() {
-    this.materias.set(this.materiaService.listar());
+  async consultarMaterias(): Promise<void> {
+    this.materias.set(await this.materiaService.listar());
   }
 
   searchMateria(event: any) {

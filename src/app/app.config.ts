@@ -11,6 +11,7 @@ import { registerLocaleData } from '@angular/common';
 // Aplicação
 import { routes } from './app.routes';
 import { PRIMENG_PROVIDER } from './core/config/providers/primeng.provider';
+import { AppDatabase } from './core/database/app.database';
 
 // Externos
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -24,8 +25,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     PRIMENG_PROVIDER,
     { provide: LOCALE_ID, useValue: 'pt-BR' }, // define o locale global
+    { provide: AppDatabase, useClass: AppDatabase },
     DialogService,
     ConfirmationService,
     MessageService,
   ],
 };
+

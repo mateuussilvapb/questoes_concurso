@@ -1,6 +1,6 @@
 //Angular
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 
 //Aplicação
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
@@ -35,7 +35,7 @@ import { DividerModule } from 'primeng/divider';
   ],
   templateUrl: './questao-list-page.html',
 })
-export class QuestaoListPage extends ListBase {
+export class QuestaoListPage extends ListBase implements OnInit {
   private readonly questaoService = inject(QuestaoService);
   private readonly materiaService = inject(MateriaService);
   private readonly assuntoService = inject(AssuntoService);
@@ -43,6 +43,8 @@ export class QuestaoListPage extends ListBase {
   protected searchTerm = signal<string>('');
   protected searchMateriaId = signal<Materia | null>(null);
   protected searchAssuntosIds = signal<Assunto[] | null>(null);
+  protected materias = signal<Materia[]>([]);
+  protected materiasPorId = computed(() => new Map(this.materias().map((m) => [m.id, m])));
 
   constructor() {
     super();
@@ -52,6 +54,10 @@ export class QuestaoListPage extends ListBase {
     this.formValue = toSignal(this.form.valueChanges, {
       initialValue: this.form.getRawValue(),
     });
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.materias.set(await this.materiaService.listar());
   }
 
   protected formValue = toSignal(this.form.valueChanges, {
@@ -90,7 +96,7 @@ export class QuestaoListPage extends ListBase {
   }
 
   getMateriaPorQuestao(questao: Questao): Materia {
-    return this.materiaService.buscarPorId(questao.idMateria);
+    return this.materiasPorId().get(questao.idMateria)!;
   }
 
   onLimpar() {

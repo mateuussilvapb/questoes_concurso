@@ -63,8 +63,8 @@ export class MateriasListPage extends ListBase implements OnInit {
     return listaOriginal.filter((materia) => materia.nome.toLowerCase().includes(busca));
   });
 
-  ngOnInit(): void {
-    this.materias.set(this.materiaService.listar());
+  async ngOnInit(): Promise<void> {
+    this.materias.set(await this.materiaService.listar());
   }
 
   onAddMateria() {

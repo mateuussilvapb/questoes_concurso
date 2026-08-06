@@ -136,10 +136,10 @@ export class QuestaoFormPage extends FormBase implements OnInit {
   readonly dificuldades = OPCOES_NIVEL_DIFICULDADE;
   readonly tiposQuestao = OPCOES_TIPO_QUESTAO;
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.createForm();
     if (!this.isCreateMode()) {
-      this.getQuestaoAndHandle();
+      await this.getQuestaoAndHandle();
     }
     if (!this.isViewMode()) {
       this.disableDependentsFields();
@@ -272,13 +272,13 @@ export class QuestaoFormPage extends FormBase implements OnInit {
     return control as FormGroup;
   }
 
-  getQuestaoAndHandle() {
+  async getQuestaoAndHandle(): Promise<void> {
     this.questao.set(this.questaoService.buscarPorId(this.pageId()));
-    this.patchValueOnForm();
+    await this.patchValueOnForm();
   }
 
-  patchValueOnForm() {
-    const materia = this.materiaService.buscarPorId(this.questao()?.idMateria ?? '');
+  async patchValueOnForm(): Promise<void> {
+    const materia = await this.materiaService.buscarPorId(this.questao()?.idMateria ?? '');
     const assuntos = this.assuntoService
       .listar()
       .filter((x) => this.questao()?.idsAssuntos.includes(x.id));

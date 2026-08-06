@@ -1,6 +1,6 @@
 <p-card>
   <div class="flex flex-row justify-content-start gap-2 flex-wrap mb-2">
-    <p-tag severity="info" class="text-xs" [value]="materia().nome" /> |
+    <p-tag severity="info" class="text-xs" [value]="materia()?.nome ?? ''" /> |
     <p-tag [ngClass]="classByNivelDificuldade()" class="text-xs" [value]="labelDificuldade()" />
   </div>
   <div class="w-full">
