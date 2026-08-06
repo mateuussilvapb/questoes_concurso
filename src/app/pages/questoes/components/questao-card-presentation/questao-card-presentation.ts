@@ -13,6 +13,7 @@ import { Util } from '../../../../shared/util/util';
 import { Questao } from '../../core/models/questao.model';
 import { QuestaoService } from '../../core/services/questao.service';
 import { Assunto } from '../../../assuntos/core/models/assunto.model';
+import { Banca } from '../../../bancas/core/models/banca.model';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { ThemeService } from '../../../../core/services/theme.service';
 import { TIPO_QUESTAO_LABEL } from '../../core/enums/tipo-questao.enum';
@@ -49,6 +50,7 @@ export class QuestaoCardPresentation extends ListBase {
 
   questao = input.required<Questao>();
   materia = input.required<Materia>();
+  banca = input<Banca | undefined>(undefined);
   assuntosAssociados = input.required<Assunto[]>();
 
   exclusaoConcluida = output<boolean>();

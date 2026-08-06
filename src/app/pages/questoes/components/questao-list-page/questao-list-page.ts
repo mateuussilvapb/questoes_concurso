@@ -7,6 +7,8 @@ import { LayoutBasePages } from '../../../../shared/components/layout-base-pages
 import { ListBase } from '../../../../shared/components/list-base/list-base';
 import { Assunto } from '../../../assuntos/core/models/assunto.model';
 import { AssuntoService } from '../../../assuntos/core/services/assunto.service';
+import { Banca } from '../../../bancas/core/models/banca.model';
+import { BancaService } from '../../../bancas/core/services/banca.service';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { MateriaService } from '../../../materias/core/services/materia.service';
 import { Questao } from '../../core/models/questao.model';
@@ -39,6 +41,7 @@ export class QuestaoListPage extends ListBase implements OnInit {
   private readonly questaoService = inject(QuestaoService);
   private readonly materiaService = inject(MateriaService);
   private readonly assuntoService = inject(AssuntoService);
+  private readonly bancaService = inject(BancaService);
 
   protected searchTerm = signal<string>('');
   protected searchMateriaId = signal<Materia | null>(null);
@@ -47,6 +50,8 @@ export class QuestaoListPage extends ListBase implements OnInit {
   protected materiasPorId = computed(() => new Map(this.materias().map((m) => [m.id, m])));
   protected assuntos = signal<Assunto[]>([]);
   protected assuntosPorId = computed(() => new Map(this.assuntos().map((a) => [a.id, a])));
+  protected bancas = signal<Banca[]>([]);
+  protected bancasPorId = computed(() => new Map(this.bancas().map((b) => [b.id, b])));
 
   constructor() {
     super();
@@ -61,6 +66,7 @@ export class QuestaoListPage extends ListBase implements OnInit {
   async ngOnInit(): Promise<void> {
     this.materias.set(await this.materiaService.listar());
     this.assuntos.set(await this.assuntoService.listar());
+    this.bancas.set(await this.bancaService.listar());
   }
 
   protected formValue = toSignal(this.form.valueChanges, {
@@ -79,6 +85,7 @@ export class QuestaoListPage extends ListBase implements OnInit {
       marcadaParaRevisao: value.marcadaParaRevisao?.value,
       idMateria: value.idMateria?.id,
       idsAssuntos: value.idsAssuntos?.map((a: Assunto) => a.id),
+      idBanca: value.idBanca?.id,
     };
 
     return this.questaoService.pesquisar(filtro);
@@ -90,6 +97,7 @@ export class QuestaoListPage extends ListBase implements OnInit {
       observacao: [null],
       idMateria: [null],
       idsAssuntos: [[]],
+      idBanca: [null],
       tipo: [null],
       nivelDificuldade: [null],
       favorita: [null],
@@ -100,6 +108,10 @@ export class QuestaoListPage extends ListBase implements OnInit {
 
   getMateriaPorQuestao(questao: Questao): Materia {
     return this.materiasPorId().get(questao.idMateria)!;
+  }
+
+  getBancaPorQuestao(questao: Questao): Banca | undefined {
+    return questao.idBanca ? this.bancasPorId().get(questao.idBanca) : undefined;
   }
 
   onLimpar() {

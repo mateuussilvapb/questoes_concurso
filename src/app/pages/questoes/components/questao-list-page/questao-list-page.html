@@ -17,6 +17,7 @@
         <app-questao-card-presentation
           [questao]="questao"
           [materia]="getMateriaPorQuestao(questao)"
+          [banca]="getBancaPorQuestao(questao)"
           [assuntosAssociados]="getAssuntosAssociados(questao)"
           (toogleStatus)="form.updateValueAndValidity()"
           (exclusaoConcluida)="form.updateValueAndValidity()"

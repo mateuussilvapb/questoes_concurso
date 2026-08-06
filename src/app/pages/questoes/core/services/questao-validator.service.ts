@@ -9,6 +9,7 @@ import { UpdateQuestaoDto } from '../dtos/update-questao.dto';
 import { AlternativaDto } from '../../alternativas/core/dtos/alternativa.dto';
 import { MateriaRepository } from '../../../../core/repository/repositories/materia-repository/materia.repository';
 import { AssuntoRepository } from '../../../../core/repository/repositories/assunto-repository/assunto.repository';
+import { BancaRepository } from '../../../../core/repository/repositories/banca-repository/banca.repository';
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +17,7 @@ import { AssuntoRepository } from '../../../../core/repository/repositories/assu
 export class QuestaoValidatorService {
   private readonly materiaRepository = inject(MateriaRepository);
   private readonly assuntoRepository = inject(AssuntoRepository);
+  private readonly bancaRepository = inject(BancaRepository);
   private readonly questaoFactoryService = inject(AlternativasFactoryService);
 
   // =====================================================
@@ -28,6 +30,8 @@ export class QuestaoValidatorService {
     await this.validarMateria(dto.idMateria);
 
     await this.validarAssuntos(dto.idMateria, dto.idsAssuntos);
+
+    await this.validarBanca(dto.idBanca);
 
     this.validarTipo(dto.tipo);
 
@@ -106,6 +110,22 @@ export class QuestaoValidatorService {
         throw new Error('Todos os assuntos devem pertencer à matéria selecionada.');
       }
     });
+  }
+
+  // =====================================================
+  // BANCA
+  // =====================================================
+
+  private async validarBanca(idBanca?: string): Promise<void> {
+    if (!idBanca?.trim()) {
+      return;
+    }
+
+    const banca = await this.bancaRepository.findById(idBanca);
+
+    if (!banca) {
+      throw new Error('Banca inexistente.');
+    }
   }
 
   // =====================================================

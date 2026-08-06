@@ -52,6 +52,10 @@ export class QuestaoRepository {
       predicates.push((q) => filter.idsAssuntos!.some((id) => q.idsAssuntos.includes(id)));
     }
 
+    if (filter?.idBanca) {
+      predicates.push((q) => q.idBanca === filter.idBanca);
+    }
+
     if (filter?.nivelDificuldade) {
       predicates.push((q) => q.nivelDificuldade === filter.nivelDificuldade);
     }

@@ -1,0 +1,41 @@
+<app-layout-base-pages
+  [title]="'Bancas'"
+  (actionButtonClick)="onAddBanca()"
+  [subtitle]="'Gerencie suas bancas'"
+  [buttonActionLabel]="'Adicionar Banca'"
+>
+  <p-card header="Filtros">
+    <!-- Campo de busca -->
+    <p-iconfield>
+      <p-inputicon class="pi pi-search" />
+      <input
+        pInputText
+        type="text"
+        class="w-full"
+        id="nome-banca-list"
+        [(ngModel)]="searchTerm"
+        placeholder="Informe o nome da banca"
+      />
+    </p-iconfield>
+  </p-card>
+
+  <p-divider />
+
+  <p-card header="Listagem">
+    <!-- Listagem -->
+    @if (bancasFiltradas().length > 0) {
+      @for (banca of bancasFiltradas(); track $index; let isLast = $last) {
+        <app-banca-card-presentation
+          [banca]="banca"
+          [questoesRelacionadas]="getQuestoesRelacionadas(banca)"
+          (exclusaoConcluida)="ngOnInit()"
+        />
+        @if (!isLast) {
+          <p-divider />
+        }
+      }
+    } @else {
+      <p class="text-center mt-3 text-secondary" colspan="100%">Nenhum registro encontrado...</p>
+    }
+  </p-card>
+</app-layout-base-pages>

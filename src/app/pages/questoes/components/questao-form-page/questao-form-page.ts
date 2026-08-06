@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 
 //Aplicação
+import { AutocompleteBanca } from '../../../../shared/components/autocomplete-banca/autocomplete-banca';
 import { AutocompleteMateria } from '../../../../shared/components/autocomplete-materia/autocomplete-materia';
 import { FormBase } from '../../../../shared/components/form-base/form-base';
 import { FormLabel } from '../../../../shared/components/form-label/form-label';
@@ -19,6 +20,7 @@ import { Loading } from '../../../../shared/components/loading/loading';
 import { MultiselectAssunto } from '../../../../shared/components/multiselect-assunto/multiselect-assunto';
 import { SelectOption, Util } from '../../../../shared/util/util';
 import { AssuntoService } from '../../../assuntos/core/services/assunto.service';
+import { BancaService } from '../../../bancas/core/services/banca.service';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { MateriaService } from '../../../materias/core/services/materia.service';
 import { CreateQuestaoDto } from '../../core/dtos/create-questao.dto';
@@ -54,6 +56,7 @@ import { pairwise, startWith } from 'rxjs';
     FormLabel,
     Alternativa,
     LayoutBasePages,
+    AutocompleteBanca,
     MultiselectAssunto,
     AutocompleteMateria,
 
@@ -72,6 +75,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
   // Services
   private readonly materiaService = inject(MateriaService);
   private readonly assuntoService = inject(AssuntoService);
+  private readonly bancaService = inject(BancaService);
   private readonly questaoService = inject(QuestaoService);
 
   // Signals
@@ -215,6 +219,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
         [Validators.required, minLengthHtmlTextValidator(10)],
       ],
       materia: [{ value: null, disabled: this.isViewMode() }, [Validators.required]],
+      banca: [{ value: null, disabled: this.isViewMode() }],
       dificuldade: [{ value: null, disabled: this.isViewMode() }, [Validators.required]],
       assuntos: [{ value: null, disabled: this.isViewMode() }, [Validators.required]],
       tipoQuestao: [{ value: null, disabled: this.isViewMode() }, [Validators.required]],
@@ -281,6 +286,8 @@ export class QuestaoFormPage extends FormBase implements OnInit {
     const materia = await this.materiaService.buscarPorId(this.questao()?.idMateria ?? '');
     const todosAssuntos = await this.assuntoService.listar();
     const assuntos = todosAssuntos.filter((x) => this.questao()?.idsAssuntos.includes(x.id));
+    const idBanca = this.questao()?.idBanca;
+    const banca = idBanca ? await this.bancaService.buscarPorId(idBanca) : null;
     const nivelDificuldade = this.dificuldades.find(
       (x) => x.value == this.questao()?.nivelDificuldade,
     );
@@ -289,6 +296,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
     this.form.patchValue({
       enunciado: this.questao()?.enunciado,
       materia: materia,
+      banca: banca,
       dificuldade: nivelDificuldade,
       assuntos: assuntos,
       tipoQuestao: tipoQuestao,
@@ -338,6 +346,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
     const dto: CreateQuestaoDto = {
       enunciado: rawValue.enunciado,
       idMateria: rawValue.materia?.id ?? '',
+      idBanca: rawValue.banca?.id,
       observacao: this.checkAndGetObservacoes(rawValue),
       idsAssuntos: rawValue.assuntos?.map((a: any) => a.id) ?? [],
       nivelDificuldade: rawValue.dificuldade.value ?? null,
@@ -393,6 +402,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
       id: this.questao()?.id ?? '',
       enunciado: rawValue.enunciado,
       idMateria: rawValue.materia?.id ?? '',
+      idBanca: rawValue.banca?.id,
       observacao: this.checkAndGetObservacoes(rawValue),
       idsAssuntos: rawValue.assuntos?.map((a: any) => a.id) ?? [],
       nivelDificuldade: rawValue.dificuldade.value ?? null,

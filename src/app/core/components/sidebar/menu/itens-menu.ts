@@ -65,6 +65,18 @@ export const ItensMenu: ItemMenu[] = [
     ],
   },
   {
+    label: 'BANCAS',
+    separator: true,
+    children: [
+      {
+        label: 'Gerenciar Bancas',
+        separator: false,
+        icon: PrimeIcons.BUILDING,
+        route: '/banca',
+      },
+    ],
+  },
+  {
     label: 'ESTATÍSTICAS',
     separator: true,
     children: [

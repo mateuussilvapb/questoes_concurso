@@ -57,6 +57,16 @@
         />
       </div>
 
+      <!-- Filtro Banca -->
+      <div class="col-12 md:col-6 lg:col-3">
+        <app-autocomplete-banca
+          [form]="form()"
+          controlName="idBanca"
+          idField="banca-questao-list"
+          placeholder="Selecione a banca associada"
+        />
+      </div>
+
       <!-- Filtro Tipo de Questão -->
       <div class="col-12 md:col-6 lg:col-3">
         <app-form-label for="tipo-questao" label="Tipo de Questão" [control]="form().get('tipo')!">

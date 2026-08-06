@@ -7,6 +7,7 @@ export interface QuestaoFilter {
   observacao?: string;
   idMateria?: string;
   idsAssuntos?: string[];
+  idBanca?: string;
   tipo?: TipoQuestao;
   nivelDificuldade?: NivelDificuldade;
   favorita?: SimNao;

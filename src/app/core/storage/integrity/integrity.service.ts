@@ -62,6 +62,28 @@ export class IntegrityService {
   }
 
   // ==========================================================
+  // BANCA
+  // ==========================================================
+
+  validarExclusaoBanca(idBanca: string): DeleteValidationResult {
+    const questoes = this.obterQuestoesDaBanca(idBanca);
+
+    if (questoes.length > 0) {
+      return {
+        canDelete: false,
+        message: 'A banca está sendo utilizada por questões.',
+        dependencies: {
+          questoes: questoes.length,
+        },
+      };
+    }
+
+    return {
+      canDelete: true,
+    };
+  }
+
+  // ==========================================================
   // QUESTÃO
   // ==========================================================
 
@@ -112,6 +134,12 @@ export class IntegrityService {
       .filter((q) => q.idsAssuntos.includes(idAssunto));
   }
 
+  obterQuestoesDaBanca(idBanca: string): Questao[] {
+    return this.storage
+      .getAll<Questao>(StorageCollection.QUESTOES)
+      .filter((q) => q.idBanca === idBanca);
+  }
+
   obterHistoricosDaQuestao(idQuestao: string): HistoricoQuestao[] {
     return this.storage
       .getAll<HistoricoQuestao>(StorageCollection.HISTORICOS)
@@ -128,6 +156,10 @@ export class IntegrityService {
 
   possuiQuestoes(idAssunto: string): boolean {
     return this.obterQuestoesDoAssunto(idAssunto).length > 0;
+  }
+
+  possuiQuestoesBanca(idBanca: string): boolean {
+    return this.obterQuestoesDaBanca(idBanca).length > 0;
   }
 
   possuiHistoricos(idQuestao: string): boolean {

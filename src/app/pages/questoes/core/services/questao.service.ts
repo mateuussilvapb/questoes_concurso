@@ -104,6 +104,12 @@ export class QuestaoService {
     });
   }
 
+  listarPorBanca(idBanca: string): Questao[] {
+    return this.repository.find({
+      idBanca,
+    });
+  }
+
   // ======================================================
   // FAVORITOS
   // ======================================================
@@ -242,6 +248,7 @@ export class QuestaoService {
       enunciado: dto.enunciado.trim(),
       idMateria: dto.idMateria,
       idsAssuntos: [...dto.idsAssuntos],
+      idBanca: dto.idBanca?.trim() || undefined,
       nivelDificuldade: dto.nivelDificuldade,
       tipo: dto.tipo,
       alternativas: this.criarAlternativas(dto),
@@ -262,6 +269,7 @@ export class QuestaoService {
       enunciado: dto.enunciado.trim(),
       idMateria: dto.idMateria,
       idsAssuntos: [...dto.idsAssuntos],
+      idBanca: dto.idBanca?.trim() || undefined,
       nivelDificuldade: dto.nivelDificuldade,
       tipo: dto.tipo,
       alternativas: this.criarAlternativas(dto),

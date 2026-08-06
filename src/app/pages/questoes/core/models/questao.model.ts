@@ -10,6 +10,7 @@ export interface Questao extends BaseEntity {
   observacao: ObservacoesQuestoes;
   idMateria: string;
   idsAssuntos: string[];
+  idBanca?: string;
   nivelDificuldade: NivelDificuldade;
   tipo: TipoQuestao;
   alternativas: Alternativa[];

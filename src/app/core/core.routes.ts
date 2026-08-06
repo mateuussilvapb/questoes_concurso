@@ -24,6 +24,10 @@ export const CORE_ROUTES: Routes = [
       import('../pages/questoes/core/questoes.routes').then((c) => c.QUESTAO_ROUTES),
   },
   {
+    path: 'banca',
+    loadChildren: () => import('../pages/bancas/core/bancas.routes').then((c) => c.BANCAS_ROUTES),
+  },
+  {
     path: 'resolver-questoes',
     loadChildren: () =>
       import('../pages/resolver-questoes/core/resolver-questoes.routes').then(
