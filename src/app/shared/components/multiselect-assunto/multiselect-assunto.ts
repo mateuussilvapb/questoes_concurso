@@ -68,9 +68,9 @@ export class MultiselectAssunto implements OnInit {
     return listaOriginal;
   });
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     if ((this.form() && this.controlName()) || this.assuntoSelecionado() !== undefined) {
-      this.consultarAssuntos();
+      await this.consultarAssuntos();
       return;
     }
     throw new Error(
@@ -78,8 +78,8 @@ export class MultiselectAssunto implements OnInit {
     );
   }
 
-  consultarAssuntos() {
-    this.assuntos.set(this.assuntoService.listar());
+  async consultarAssuntos() {
+    this.assuntos.set(await this.assuntoService.listar());
   }
 
   searchAssunto(event: any) {

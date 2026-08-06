@@ -78,7 +78,7 @@ export class AssuntosListPage extends ListBase implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    this.assuntos.set(this.assuntoService.listar());
+    this.assuntos.set(await this.assuntoService.listar());
     this.materias.set(await this.materiaService.listar());
   }
 

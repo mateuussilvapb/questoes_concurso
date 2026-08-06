@@ -51,6 +51,16 @@ export class MateriasListPage extends ListBase implements OnInit {
   protected searchTerm = signal<string>('');
 
   protected materias = signal<Materia[]>([]);
+  protected assuntos = signal<Assunto[]>([]);
+  protected assuntosPorMateria = computed(() => {
+    const mapa = new Map<string, Assunto[]>();
+    for (const assunto of this.assuntos()) {
+      const lista = mapa.get(assunto.idMateria) ?? [];
+      lista.push(assunto);
+      mapa.set(assunto.idMateria, lista);
+    }
+    return mapa;
+  });
 
   protected materiasFiltradas = computed(() => {
     const busca = this.searchTerm().toLowerCase().trim();
@@ -65,6 +75,7 @@ export class MateriasListPage extends ListBase implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.materias.set(await this.materiaService.listar());
+    this.assuntos.set(await this.assuntoService.listar());
   }
 
   onAddMateria() {
@@ -72,7 +83,7 @@ export class MateriasListPage extends ListBase implements OnInit {
   }
 
   getAssuntosRelacionados(materia: Materia): Assunto[] {
-    return this.assuntoService.buscarPorIdMateria(materia.id);
+    return this.assuntosPorMateria().get(materia.id) ?? [];
   }
 
   getQuestoesRelacionadas(materia: Materia): Questao[] {

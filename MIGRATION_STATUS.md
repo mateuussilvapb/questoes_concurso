@@ -127,7 +127,7 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 | Arquivo a migrar | Substituto | Status em 06/08 |
 |---|---|---|
 | `pages/materias/core/services/materia.service.ts` | `MateriaRepository` | ✅ Migrado — 100% assíncrono, com `LoadingOverlayService`. Consumidores atualizados em `materias/*`, `assuntos-list-page.ts`, `assuntos-form-page.ts`, `questao-list-page.ts`, `questao-form-page.ts`, `resolver-questao-card.ts` (9 pontos de chamada) |
-| `pages/assuntos/core/services/assunto.service.ts` | `AssuntoRepository` | ❌ Ainda usa `StorageService` |
+| `pages/assuntos/core/services/assunto.service.ts` | `AssuntoRepository` | ✅ Migrado — 100% assíncrono, com `LoadingOverlayService`. `AssuntoEntity` ganhou o campo `idMateria` (ausente até então). Consumidores atualizados em `assuntos/*`, `materias-list-page.ts`, `questao-form-page.ts`, `questao-list-page.ts`, `multiselect-assunto.ts`, `autocomplete-assunto.ts` (chamadas por item de lista viraram `Map` pré-carregado) |
 | `pages/questoes/core/repositories/questao-repository.ts` | `QuestaoRepository` | ❌ Ainda usa `StorageService` |
 | `pages/historico/core/repositories/historico-repository.ts` | `HistoricoRepository` | ❌ Ainda usa `StorageService` |
 | `pages/questoes/core/services/questao-validator.service.ts` | Adaptar a queries Dexie | ❌ Ainda usa `StorageService` |
@@ -206,7 +206,7 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 
 [x] 11. Migrar materia.service.ts → MateriaRepository            (concluído 06/08 — cascata async)
 
-[ ] 12. Migrar assunto.service.ts → AssuntoRepository
+[x] 12. Migrar assunto.service.ts → AssuntoRepository                (concluído 06/08 — cascata async)
 
 [ ] 13. Migrar questao-repository.ts (legado) → QuestaoRepository
 
@@ -239,7 +239,7 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 [ ] 23. Revisar updateAll para usar transação Dexie (db.transaction())
 ```
 
-**Próximo passo recomendado:** item 12 (`assunto.service.ts` → `AssuntoRepository`), seguindo o mesmo padrão estabelecido em `materia.service.ts` (100% assíncrono + `LoadingOverlayService`).
+**Próximo passo recomendado:** item 13 (`questao-repository.ts` legado → `QuestaoRepository`), seguindo o mesmo padrão estabelecido em `materia.service.ts`/`assunto.service.ts` (100% assíncrono + `LoadingOverlayService`).
 
 > Existe agora uma skill reutilizável para conduzir essas migrações módulo a módulo:
 > `.claude/skills/migrate-module-to-dexie/SKILL.md`. Invocar como "analise/migre o módulo de assunto" (ou questao/historico/banca).

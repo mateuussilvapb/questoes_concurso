@@ -9,4 +9,7 @@ export class AssuntoEntity extends PersistentEntity {
 
   @Index()
   descricao!: string;
+
+  @Index()
+  idMateria!: string;
 }

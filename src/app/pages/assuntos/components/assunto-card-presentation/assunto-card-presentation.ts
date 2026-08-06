@@ -51,9 +51,9 @@ export class AssuntoCardPresentation extends ListBase {
     });
   }
 
-  excluir() {
+  async excluir() {
     try {
-      this.assuntoService.remover(this.assunto().id);
+      await this.assuntoService.remover(this.assunto().id);
       this.messageService.showSuccess('Assunto excluída com sucesso!');
       this.exclusaoConcluida.emit(true);
     } catch (e: any) {

@@ -45,6 +45,8 @@ export class QuestaoListPage extends ListBase implements OnInit {
   protected searchAssuntosIds = signal<Assunto[] | null>(null);
   protected materias = signal<Materia[]>([]);
   protected materiasPorId = computed(() => new Map(this.materias().map((m) => [m.id, m])));
+  protected assuntos = signal<Assunto[]>([]);
+  protected assuntosPorId = computed(() => new Map(this.assuntos().map((a) => [a.id, a])));
 
   constructor() {
     super();
@@ -58,6 +60,7 @@ export class QuestaoListPage extends ListBase implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.materias.set(await this.materiaService.listar());
+    this.assuntos.set(await this.assuntoService.listar());
   }
 
   protected formValue = toSignal(this.form.valueChanges, {
@@ -109,11 +112,11 @@ export class QuestaoListPage extends ListBase implements OnInit {
     this.router.navigate(['questao', 'cadastro']);
   }
 
-  getAssuntosAssociados(questao: Questao) {
-    const assuntosAssociados: Array<Assunto> = [];
-    questao.idsAssuntos.forEach((id) =>
-      assuntosAssociados.push(this.assuntoService.buscarPorId(id)),
-    );
-    return assuntosAssociados;
+  getAssuntosAssociados(questao: Questao): Assunto[] {
+    const assuntosPorId = this.assuntosPorId();
+
+    return questao.idsAssuntos
+      .map((id) => assuntosPorId.get(id))
+      .filter((assunto): assunto is Assunto => assunto !== undefined);
   }
 }

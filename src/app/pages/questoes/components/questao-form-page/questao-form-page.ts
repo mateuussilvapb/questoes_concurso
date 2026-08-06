@@ -279,9 +279,8 @@ export class QuestaoFormPage extends FormBase implements OnInit {
 
   async patchValueOnForm(): Promise<void> {
     const materia = await this.materiaService.buscarPorId(this.questao()?.idMateria ?? '');
-    const assuntos = this.assuntoService
-      .listar()
-      .filter((x) => this.questao()?.idsAssuntos.includes(x.id));
+    const todosAssuntos = await this.assuntoService.listar();
+    const assuntos = todosAssuntos.filter((x) => this.questao()?.idsAssuntos.includes(x.id));
     const nivelDificuldade = this.dificuldades.find(
       (x) => x.value == this.questao()?.nivelDificuldade,
     );

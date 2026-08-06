@@ -121,7 +121,7 @@ export class AssuntosFormPage extends FormBase implements OnInit {
   }
 
   async getAssuntoAndHandle(): Promise<void> {
-    this.assunto.set(this.assuntoService.buscarPorId(this.pageId()));
+    this.assunto.set(await this.assuntoService.buscarPorId(this.pageId()));
     await this.patchValueOnForm();
   }
 
@@ -149,7 +149,7 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     this.messageService.showInfo('Formulário inválido. Preencha o formulário corretamente.');
   }
 
-  onCreate() {
+  async onCreate() {
     const rawValue = this.form.getRawValue();
     const dto: CreateAssuntoDto = {
       nome: rawValue.nome,
@@ -158,7 +158,7 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     };
 
     try {
-      this.assuntoService.criar(dto);
+      await this.assuntoService.criar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
         'Assunto criado com sucesso. Você será redirecionado para listagem.',
@@ -174,7 +174,7 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     }
   }
 
-  onUpdate() {
+  async onUpdate() {
     const rawValue = this.form.getRawValue();
     const dto: UpdateAssuntoDto = {
       id: this.assunto()?.id ?? '',
@@ -184,7 +184,7 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     };
 
     try {
-      this.assuntoService.atualizar(dto);
+      await this.assuntoService.atualizar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
         'Assunto atualizado com sucesso. Você será redirecionado para listagem.',
