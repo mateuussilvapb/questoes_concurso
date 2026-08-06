@@ -19,6 +19,7 @@ import { Materia } from '../../../materias/core/models/materia.model';
     TooltipModule,
   ],
   templateUrl: './assunto-card-presentation.html',
+  styleUrls: ['./assunto-card-presentation.scss'],
 })
 export class AssuntoCardPresentation extends ListBase {
   private readonly assuntoService = inject(AssuntoService);

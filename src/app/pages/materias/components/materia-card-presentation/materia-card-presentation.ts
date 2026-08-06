@@ -1,6 +1,7 @@
 import { Component, computed, inject, input, output } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { TagModule } from 'primeng/tag';
 import { ListBase } from '../../../../shared/components/list-base/list-base';
 import { Assunto } from '../../../assuntos/core/models/assunto.model';
 import { Questao } from '../../../questoes/core/models/questao.model';
@@ -12,11 +13,13 @@ import { TooltipModule } from 'primeng/tooltip';
   selector: 'app-materia-card-presentation',
   imports: [
     //Externo
+    TagModule,
     CardModule,
     ButtonModule,
     TooltipModule,
   ],
   templateUrl: './materia-card-presentation.html',
+  styleUrls: ['./materia-card-presentation.scss'],
 })
 export class MateriaCardPresentation extends ListBase {
   private readonly materiaService = inject(MateriaService);
