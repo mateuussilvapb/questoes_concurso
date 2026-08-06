@@ -13,7 +13,7 @@
   <p-card header="Listagem">
     <!-- Listagem -->
     @if (questoes().length > 0) {
-      @for (questao of questoes(); track $index; let isLast = $last) {
+      @for (questao of questoesVisiveis(); track $index; let isLast = $last) {
         <app-questao-card-presentation
           [questao]="questao"
           [materia]="getMateriaPorQuestao(questao)"
@@ -25,6 +25,14 @@
         @if (!isLast) {
           <p-divider />
         }
+      }
+
+      <p class="text-center mt-3 text-secondary text-sm">
+        Mostrando {{ questoesVisiveis().length }} de {{ questoes().length }} questões
+      </p>
+
+      @if (questoesVisiveis().length < questoes().length) {
+        <div appInfiniteScrollSentinel (visible)="carregarMais()"></div>
       }
     } @else {
       <p class="text-center mt-3 text-secondary" colspan="100%">Nenhum registro encontrado...</p>

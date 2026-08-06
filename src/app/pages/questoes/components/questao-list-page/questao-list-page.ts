@@ -5,6 +5,7 @@ import { Component, computed, effect, inject, OnInit, signal } from '@angular/co
 //Aplicação
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
 import { ListBase } from '../../../../shared/components/list-base/list-base';
+import { InfiniteScrollSentinelDirective } from '../../../../shared/directives/infinite-scroll-sentinel.directive';
 import { Assunto } from '../../../assuntos/core/models/assunto.model';
 import { AssuntoService } from '../../../assuntos/core/services/assunto.service';
 import { Banca } from '../../../bancas/core/models/banca.model';
@@ -21,6 +22,8 @@ import { QuestaoFilter } from '../../core/dtos/filter-questao.dto';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
 
+const TAMANHO_PAGINA = 20;
+
 @Component({
   selector: 'app-questao-list-page',
   imports: [
@@ -30,6 +33,7 @@ import { DividerModule } from 'primeng/divider';
     LayoutBasePages,
     QuestaoFilterComponent,
     QuestaoCardPresentation,
+    InfiniteScrollSentinelDirective,
 
     //Externo
     CardModule,
@@ -77,7 +81,10 @@ export class QuestaoListPage extends ListBase implements OnInit {
         idBanca: value.idBanca?.id,
       };
 
-      this.questaoService.pesquisar(filtro).then((questoes) => this.questoes.set(questoes));
+      this.questaoService.pesquisar(filtro).then((questoes) => {
+        this.questoes.set(questoes);
+        this.itensVisiveis.set(TAMANHO_PAGINA);
+      });
     });
   }
 
@@ -92,6 +99,8 @@ export class QuestaoListPage extends ListBase implements OnInit {
   });
 
   protected questoes = signal<Questao[]>([]);
+  protected itensVisiveis = signal(TAMANHO_PAGINA);
+  protected questoesVisiveis = computed(() => this.questoes().slice(0, this.itensVisiveis()));
 
   createForm() {
     this.form = this.fb.group({
@@ -124,6 +133,14 @@ export class QuestaoListPage extends ListBase implements OnInit {
 
   onAddQuestao() {
     this.router.navigate(['questao', 'cadastro']);
+  }
+
+  protected carregarMais(): void {
+    if (this.itensVisiveis() >= this.questoes().length) {
+      return;
+    }
+
+    this.itensVisiveis.update((valor) => Math.min(valor + TAMANHO_PAGINA, this.questoes().length));
   }
 
   getAssuntosAssociados(questao: Questao): Assunto[] {
