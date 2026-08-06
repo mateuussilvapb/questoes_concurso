@@ -332,7 +332,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
     );
   }
 
-  onCreate() {
+  async onCreate() {
     const rawValue = this.form.getRawValue();
 
     const dto: CreateQuestaoDto = {
@@ -347,7 +347,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
     };
 
     try {
-      this.questaoService.criar(dto);
+      await this.questaoService.criar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess('Questão criada com sucesso.');
       this.continuarAdicionandoOuVoltar();
@@ -387,7 +387,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
     this.marcarTodasAlternativasFalsas();
   }
 
-  onUpdate() {
+  async onUpdate() {
     const rawValue = this.form.getRawValue();
     const dto: UpdateQuestaoDto = {
       id: this.questao()?.id ?? '',
@@ -406,7 +406,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
     };
 
     try {
-      this.questaoService.atualizar(dto);
+      await this.questaoService.atualizar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
         'Questão atualizada com sucesso. Você será redirecionado para listagem.',

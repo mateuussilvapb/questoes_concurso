@@ -4,31 +4,30 @@ import { Injectable, inject } from '@angular/core';
 import { Alternativa } from '../../alternativas/core/models/alternativa.model';
 
 import { TipoQuestao } from '../enums/tipo-questao.enum';
-import { StorageService } from '../../../../core/storage/storage.service';
 import { CreateQuestaoDto } from '../dtos/create-questao.dto';
 import { UpdateQuestaoDto } from '../dtos/update-questao.dto';
-import { Materia } from '../../../materias/core/models/materia.model';
-import { StorageCollection } from '../../../../core/storage/storage.constants';
-import { Assunto } from '../../../assuntos/core/models/assunto.model';
 import { AlternativaDto } from '../../alternativas/core/dtos/alternativa.dto';
+import { MateriaRepository } from '../../../../core/repository/repositories/materia-repository/materia.repository';
+import { AssuntoRepository } from '../../../../core/repository/repositories/assunto-repository/assunto.repository';
 
 @Injectable({
   providedIn: 'root',
 })
 export class QuestaoValidatorService {
-  private readonly storage = inject(StorageService);
+  private readonly materiaRepository = inject(MateriaRepository);
+  private readonly assuntoRepository = inject(AssuntoRepository);
   private readonly questaoFactoryService = inject(AlternativasFactoryService);
 
   // =====================================================
   // API
   // =====================================================
 
-  validarCriacao(dto: CreateQuestaoDto): void {
+  async validarCriacao(dto: CreateQuestaoDto): Promise<void> {
     this.validarDeclaracao(dto.enunciado);
 
-    this.validarMateria(dto.idMateria);
+    await this.validarMateria(dto.idMateria);
 
-    this.validarAssuntos(dto.idMateria, dto.idsAssuntos);
+    await this.validarAssuntos(dto.idMateria, dto.idsAssuntos);
 
     this.validarTipo(dto.tipo);
 
@@ -37,12 +36,12 @@ export class QuestaoValidatorService {
     this.validarAlternativas(dto.tipo, dto.alternativas);
   }
 
-  validarAtualizacao(dto: UpdateQuestaoDto): void {
+  async validarAtualizacao(dto: UpdateQuestaoDto): Promise<void> {
     if (!dto.id?.trim()) {
       throw new Error('Id inválido.');
     }
 
-    this.validarCriacao(dto);
+    await this.validarCriacao(dto);
   }
 
   prepararAlternativas(tipo: TipoQuestao, alternativas: AlternativaDto[]): Alternativa[] {
@@ -67,12 +66,12 @@ export class QuestaoValidatorService {
   // MATÉRIA
   // =====================================================
 
-  private validarMateria(idMateria: string): void {
+  private async validarMateria(idMateria: string): Promise<void> {
     if (!idMateria) {
       throw new Error('Informe uma matéria.');
     }
 
-    const materia = this.storage.getById<Materia>(StorageCollection.MATERIAS, idMateria);
+    const materia = await this.materiaRepository.findById(idMateria);
 
     if (!materia) {
       throw new Error('Matéria inexistente.');
@@ -83,7 +82,7 @@ export class QuestaoValidatorService {
   // ASSUNTOS
   // =====================================================
 
-  private validarAssuntos(idMateria: string, ids: string[]): void {
+  private async validarAssuntos(idMateria: string, ids: string[]): Promise<void> {
     if (!ids?.length) {
       throw new Error('Selecione ao menos um assunto.');
     }
@@ -94,7 +93,7 @@ export class QuestaoValidatorService {
       throw new Error('Existem assuntos repetidos.');
     }
 
-    const assuntos = this.storage.getAll<Assunto>(StorageCollection.ASSUNTOS);
+    const assuntos = await this.assuntoRepository.findAll();
 
     ids.forEach((id) => {
       const assunto = assuntos.find((a) => a.id === id);

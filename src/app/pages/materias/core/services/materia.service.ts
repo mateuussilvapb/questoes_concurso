@@ -77,7 +77,7 @@ export class MateriaService {
     return this.loadingOverlay.wrap(async () => {
       await this.buscarEntidadePorId(id);
 
-      const validation = this.integrityService.validarExclusaoMateria(id);
+      const validation = await this.integrityService.validarExclusaoMateria(id);
 
       if (!validation.canDelete) {
         throw new Error(validation.message);

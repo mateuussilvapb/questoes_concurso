@@ -48,13 +48,13 @@ export class QuestaoService {
     return questao;
   }
 
-  criar(dto: CreateQuestaoDto): Questao {
-    const questao = this.validateAndMapCreateToEntity(dto);
+  async criar(dto: CreateQuestaoDto): Promise<Questao> {
+    const questao = await this.validateAndMapCreateToEntity(dto);
     return this.repository.insert(questao);
   }
 
-  atualizar(dto: UpdateQuestaoDto): Questao {
-    const atualizado = this.validateAndMapUpdateToEntity(dto);
+  async atualizar(dto: UpdateQuestaoDto): Promise<Questao> {
+    const atualizado = await this.validateAndMapUpdateToEntity(dto);
     return this.repository.update(atualizado);
   }
 
@@ -234,8 +234,8 @@ export class QuestaoService {
       : this.factory.criarAlternativas(dto.alternativas);
   }
 
-  validateAndMapCreateToEntity(dto: CreateQuestaoDto): Questao {
-    this.validator.validarCriacao(dto);
+  async validateAndMapCreateToEntity(dto: CreateQuestaoDto): Promise<Questao> {
+    await this.validator.validarCriacao(dto);
 
     const questao: Questao = {
       id: this.idGeneratorService.generate(),
@@ -254,9 +254,9 @@ export class QuestaoService {
     return questao;
   }
 
-  validateAndMapUpdateToEntity(dto: UpdateQuestaoDto): Questao {
+  async validateAndMapUpdateToEntity(dto: UpdateQuestaoDto): Promise<Questao> {
     const atual = this.buscarPorId(dto.id);
-    this.validator.validarAtualizacao(dto);
+    await this.validator.validarAtualizacao(dto);
     const atualizado: Questao = {
       ...atual,
       enunciado: dto.enunciado.trim(),

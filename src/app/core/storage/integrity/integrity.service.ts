@@ -5,22 +5,24 @@ import { Injectable, inject } from '@angular/core';
 import { StorageService } from '../storage.service';
 import { StorageCollection } from '../storage.constants';
 import { DeleteValidationResult } from './integrity.models';
-import { Assunto } from '../../../pages/assuntos/core/models/assunto.model';
 import { Questao } from '../../../pages/questoes/core/models/questao.model';
 import { HistoricoQuestao } from '../../../pages/historico/core/models/historico-questao.model';
+import { AssuntoRepository } from '../../repository/repositories/assunto-repository/assunto.repository';
+import { AssuntoEntity } from '../../database/entities/assunto-entity';
 
 @Injectable({
   providedIn: 'root',
 })
 export class IntegrityService {
   private readonly storage = inject(StorageService);
+  private readonly assuntoRepository = inject(AssuntoRepository);
 
   // ==========================================================
   // MATÉRIA
   // ==========================================================
 
-  validarExclusaoMateria(idMateria: string): DeleteValidationResult {
-    const assuntos = this.obterAssuntosDaMateria(idMateria);
+  async validarExclusaoMateria(idMateria: string): Promise<DeleteValidationResult> {
+    const assuntos = await this.obterAssuntosDaMateria(idMateria);
 
     if (assuntos.length > 0) {
       return {
@@ -94,10 +96,8 @@ export class IntegrityService {
   // CONSULTAS
   // ==========================================================
 
-  obterAssuntosDaMateria(idMateria: string): Assunto[] {
-    return this.storage
-      .getAll<Assunto>(StorageCollection.ASSUNTOS)
-      .filter((a) => a.idMateria === idMateria);
+  async obterAssuntosDaMateria(idMateria: string): Promise<AssuntoEntity[]> {
+    return this.assuntoRepository.findByPredicate((a) => a.idMateria === idMateria);
   }
 
   obterQuestoesDaMateria(idMateria: string): Questao[] {
@@ -122,8 +122,8 @@ export class IntegrityService {
   // HELPERS
   // ==========================================================
 
-  possuiAssuntos(idMateria: string): boolean {
-    return this.obterAssuntosDaMateria(idMateria).length > 0;
+  async possuiAssuntos(idMateria: string): Promise<boolean> {
+    return (await this.obterAssuntosDaMateria(idMateria)).length > 0;
   }
 
   possuiQuestoes(idAssunto: string): boolean {
