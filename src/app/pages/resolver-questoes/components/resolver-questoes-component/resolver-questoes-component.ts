@@ -96,7 +96,9 @@ export class ResolverQuestoesComponent {
       message: 'Tem certeza que deseja encerrar? Os resultados não serão persistidos no histórico.',
       header: 'Confirma?',
       icon: 'pi pi-exclamation-triangle',
-      rejectButtonStyleClass: 'p-button-secondary',
+      rejectLabel: 'Continuar',
+      rejectButtonStyleClass: 'p-button-primary',
+      acceptLabel: 'Cancelar',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.encerrar.emit();
