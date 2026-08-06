@@ -4,6 +4,8 @@
 
 > **Nota de escopo — migração de `historico` (06/08):** este módulo foi migrado inteiramente na camada de infraestrutura/persistência (entity, repository, service, validator, `IntegrityService`), mas **não possui nenhum consumidor de UI hoje** — `resolver-questoes-page.ts` tem um TODO pendente para gravar o histórico ao concluir uma resolução, e `pages/estatisticas/` ainda não foi implementada. Ambos permanecem fora de escopo desta migração (são funcionalidades novas, não portabilidade de persistência) até serem pedidos explicitamente.
 
+> **Nota de escopo — migração de backup/restauração (06/08):** `backup.service.ts` foi reescrito sobre os repositories Dexie. A pedido do usuário, o backup passou a incluir `bancas` (único domínio até então ausente do formato de backup), o que exigiu subir `BACKUP_VERSION` de 1 para 2. Com isso, `StorageService` e `StorageCollection` (legado LocalStorage) ficaram sem nenhum consumidor e foram removidos do projeto. Em seguida, a pedido do usuário, a **importação** de backups em versão 1 voltou a ser aceita: `BackupService.normalizarVersaoLegada()` preenche `bancas: []` antes da validação, `BackupValidatorService` aceita `versao === 1` como legado suportado, e a UI (`backup-restauracao.ts`) avisa o usuário quando o arquivo restaurado é de uma versão anterior sem bancas. A exportação continua sempre gerando `versao: 2`.
+
 ---
 
 ## 1. Arquitetura encontrada
@@ -136,23 +138,23 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 | `pages/questoes/core/services/questao-validator.service.ts` | Adaptar a queries Dexie | ✅ Migrado (junto da correção do bug de criação de questão em 06/08) — valida matéria/assunto/banca via `MateriaRepository`/`AssuntoRepository`/`BancaRepository` (Dexie) |
 | `pages/historico/core/services/historico-validator.service.ts` | Adaptar a queries Dexie | ✅ Migrado em 06/08 — reescrito do zero (o rascunho anterior estava inteiramente comentado); valida questão/matéria/assuntos/alternativa selecionada via `QuestaoRepository`/`MateriaRepository`/`AssuntoRepository` (Dexie) |
 | `pages/historico/core/services/historico.service.ts` | `HistoricoRepository` | ✅ Migrado em 06/08 — reescrito do zero, 100% assíncrono, com `LoadingOverlayService`. Sem consumidores de UI ainda (ver nota de escopo no topo do documento) |
-| `pages/configuracoes/core/services/backup.service.ts` | Nova camada de backup via Dexie | ❌ Ainda usa `StorageService` |
-| `pages/configuracoes/components/backup-restauracao/backup-restauracao.ts` | Via `backup.service` novo | ❌ Ainda usa `StorageService` |
+| `pages/configuracoes/core/services/backup.service.ts` | Nova camada de backup via Dexie | ✅ Migrado em 06/08 — reescrito do zero, 100% assíncrono, com `LoadingOverlayService`. Exporta/importa via `MateriaRepository`/`AssuntoRepository`/`BancaRepository`/`QuestaoRepository`/`HistoricoRepository`; leitura de exportação reaproveita os `*.service.ts` já migrados (`listar()`), escrita de importação mapeia Model→Entity preservando `id`/`dataCriacao`/`dataAtualizacao` originais. `BackupData` ganhou o campo `bancas` (decisão do usuário — único domínio que ainda faltava no backup) e `BACKUP_VERSION` foi de 1 para 2 |
+| `pages/configuracoes/components/backup-restauracao/backup-restauracao.ts` | Via `backup.service` novo | ✅ Migrado em 06/08 — `backup()`/`confirmAndImport()` assíncronos, `existAnyData()` (antes em `StorageService`) movido para `BackupService` |
 | `core/storage/integrity/integrity.service.ts` | Adaptar verificações a queries Dexie | ✅ Migrado em 06/08 — todas as verificações (matéria/assunto/banca/questão/histórico) agora usam os repositories Dexie; `StorageService` não é mais importado neste arquivo |
 
-> `materia`, `assunto`, `questao` e `historico` estão migrados (100% assíncrono + `LoadingOverlayService`). `banca` é um módulo novo, criado direto sobre Dexie (nunca existiu em `StorageService`). Todos os módulos de página estão migrados; resta apenas o trabalho transversal (Prioridade 6 e 7 abaixo).
+> `materia`, `assunto`, `questao`, `historico` e o backup estão migrados (100% assíncrono + `LoadingOverlayService`). `banca` é um módulo novo, criado direto sobre Dexie (nunca existiu em `StorageService`). Todos os módulos de página e o backup/restauração estão migrados; resta apenas a limpeza final do legado (Prioridade 7).
 
-### Prioridade 6 — Backup/Exportação
+### ~~Prioridade 6 — Backup/Exportação~~ ✅ Concluída em 06/08
 
-- [ ] Implementar exportação de dados a partir do IndexedDB (substituto do `exportBackup()`)
-- [ ] Implementar importação com merge a partir do IndexedDB
+- [x] Implementar exportação de dados a partir do IndexedDB (substituto do `exportBackup()`)
+- [x] Implementar importação com merge a partir do IndexedDB
 
 ### Prioridade 7 — Limpeza do legado
 
-- [ ] Remover `StorageService` após todas as migrações
-- [ ] Remover `StorageCollection` enum
-- [ ] Remover `backup.models.ts` legado (ou adaptar)
-- [ ] Remover `integrity.service.ts` legado (ou adaptar)
+- [x] Remover `StorageService` — arquivo deletado em 06/08 (`core/storage/storage.service.ts`); não havia mais nenhum consumidor
+- [x] Remover `StorageCollection` enum — arquivo deletado em 06/08 (`core/storage/storage.constants.ts`)
+- [x] `backup.models.ts` — mantido (ainda é o contrato de tipos do backup, agora consumido só pela infra Dexie); não havia nada de legado a remover além do `StorageService` que o usava
+- [x] `integrity.service.ts` — já era 100% Dexie desde a migração de `historico` (06/08); não existe versão legada paralela
 
 ---
 
@@ -178,7 +180,7 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 | ~~6~~ | ~~`PersistentEntity` usa `inject(IdGeneratorService)` diretamente~~ | ✅ Resolvido em 06/08 — movido para 🔴 Críticos acima (era bloqueante, não só um risco) |
 | 7 | `BaseRepository` recebe `entityType: Function` e usa `MetadataResolver.resolve()`, mas o `MetadataResolver.resolve` lê colunas não resolvidas do `MetadataStorage` (sem herança) no `executeConditions` do `QueryExecutor` | `query/query-executor.ts` L70 |
 | 8 | `QueryExecutor` usa `metadata.columns` sem resolver hierarquia — pode não encontrar colunas herdadas de `PersistentEntity` | `query/query-executor.ts` L70 |
-| 9 | Toda a aplicação ainda usa `StorageService` — as duas infraestruturas convivem sem plano de transição definido. Os repositories Dexie estão prontos, mas nenhuma página foi migrada para consumi-los | `core/storage/`, `pages/` |
+| ~~9~~ | ~~Toda a aplicação ainda usa `StorageService`~~ | ✅ Resolvido em 06/08 — `StorageService`/`StorageCollection` removidos; todas as páginas e o backup consomem os repositories Dexie |
 | 10 | `EntityRegistry` exporta array `ENTITY_REGISTRY` mas `app.database.ts` apenas o importa como side-effect (`import './registry/entity.registry'`) — o array não é consumido, apenas o efeito colateral dos decorators | `registry/entity.registry.ts` |
 
 ### 🟢 Menores
@@ -223,17 +225,17 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 
 [x] 16. Migrar historico-validator.service.ts → queries Dexie            (concluído 06/08)
 
-[ ] 17. Implementar backup.service.ts baseado em Dexie
-         (exportar e importar via transaction)
+[x] 17. Implementar backup.service.ts baseado em Dexie
+         (exportar e importar via transaction)                          (concluído 06/08 — inclui `bancas` no backup, BACKUP_VERSION 1→2)
 
-[ ] 18. Migrar backup-restauracao.ts para o novo backup.service
+[x] 18. Migrar backup-restauracao.ts para o novo backup.service          (concluído 06/08)
 
 [x] 19. Migrar integrity.service.ts → queries Dexie                      (concluído 06/08 — todas as verificações, incluindo históricos)
 
-[ ] 20. Remover StorageService, StorageCollection e legado
+[x] 20. Remover StorageService, StorageCollection e legado               (concluído 06/08 — ambos os arquivos deletados; sem consumidores restantes)
 
-[ ] 21. Verificar e ajustar injeção de IdGeneratorService em PersistentEntity
-         (garantir compatibilidade com contexto de injeção Angular)
+[x] 21. Verificar e ajustar injeção de IdGeneratorService em PersistentEntity
+         (garantir compatibilidade com contexto de injeção Angular)      (já resolvido ao migrar `materia` — `id` gerado via `crypto.randomUUID()`, sem `inject()`)
 
 [ ] 22. Revisar paginação do QueryExecutor para usar `.offset().limit()` nativo do Dexie
          (atualmente carrega tudo em memória antes de paginar)
@@ -241,7 +243,7 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 [ ] 23. Revisar updateAll para usar transação Dexie (db.transaction())
 ```
 
-**Próximo passo recomendado:** todos os módulos de página (`materia`, `assunto`, `banca`, `questao`, `historico`) estão migrados. Resta a Prioridade 6 — implementar `backup.service.ts` e `backup-restauracao.ts` sobre Dexie (itens 17-18) — seguida da Prioridade 7 (remoção do `StorageService` legado, item 20) e dos itens 🟢 menores (21-23). Nota: `historico` foi migrado sem UI consumidora — se o próximo passo desejado for wiring de UI em vez de infraestrutura, avaliar primeiro o TODO em `resolver-questoes-page.ts` e a página `pages/estatisticas/`.
+**Próximo passo recomendado:** todos os módulos de página (`materia`, `assunto`, `banca`, `questao`, `historico`) e o backup/restauração estão migrados; o `StorageService` legado foi removido do projeto. Resta apenas os itens 🟢 menores (22-23), que são refinamentos de performance/robustez sem urgência, e a decisão em aberto sobre `historico`: foi migrado sem UI consumidora — se o próximo passo desejado for wiring de UI em vez de infraestrutura, avaliar primeiro o TODO em `resolver-questoes-page.ts` e a página `pages/estatisticas/`.
 
 > Existe agora uma skill reutilizável para conduzir essas migrações módulo a módulo:
 > `.claude/skills/migrate-module-to-dexie/SKILL.md`. Invocar como "analise/migre o módulo de assunto" (ou questao/historico/banca).

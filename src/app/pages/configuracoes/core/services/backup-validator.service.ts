@@ -6,9 +6,17 @@ import { BaseEntity } from '../../../../shared/models/base-entity';
 import { BackupData } from '../../../../core/storage/backup.models';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { Assunto } from '../../../assuntos/core/models/assunto.model';
+import { Banca } from '../../../bancas/core/models/banca.model';
 import { Questao } from '../../../questoes/core/models/questao.model';
 import { BACKUP_VERSION } from '../../../../shared/types/types-const';
 import { HistoricoQuestao } from '../../../historico/core/models/historico-questao.model';
+
+/**
+ * Versões de backup ainda aceitas na importação, além da versão atual.
+ * Versão 1 não tinha o campo `bancas` — o BackupService normaliza o
+ * arquivo (preenchendo `bancas: []`) antes de chamar `validate()`.
+ */
+const VERSOES_LEGADAS_SUPORTADAS = [1];
 
 @Injectable({
   providedIn: 'root',
@@ -19,15 +27,23 @@ export class BackupValidatorService {
 
     this.validateEntities(backup.materias, 'Matéria');
     this.validateEntities(backup.assuntos, 'Assunto');
+    this.validateEntities(backup.bancas, 'Banca');
     this.validateEntities(backup.questoes, 'Questão');
     this.validateEntities(backup.historicos, 'Histórico');
 
     this.validateDuplicateIds(backup.materias, 'Matéria');
     this.validateDuplicateIds(backup.assuntos, 'Assunto');
+    this.validateDuplicateIds(backup.bancas, 'Banca');
     this.validateDuplicateIds(backup.questoes, 'Questão');
     this.validateDuplicateIds(backup.historicos, 'Histórico');
 
-    this.validateRelations(backup.materias, backup.assuntos, backup.questoes, backup.historicos);
+    this.validateRelations(
+      backup.materias,
+      backup.assuntos,
+      backup.bancas,
+      backup.questoes,
+      backup.historicos,
+    );
   }
 
   private validateStructure(backup: BackupData): void {
@@ -35,7 +51,10 @@ export class BackupValidatorService {
       throw new Error('Backup inválido.');
     }
 
-    if (backup.versao !== BACKUP_VERSION) {
+    const versaoSuportada =
+      backup.versao === BACKUP_VERSION || VERSOES_LEGADAS_SUPORTADAS.includes(backup.versao);
+
+    if (!versaoSuportada) {
       throw new Error('Versão do backup incompatível.');
     }
 
@@ -49,6 +68,10 @@ export class BackupValidatorService {
 
     if (!Array.isArray(backup.assuntos)) {
       throw new Error('Assuntos inválidos.');
+    }
+
+    if (!Array.isArray(backup.bancas)) {
+      throw new Error('Bancas inválidas.');
     }
 
     if (!Array.isArray(backup.questoes)) {
@@ -87,11 +110,13 @@ export class BackupValidatorService {
   private validateRelations(
     materias: Materia[],
     assuntos: Assunto[],
+    bancas: Banca[],
     questoes: Questao[],
     historicos: HistoricoQuestao[],
   ): void {
     const materiaIds = new Set(materias.map((m) => m.id));
     const assuntoIds = new Set(assuntos.map((a) => a.id));
+    const bancaIds = new Set(bancas.map((b) => b.id));
     const questaoIds = new Set(questoes.map((q) => q.id));
 
     for (const assunto of assuntos) {
@@ -100,6 +125,10 @@ export class BackupValidatorService {
 
     for (const questao of questoes) {
       this.validateReference('Questão', questao.id, 'Assunto', questao.idsAssuntos, assuntoIds);
+
+      if (questao.idBanca) {
+        this.validateReference('Questão', questao.id, 'Banca', questao.idBanca, bancaIds);
+      }
     }
 
     for (const historico of historicos) {
