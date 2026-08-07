@@ -15,7 +15,6 @@ import { AutocompleteMateria } from '../../../../shared/components/autocomplete-
 import { FormBase } from '../../../../shared/components/form-base/form-base';
 import { FormLabel } from '../../../../shared/components/form-label/form-label';
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
-import { Loading } from '../../../../shared/components/loading/loading';
 import { Util } from '../../../../shared/util/util';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { MateriaService } from '../../../materias/core/services/materia.service';
@@ -33,7 +32,6 @@ import { AssuntoService } from '../../core/services/assunto.service';
     ReactiveFormsModule,
 
     //Aplicação
-    Loading,
     FormLabel,
     LayoutBasePages,
     AutocompleteMateria,

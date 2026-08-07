@@ -16,7 +16,6 @@ import { AutocompleteMateria } from '../../../../shared/components/autocomplete-
 import { FormBase } from '../../../../shared/components/form-base/form-base';
 import { FormLabel } from '../../../../shared/components/form-label/form-label';
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
-import { Loading } from '../../../../shared/components/loading/loading';
 import { MultiselectAssunto } from '../../../../shared/components/multiselect-assunto/multiselect-assunto';
 import { SelectOption, Util } from '../../../../shared/util/util';
 import { AssuntoService } from '../../../assuntos/core/services/assunto.service';
@@ -52,7 +51,6 @@ import { pairwise, startWith } from 'rxjs';
     ReactiveFormsModule,
 
     //Aplicação
-    Loading,
     FormLabel,
     Alternativa,
     LayoutBasePages,

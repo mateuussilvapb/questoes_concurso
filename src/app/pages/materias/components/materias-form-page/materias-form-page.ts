@@ -12,7 +12,6 @@ import { InputTextModule } from 'primeng/inputtext';
 //Aplicação
 import { Materia } from '../../core/models/materia.model';
 import { MateriaService } from '../../core/services/materia.service';
-import { Loading } from '../../../../shared/components/loading/loading';
 import { CreateMateriaDto } from '../../core/dtos/create-materia.dto';
 import { UpdateMateriaDto } from '../../core/dtos/update-materia.dto';
 import { FormBase } from '../../../../shared/components/form-base/form-base';
@@ -28,7 +27,6 @@ import { LayoutBasePages } from '../../../../shared/components/layout-base-pages
     ReactiveFormsModule,
 
     //Aplicação
-    Loading,
     FormLabel,
     LayoutBasePages,
 

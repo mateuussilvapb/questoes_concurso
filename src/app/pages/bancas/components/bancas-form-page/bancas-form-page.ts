@@ -12,7 +12,6 @@ import { InputTextModule } from 'primeng/inputtext';
 //Aplicação
 import { Banca } from '../../core/models/banca.model';
 import { BancaService } from '../../core/services/banca.service';
-import { Loading } from '../../../../shared/components/loading/loading';
 import { CreateBancaDto } from '../../core/dtos/create-banca.dto';
 import { UpdateBancaDto } from '../../core/dtos/update-banca.dto';
 import { FormBase } from '../../../../shared/components/form-base/form-base';
@@ -28,7 +27,6 @@ import { LayoutBasePages } from '../../../../shared/components/layout-base-pages
     ReactiveFormsModule,
 
     //Aplicação
-    Loading,
     FormLabel,
     LayoutBasePages,
 

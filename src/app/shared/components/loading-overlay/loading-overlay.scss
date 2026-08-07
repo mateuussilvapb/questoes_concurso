@@ -1,3 +1,5 @@
+@use '../../../../assets/scss/utils/variables' as *;
+
 .loading-overlay {
   position: fixed;
   inset: 0;
@@ -24,28 +26,50 @@
 }
 
 .dot-1 {
-  background-color: #4285f4;
+  background-color: $gradientStartColor;
   animation-delay: 0s;
 }
 
 .dot-2 {
-  background-color: #34a853;
+  background-color: $gradientMidColor;
   animation-delay: 0.3s;
 }
 
 .dot-3 {
-  background-color: #fbbc05;
+  background-color: $gradientLastColor;
   animation-delay: 0.6s;
 }
 
 .dot-4 {
-  background-color: #ea4335;
+  background-color: $gradientMidColor;
   animation-delay: 0.9s;
 }
 
 .dot-5 {
-  background-color: #4285f4;
+  background-color: $gradientStartColor;
   animation-delay: 1.2s;
+}
+
+:host-context(.app-dark) {
+  .dot-1 {
+    background-color: $gradientStartColorDark;
+  }
+
+  .dot-2 {
+    background-color: $gradientMidColorDark;
+  }
+
+  .dot-3 {
+    background-color: $gradientLastColorDark;
+  }
+
+  .dot-4 {
+    background-color: $gradientMidColorDark;
+  }
+
+  .dot-5 {
+    background-color: $gradientStartColorDark;
+  }
 }
 
 @keyframes dot-pulse2 {
