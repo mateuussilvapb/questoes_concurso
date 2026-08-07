@@ -1,13 +1,68 @@
 //Externos
 import Aura from '@primeuix/themes/aura';
+import { definePreset } from '@primeuix/themes';
 import { providePrimeNG } from 'primeng/config';
 
 //Aplicação
 import { primeNgTranslation } from '../../../i18n/primeng-pt';
 
+/**
+ * Preset alinhado à identidade visual do projeto (gradiente vermelho→laranja
+ * de $gradientStartColor/$gradientMidColor/$gradientLastColor em
+ * assets/scss/utils/_variables.scss). A escala abaixo é ancorada em
+ * $gradientStartColor (#E11F47), a cor dominante do gradiente.
+ */
+const QuestoesConcursoPreset = definePreset(Aura, {
+  semantic: {
+    primary: {
+      50: '#fef1f4',
+      100: '#fcdee4',
+      200: '#f8b9c6',
+      300: '#f3869d',
+      400: '#ed4568',
+      500: '#e11f47',
+      600: '#be193b',
+      700: '#92122c',
+      800: '#660c1e',
+      900: '#380610',
+      950: '#1c0308',
+    },
+    colorScheme: {
+      light: {
+        primary: {
+          color: '{primary.500}',
+          contrastColor: '#ffffff',
+          hoverColor: '{primary.600}',
+          activeColor: '{primary.700}',
+        },
+        highlight: {
+          background: '{primary.500}',
+          focusBackground: '{primary.600}',
+          color: '#ffffff',
+          focusColor: '#ffffff',
+        },
+      },
+      dark: {
+        primary: {
+          color: '{primary.400}',
+          contrastColor: '{primary.950}',
+          hoverColor: '{primary.300}',
+          activeColor: '{primary.200}',
+        },
+        highlight: {
+          background: 'color-mix(in srgb, {primary.400}, transparent 84%)',
+          focusBackground: 'color-mix(in srgb, {primary.400}, transparent 76%)',
+          color: '{primary.400}',
+          focusColor: '{primary.400}',
+        },
+      },
+    },
+  },
+});
+
 export const PRIMENG_PROVIDER = providePrimeNG({
   theme: {
-    preset: Aura,
+    preset: QuestoesConcursoPreset,
     options: {
       prefix: 'p',
       darkModeSelector: '.app-dark',
@@ -16,103 +71,10 @@ export const PRIMENG_PROVIDER = providePrimeNG({
   },
   ripple: false,
   translation: primeNgTranslation,
-        zIndex: {
-        modal: 1100, // dialog, sidebarc
-        overlay: 900, // dropdown, overlaypanel
-        menu: 1000, // overlay menus
-        tooltip: 1100, // tooltip
-      },
+  zIndex: {
+    modal: 1100, // dialog, sidebarc
+    overlay: 900, // dropdown, overlaypanel
+    menu: 1000, // overlay menus
+    tooltip: 1100, // tooltip
+  },
 });
-
-
-//TODO: Avaliar se é necessário criar um preset customizado para o tema Aura, com cores personalizadas para a aplicação.
-// const MyPreset = definePreset(Aura, {
-//   primitive: {
-//     red: {
-//       50: '#fef2f7',
-//       100: '#fde6ef',
-//       200: '#fccce0',
-//       300: '#fab3d0',
-//       400: '#d20d68',
-//       500: '#d20d68',
-//       600: '#d20d68',
-//       700: '#b00b5a',
-//       800: '#8e094c',
-//       900: '#6c073d',
-//       950: '#4a052f',
-//     },
-//   },
-//   semantic: {
-//     primary: {
-//       50: '#f0f7ff',
-//       100: '#d3ddfe',
-//       200: '#99b4fe',
-//       300: '#4f8dfd',
-//       400: '#0d68d4',
-//       500: '#064794',
-//       600: '#022859',
-//       700: '#00102b',
-//       800: '#000818',
-//       900: '#000408',
-//       950: '#000204',
-//     },
-//     colorScheme: {
-//       light: {
-//         primary: {
-//           color: '#0d68d4',
-//           contrastColor: '#ffffff',
-//           hoverColor: '#064794',
-//           activeColor: '#022859',
-//         },
-//         highlight: {
-//           background: '#0d68d4',
-//           focusBackground: '#064794',
-//           color: '#ffffff',
-//           focusColor: '#ffffff',
-//         },
-//         surface: {
-//           0: '#ffffff',
-//           50: '{gray.50}',
-//           100: '{gray.100}',
-//           200: '{gray.200}',
-//           300: '{gray.300}',
-//           400: '{gray.400}',
-//           500: '{gray.500}',
-//           600: '{gray.600}',
-//           700: '{gray.700}',
-//           800: '{gray.800}',
-//           900: '{gray.900}',
-//           950: '{gray.950}',
-//         },
-//       },
-//       dark: {
-//         primary: {
-//           color: '#fd4d8c',
-//           contrastColor: '#ffffff',
-//           hoverColor: '#fd99b4',
-//           activeColor: '#fed3dd',
-//         },
-//         highlight: {
-//           background: '#fd4d8c',
-//           focusBackground: '#fd99b4',
-//           color: '#ffffff',
-//           focusColor: '#ffffff',
-//         },
-//         surface: {
-//           0: '#ffffff',
-//           50: '{zinc.50}',
-//           100: '{zinc.100}',
-//           200: '{zinc.200}',
-//           300: '{zinc.300}',
-//           400: '{zinc.400}',
-//           500: '{zinc.500}',
-//           600: '{zinc.600}',
-//           700: '{zinc.700}',
-//           800: '{zinc.800}',
-//           900: '{zinc.900}',
-//           950: '{zinc.950}',
-//         },
-//       },
-//     },
-//   },
-// });
