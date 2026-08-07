@@ -40,6 +40,11 @@ export const CORE_ROUTES: Routes = [
       import('../pages/configuracoes/core/assuntos.routes').then((c) => c.CONFIGURACOES_ROUTES),
   },
   {
+    path: 'estatistica',
+    loadChildren: () =>
+      import('../pages/estatisticas/core/estatisticas.routes').then((c) => c.ESTATISTICAS_ROUTES),
+  },
+  {
     path: '**',
     loadComponent: () =>
       import('../../app/pages/page-not-found/components/page-not-found/page-not-found').then(

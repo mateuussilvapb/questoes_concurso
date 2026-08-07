@@ -95,8 +95,7 @@ export class Util {
    * Método de bypass de sanitização do html afim de manter exatamente o mesmo conteúdo
    */
   static bypassSanitizerHtml(text: string, sanitizer: DomSanitizer): SafeHtml {
-    const html = text.replaceAll('&nbsp;', ' ')
-      .replaceAll('\u00A0', ' ');
+    const html = text.replaceAll('&nbsp;', ' ').replaceAll('\u00A0', ' ');
 
     return sanitizer.bypassSecurityTrustHtml(html);
   }
@@ -112,5 +111,18 @@ export class Util {
    */
   static mapIndexToLetter(index: number): string {
     return this.LETTERS[index] || '';
+  }
+
+  /**
+   * Formata uma quantidade de segundos como 'mm:ss'.
+   *
+   * @param segundos Quantidade de segundos
+   */
+  static formatarDuracao(segundos: number): string {
+    const total = Math.max(0, Math.round(segundos ?? 0));
+    const minutos = Math.floor(total / 60);
+    const segs = total % 60;
+
+    return `${String(minutos).padStart(2, '0')}:${String(segs).padStart(2, '0')}`;
   }
 }

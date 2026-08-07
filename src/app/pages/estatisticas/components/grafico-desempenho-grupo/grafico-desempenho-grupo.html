@@ -1,0 +1,14 @@
+<app-grafico-card
+  [titulo]="titulo()"
+  [subtitulo]="subtitulo()"
+  icone="pi pi-chart-bar"
+  [vazio]="vazio()"
+  mensagemVazio="Sem dados para exibir com o filtro atual."
+>
+  <p-chart
+    type="bar"
+    [data]="dadosGrafico()"
+    [options]="opcoesGrafico()"
+    [height]="alturaCanvas()"
+  />
+</app-grafico-card>

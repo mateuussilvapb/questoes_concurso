@@ -1,0 +1,44 @@
+<div class="grid">
+  <div class="col-12 lg:col-6">
+    <app-grafico-card
+      titulo="Tempo Médio por Matéria"
+      icone="pi pi-clock"
+      [vazio]="vazioMateria()"
+      mensagemVazio="Sem dados para exibir com o filtro atual."
+    >
+      <p-chart type="bar" [data]="dadosMateria()" [options]="opcoesMateria()" height="320px" />
+    </app-grafico-card>
+  </div>
+
+  <div class="col-12 lg:col-6">
+    <app-grafico-card
+      titulo="Tempo Médio por Dificuldade"
+      icone="pi pi-clock"
+      [vazio]="vazioDificuldade()"
+      mensagemVazio="Sem dados para exibir com o filtro atual."
+    >
+      <p-chart
+        type="bar"
+        [data]="dadosDificuldade()"
+        [options]="opcoesDificuldade()"
+        height="320px"
+      />
+    </app-grafico-card>
+  </div>
+
+  <div class="col-12">
+    <app-grafico-card
+      titulo="Faixas de Tempo x Acerto"
+      subtitulo="Faixas com menos de 5 respostas aparecem com opacidade reduzida (pouco confiáveis)"
+      icone="pi pi-stopwatch"
+      [vazio]="vazioFaixas()"
+      mensagemVazio="Sem dados para exibir com o filtro atual."
+    >
+      <p-chart type="bar" [data]="dadosFaixas()" [options]="opcoesFaixas()" height="320px" />
+
+      @if (insight()) {
+        <p class="mt-3 text-center font-medium">{{ insight() }}</p>
+      }
+    </app-grafico-card>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+<p-card>
+  <div class="flex align-items-start justify-content-between mb-3 gap-2">
+    <div>
+      <h3 class="m-0 flex align-items-center gap-2 text-lg">
+        @if (icone()) {
+          <i [class]="icone()"></i>
+        }
+        {{ titulo() }}
+      </h3>
+      @if (subtitulo()) {
+        <p class="mt-1 mb-0 text-sm text-secondary">{{ subtitulo() }}</p>
+      }
+    </div>
+    <ng-content select="[acoes]" />
+  </div>
+
+  @if (vazio()) {
+    <p class="text-center mt-3 text-secondary">{{ mensagemVazio() }}</p>
+  } @else {
+    <ng-content />
+  }
+</p-card>

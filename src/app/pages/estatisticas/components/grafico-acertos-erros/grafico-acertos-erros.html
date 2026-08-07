@@ -1,0 +1,14 @@
+<app-grafico-card
+  titulo="Acertos x Erros"
+  icone="pi pi-check-circle"
+  [vazio]="vazio()"
+  mensagemVazio="Responda questões para ver a proporção de acertos e erros."
+>
+  <div class="relative flex align-items-center justify-content-center" style="height: 320px">
+    <p-chart type="doughnut" [data]="dados()" [options]="opcoes()" height="320px" />
+    <div class="absolute flex flex-column align-items-center pointer-events-none">
+      <span class="text-3xl font-bold">{{ percentualLabel() }}</span>
+      <span class="text-sm text-secondary">aproveitamento</span>
+    </div>
+  </div>
+</app-grafico-card>

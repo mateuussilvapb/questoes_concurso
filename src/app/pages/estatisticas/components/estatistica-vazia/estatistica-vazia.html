@@ -1,0 +1,6 @@
+<div class="flex flex-column align-items-center justify-content-center text-center py-6 gap-3">
+  <i [class]="icone() + ' text-6xl text-secondary'"></i>
+  <h2 class="m-0">{{ titulo() }}</h2>
+  <p class="m-0 text-secondary">{{ descricao() }}</p>
+  <p-button [label]="labelBotao()" (onClick)="acaoClick.emit()" />
+</div>

@@ -1,0 +1,98 @@
+@if (form()) {
+  <ng-container [formGroup]="form()">
+    <div class="grid">
+      <!-- Período rápido -->
+      <div class="col-12">
+        <label class="block mb-2 font-medium">Período</label>
+        <p-selectbutton
+          [options]="periodosRapidos"
+          optionLabel="label"
+          optionValue="dias"
+          (onOptionClick)="onSelecionarPeriodo($event.option.dias)"
+        />
+      </div>
+
+      <!-- Data início -->
+      <div class="col-12 md:col-6 lg:col-3">
+        <app-form-label
+          label="De"
+          for="data-inicio-estatistica"
+          [control]="form().get('dataInicioPeriodoConsulta')!"
+        >
+          <p-datepicker
+            class="w-full"
+            dateFormat="dd/mm/yy"
+            inputId="data-inicio-estatistica"
+            formControlName="dataInicioPeriodoConsulta"
+            placeholder="Data inicial"
+            [showIcon]="true"
+            [showClear]="true"
+          />
+        </app-form-label>
+      </div>
+
+      <!-- Data fim -->
+      <div class="col-12 md:col-6 lg:col-3">
+        <app-form-label
+          label="Até"
+          for="data-fim-estatistica"
+          [control]="form().get('dataFimPeriodoConsulta')!"
+        >
+          <p-datepicker
+            class="w-full"
+            dateFormat="dd/mm/yy"
+            inputId="data-fim-estatistica"
+            formControlName="dataFimPeriodoConsulta"
+            placeholder="Data final"
+            [showIcon]="true"
+            [showClear]="true"
+          />
+        </app-form-label>
+      </div>
+
+      <!-- Matéria -->
+      <div class="col-12 md:col-6 lg:col-3">
+        <app-autocomplete-materia
+          [form]="form()"
+          controlName="idMateria"
+          idField="materia-estatistica"
+          placeholder="Selecione a matéria"
+        />
+      </div>
+
+      <!-- Assunto -->
+      <div class="col-12 md:col-6 lg:col-3">
+        <app-multiselect-assunto
+          [form]="form()"
+          controlName="idsAssuntos"
+          idField="assuntos-estatistica"
+          placeholder="Selecione os assuntos"
+        />
+      </div>
+
+      <!-- Dificuldade -->
+      <div class="col-12 md:col-6 lg:col-3">
+        <app-form-label
+          for="dificuldade-estatistica"
+          label="Nível de Dificuldade"
+          [control]="form().get('dificuldade')!"
+        >
+          <p-select
+            [checkmark]="true"
+            [showClear]="true"
+            optionLabel="label"
+            id="dificuldade-estatistica"
+            [options]="dificuldades"
+            formControlName="dificuldade"
+            placeholder="Selecione o nível"
+          />
+        </app-form-label>
+      </div>
+    </div>
+
+    <div class="flex flex-row justify-content-end w-full mt-3 gap-2">
+      <p-button label="Limpar" severity="secondary" (onClick)="onLimpar()" />
+      <p-button label="Atualizar" class="button-aplicacao-style" (onClick)="onAtualizar()" />
+    </div>
+  </ng-container>
+}
