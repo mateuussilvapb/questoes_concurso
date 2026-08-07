@@ -8,6 +8,7 @@ import { Assunto } from '../../../assuntos/core/models/assunto.model';
 import { Questao } from '../../../questoes/core/models/questao.model';
 import { ResolverQuestoes } from '../../core/models/resolver-questoes.model';
 import { ListBase } from '../../../../shared/components/list-base/list-base';
+import { HistoricoService } from '../../../historico/core/services/historico.service';
 import { QuestaoFilter } from '../../../questoes/core/dtos/filter-questao.dto';
 import { QuestaoService } from './../../../questoes/core/services/questao.service';
 import { ResultadosResolucaoComponent } from '../resultados-resolucao/resultados-resolucao';
@@ -43,6 +44,7 @@ export interface ResultadosResolucao {
 })
 export class ResolverQuestoesPage extends ListBase {
   private readonly questaoService = inject(QuestaoService);
+  private readonly historicoService = inject(HistoricoService);
 
   protected readonly resolverMode = signal<boolean>(false);
   protected readonly resultadosMode = signal<boolean>(false);
@@ -114,6 +116,8 @@ export class ResolverQuestoesPage extends ListBase {
       resolvida: false,
       correta: false,
       alternativaId: '',
+      tempoResposta: 0,
+      respondidaEm: '',
     }));
 
     this.questoesResolucao.set(questoes);
@@ -134,11 +138,24 @@ export class ResolverQuestoesPage extends ListBase {
     this.resolverMode.set(false);
   }
 
-  onRespondeu(event: { questaoId: string; alternativaId: string; correta: boolean }) {
+  onRespondeu(event: {
+    questaoId: string;
+    alternativaId: string;
+    correta: boolean;
+    tempoResposta: number;
+    respondidaEm: string;
+  }) {
     this.questoesResolucao.update((questoes) =>
       questoes.map((q) =>
         q.questao.id == event.questaoId
-          ? { ...q, alternativaId: event.alternativaId, correta: event.correta, resolvida: true }
+          ? {
+              ...q,
+              alternativaId: event.alternativaId,
+              correta: event.correta,
+              resolvida: true,
+              tempoResposta: event.tempoResposta,
+              respondidaEm: event.respondidaEm,
+            }
           : q,
       ),
     );
@@ -148,7 +165,15 @@ export class ResolverQuestoesPage extends ListBase {
     this.questoesResolucao.update((questoes) =>
       questoes.map((q) =>
         q.questao.id === questaoAtualizada.id
-          ? { ...q, questao: questaoAtualizada, resolvida: false, correta: false, alternativaId: '' }
+          ? {
+              ...q,
+              questao: questaoAtualizada,
+              resolvida: false,
+              correta: false,
+              alternativaId: '',
+              tempoResposta: 0,
+              respondidaEm: '',
+            }
           : q,
       ),
     );
@@ -159,12 +184,30 @@ export class ResolverQuestoesPage extends ListBase {
     this.resultadosMode.set(true);
   }
 
-  onEncerrarVisualizacaoResultados() {
-    //TODO: Implementar persistência de histórico
+  async onEncerrarVisualizacaoResultados() {
+    await this.persistirHistorico();
+
     this.form.reset();
     this.form.updateValueAndValidity();
     this.resultadoResolucao.set(null);
     this.resultadosMode.set(false);
     this.resolverMode.set(false);
+  }
+
+  private async persistirHistorico() {
+    const resolvidas = this.questoesResolucao().filter((q) => q.resolvida);
+
+    for (const resolucao of resolvidas) {
+      await this.historicoService.criar({
+        idQuestao: resolucao.questao.id,
+        respondidaEm: resolucao.respondidaEm,
+        idAlternativaSelecionada: resolucao.alternativaId,
+        correta: resolucao.correta,
+        tempoResposta: resolucao.tempoResposta,
+        dificuldade: resolucao.questao.nivelDificuldade,
+        idMateria: resolucao.questao.idMateria,
+        idsAssuntos: resolucao.questao.idsAssuntos,
+      });
+    }
   }
 }

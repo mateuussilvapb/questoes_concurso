@@ -28,10 +28,18 @@ export class ResolverQuestoesComponent {
 
   encerrar = output();
   finalizar = output<ResultadosResolucao>();
-  respondeu = output<{ questaoId: string; alternativaId: string; correta: boolean }>();
+  respondeu = output<{
+    questaoId: string;
+    alternativaId: string;
+    correta: boolean;
+    tempoResposta: number;
+    respondidaEm: string;
+  }>();
   questaoAtualizada = output<Questao>();
 
   readonly indiceAtual = signal<number>(0);
+
+  private inicioQuestaoAtual = Date.now();
 
   readonly questaoAtual = computed(() => this.questoes()[this.indiceAtual()]);
 
@@ -62,6 +70,7 @@ export class ResolverQuestoesComponent {
 
   constructor() {
     this.timerService.startStopwatchDisabled();
+    this.timerService.hide();
   }
 
   private alterarIndice(indice: number) {
@@ -70,6 +79,7 @@ export class ResolverQuestoesComponent {
     }
 
     this.indiceAtual.set(indice);
+    this.inicioQuestaoAtual = Date.now();
   }
 
   proximaQuestao() {
@@ -110,14 +120,19 @@ export class ResolverQuestoesComponent {
   }
 
   onRespondeu(event: { alternativaId: string; correta: boolean }) {
+    const tempoResposta = Math.round((Date.now() - this.inicioQuestaoAtual) / 1000);
+
     this.respondeu.emit({
       questaoId: this.questaoAtual().questao.id,
       alternativaId: event.alternativaId,
       correta: event.correta,
+      tempoResposta,
+      respondidaEm: new Date().toISOString(),
     });
   }
 
   onQuestaoEditada(questao: Questao) {
+    this.inicioQuestaoAtual = Date.now();
     this.questaoAtualizada.emit(questao);
   }
 
