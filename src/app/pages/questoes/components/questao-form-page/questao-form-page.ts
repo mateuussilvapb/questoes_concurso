@@ -356,9 +356,13 @@ export class QuestaoFormPage extends FormBase implements OnInit {
     };
 
     try {
-      await this.questaoService.criar(dto);
+      const questaoCriada = await this.questaoService.criar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess('Questão criada com sucesso.');
+      if (this.isDialogMode()) {
+        this.finalizar(questaoCriada, ['/questao']);
+        return;
+      }
       this.continuarAdicionandoOuVoltar();
     } catch (e: any) {
       console.error(e);
@@ -416,12 +420,14 @@ export class QuestaoFormPage extends FormBase implements OnInit {
     };
 
     try {
-      await this.questaoService.atualizar(dto);
+      const questaoAtualizada = await this.questaoService.atualizar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
-        'Questão atualizada com sucesso. Você será redirecionado para listagem.',
+        this.isDialogMode()
+          ? 'Questão atualizada com sucesso.'
+          : 'Questão atualizada com sucesso. Você será redirecionado para listagem.',
       );
-      this.onVoltar();
+      this.finalizar(questaoAtualizada, ['/questao']);
       return;
     } catch (e: any) {
       console.error(e);
@@ -445,7 +451,7 @@ export class QuestaoFormPage extends FormBase implements OnInit {
   }
 
   onVoltar() {
-    this.router.navigate(['/questao']);
+    this.finalizar(undefined, ['/questao']);
   }
 
   // Get Controls and Arrays

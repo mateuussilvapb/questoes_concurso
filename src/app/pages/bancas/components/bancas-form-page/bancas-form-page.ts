@@ -138,12 +138,14 @@ export class BancasFormPage extends FormBase implements OnInit {
     };
 
     try {
-      await this.bancaService.criar(dto);
+      const bancaCriada = await this.bancaService.criar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
-        'Banca criada com sucesso. Você será redirecionado para listagem.',
+        this.isDialogMode()
+          ? 'Banca criada com sucesso.'
+          : 'Banca criada com sucesso. Você será redirecionado para listagem.',
       );
-      this.router.navigate(['banca']);
+      this.finalizar(bancaCriada, ['banca']);
       return;
     } catch (e: any) {
       console.error(e);
@@ -163,12 +165,14 @@ export class BancasFormPage extends FormBase implements OnInit {
     };
 
     try {
-      await this.bancaService.atualizar(dto);
+      const bancaAtualizada = await this.bancaService.atualizar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
-        'Banca atualizada com sucesso. Você será redirecionado para listagem.',
+        this.isDialogMode()
+          ? 'Banca atualizada com sucesso.'
+          : 'Banca atualizada com sucesso. Você será redirecionado para listagem.',
       );
-      this.router.navigate(['banca']);
+      this.finalizar(bancaAtualizada, ['banca']);
       return;
     } catch (e: any) {
       console.error(e);
@@ -180,6 +184,6 @@ export class BancasFormPage extends FormBase implements OnInit {
   }
 
   onVoltar() {
-    this.router.navigate(['/banca']);
+    this.finalizar(undefined, ['/banca']);
   }
 }

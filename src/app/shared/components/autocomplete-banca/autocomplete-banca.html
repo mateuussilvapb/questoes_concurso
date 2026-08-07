@@ -24,7 +24,22 @@
         (onDropdownClick)="abrirAutocomplete(ac)"
         (completeMethod)="searchBanca($event)"
         emptyMessage="Nenhuma banca encontrada"
-      />
+      >
+        @if (exibirBotaoCadastro()) {
+          <ng-template pTemplate="footer">
+            <div class="p-2">
+              <p-button
+                label="Nova Banca"
+                icon="pi pi-plus"
+                size="small"
+                variant="text"
+                styleClass="w-full"
+                (onClick)="abrirModalCriacaoBanca(ac)"
+              />
+            </div>
+          </ng-template>
+        }
+      </p-autocomplete>
     </app-form-label>
   </ng-container>
 } @else {
@@ -45,5 +60,20 @@
     (completeMethod)="searchBanca($event)"
     (onDropdownClick)="abrirAutocomplete(ac)"
     emptyMessage="Nenhuma banca encontrada"
-  />
+  >
+    @if (exibirBotaoCadastro()) {
+      <ng-template pTemplate="footer">
+        <div class="p-2">
+          <p-button
+            label="Nova Banca"
+            icon="pi pi-plus"
+            size="small"
+            variant="text"
+            styleClass="w-full"
+            (onClick)="abrirModalCriacaoBanca(ac)"
+          />
+        </div>
+      </ng-template>
+    }
+  </p-autocomplete>
 }

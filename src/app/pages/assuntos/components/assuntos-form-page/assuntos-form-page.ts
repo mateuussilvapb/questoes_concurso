@@ -118,6 +118,11 @@ export class AssuntosFormPage extends FormBase implements OnInit {
         [Validators.required],
       ],
     });
+
+    const valoresIniciais = this.dialogData()?.valoresIniciais;
+    if (this.isCreateMode() && valoresIniciais) {
+      this.form.patchValue(valoresIniciais);
+    }
   }
 
   async getAssuntoAndHandle(): Promise<void> {
@@ -158,12 +163,14 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     };
 
     try {
-      await this.assuntoService.criar(dto);
+      const assuntoCriado = await this.assuntoService.criar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
-        'Assunto criado com sucesso. Você será redirecionado para listagem.',
+        this.isDialogMode()
+          ? 'Assunto criado com sucesso.'
+          : 'Assunto criado com sucesso. Você será redirecionado para listagem.',
       );
-      this.router.navigate(['assunto']);
+      this.finalizar(assuntoCriado, ['assunto']);
       return;
     } catch (e: any) {
       console.error(e);
@@ -184,12 +191,14 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     };
 
     try {
-      await this.assuntoService.atualizar(dto);
+      const assuntoAtualizado = await this.assuntoService.atualizar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
-        'Assunto atualizado com sucesso. Você será redirecionado para listagem.',
+        this.isDialogMode()
+          ? 'Assunto atualizado com sucesso.'
+          : 'Assunto atualizado com sucesso. Você será redirecionado para listagem.',
       );
-      this.router.navigate(['assunto']);
+      this.finalizar(assuntoAtualizado, ['assunto']);
       return;
     } catch (e: any) {
       console.error(e);
@@ -201,6 +210,6 @@ export class AssuntosFormPage extends FormBase implements OnInit {
   }
 
   onVoltar() {
-    this.router.navigate(['/assunto']);
+    this.finalizar(undefined, ['/assunto']);
   }
 }

@@ -16,6 +16,9 @@ import {
 } from '../../../questoes/core/enums/nivel-dificuldade.enum';
 import { ResolverQuestoes } from '../../core/models/resolver-questoes.model';
 import { ThemeService } from './../../../../core/services/theme.service';
+import { Questao } from '../../../questoes/core/models/questao.model';
+import { QuestaoFormPage } from '../../../questoes/components/questao-form-page/questao-form-page';
+import { FormDialogData } from '../../../../shared/components/form-base/form-base';
 
 //Externo
 import { ButtonModule } from 'primeng/button';
@@ -69,6 +72,7 @@ export class ResolverQuestaoCard {
   questaoAnterior = output();
   finalizarRespostas = output();
   respondeu = output<{ alternativaId: string; correta: boolean }>();
+  questaoAtualizada = output<Questao>();
 
   alternativaSelecionada = signal<AlternativaResolucao | null>(null);
 
@@ -211,6 +215,26 @@ export class ResolverQuestaoCard {
       header: `Comentário`,
       draggable: false,
       closable: true,
+    });
+  }
+
+  onEditarQuestao() {
+    const ref = this.dialogService.open(QuestaoFormPage, {
+      header: 'Editar Questão',
+      width: this.layoutService.isMobile() ? '100vw' : '70vw',
+      closeOnEscape: true,
+      draggable: false,
+      closable: true,
+      maximizable: this.layoutService.isMobile(),
+      contentStyle: { overflow: 'auto' },
+      data: { mode: 'edicao', id: this.questao().questao.id } satisfies FormDialogData,
+    });
+
+    ref?.onClose.subscribe((questaoAtualizada?: Questao) => {
+      if (!questaoAtualizada) {
+        return;
+      }
+      this.questaoAtualizada.emit(questaoAtualizada);
     });
   }
 }

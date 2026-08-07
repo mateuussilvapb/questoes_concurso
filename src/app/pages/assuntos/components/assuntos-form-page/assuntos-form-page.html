@@ -1,4 +1,4 @@
-<app-layout-base-pages [title]="title()" [subtitle]="subtitle()">
+<ng-template #corpo>
   <p-card>
     @if (form) {
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -85,4 +85,12 @@
       </form>
     }
   </p-card>
-</app-layout-base-pages>
+</ng-template>
+
+@if (isDialogMode()) {
+  <ng-container [ngTemplateOutlet]="corpo" />
+} @else {
+  <app-layout-base-pages [title]="title()" [subtitle]="subtitle()">
+    <ng-container [ngTemplateOutlet]="corpo" />
+  </app-layout-base-pages>
+}

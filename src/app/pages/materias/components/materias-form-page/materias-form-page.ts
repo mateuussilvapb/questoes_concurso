@@ -138,12 +138,14 @@ export class MateriasFormPage extends FormBase implements OnInit {
     };
 
     try {
-      await this.materiaService.criar(dto);
+      const materiaCriada = await this.materiaService.criar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
-        'Matéria criada com sucesso. Você será redirecionado para listagem.',
+        this.isDialogMode()
+          ? 'Matéria criada com sucesso.'
+          : 'Matéria criada com sucesso. Você será redirecionado para listagem.',
       );
-      this.router.navigate(['materia']);
+      this.finalizar(materiaCriada, ['materia']);
       return;
     } catch (e: any) {
       console.error(e);
@@ -163,12 +165,14 @@ export class MateriasFormPage extends FormBase implements OnInit {
     };
 
     try {
-      await this.materiaService.atualizar(dto);
+      const materiaAtualizada = await this.materiaService.atualizar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
-        'Matéria atualizada com sucesso. Você será redirecionado para listagem.',
+        this.isDialogMode()
+          ? 'Matéria atualizada com sucesso.'
+          : 'Matéria atualizada com sucesso. Você será redirecionado para listagem.',
       );
-      this.router.navigate(['materia']);
+      this.finalizar(materiaAtualizada, ['materia']);
       return;
     } catch (e: any) {
       console.error(e);
@@ -180,6 +184,6 @@ export class MateriasFormPage extends FormBase implements OnInit {
   }
 
   onVoltar() {
-    this.router.navigate(['/materia']);
+    this.finalizar(undefined, ['/materia']);
   }
 }

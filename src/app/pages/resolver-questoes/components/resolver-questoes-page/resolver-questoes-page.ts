@@ -70,6 +70,7 @@ export class ResolverQuestoesPage extends ListBase {
         marcadaParaRevisao: value.marcadaParaRevisao?.value,
         idMateria: value.idMateria?.id,
         idsAssuntos: value.idsAssuntos?.map((a: Assunto) => a.id),
+        idBanca: value.idBanca?.id,
       };
 
       this.questaoService.pesquisar(filtro).then((questoes) => this.questoes.set(questoes));
@@ -88,6 +89,7 @@ export class ResolverQuestoesPage extends ListBase {
       observacao: [null],
       idMateria: [null],
       idsAssuntos: [[]],
+      idBanca: [null],
       tipo: [null],
       nivelDificuldade: [null],
       favorita: [null],
@@ -137,6 +139,16 @@ export class ResolverQuestoesPage extends ListBase {
       questoes.map((q) =>
         q.questao.id == event.questaoId
           ? { ...q, alternativaId: event.alternativaId, correta: event.correta, resolvida: true }
+          : q,
+      ),
+    );
+  }
+
+  onQuestaoAtualizada(questaoAtualizada: Questao) {
+    this.questoesResolucao.update((questoes) =>
+      questoes.map((q) =>
+        q.questao.id === questaoAtualizada.id
+          ? { ...q, questao: questaoAtualizada, resolvida: false, correta: false, alternativaId: '' }
           : q,
       ),
     );

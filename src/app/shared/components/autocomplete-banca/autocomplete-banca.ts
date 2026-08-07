@@ -6,11 +6,16 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 //Aplicação
 import { Banca } from '../../../pages/bancas/core/models/banca.model';
 import { BancaService } from '../../../pages/bancas/core/services/banca.service';
+import { BancasFormPage } from '../../../pages/bancas/components/bancas-form-page/bancas-form-page';
+import { FormDialogData } from '../form-base/form-base';
 import { Util } from '../../util/util';
+import { LayoutService } from '../../../core/services/layout.service';
 import { FormLabel } from '../form-label/form-label';
 
 //Externo
 import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
+import { ButtonModule } from 'primeng/button';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-autocomplete-banca',
@@ -25,11 +30,14 @@ import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
 
     //Externos
     AutoCompleteModule,
+    ButtonModule,
   ],
   templateUrl: './autocomplete-banca.html',
 })
 export class AutocompleteBanca implements OnInit {
   private readonly bancaService = inject(BancaService);
+  private readonly dialogService = inject(DialogService);
+  private readonly layoutService = inject(LayoutService);
 
   form = input<FormGroup>();
   controlName = input<string>('');
@@ -39,6 +47,7 @@ export class AutocompleteBanca implements OnInit {
 
   idField = input.required<string>();
   placeholder = input.required<string>();
+  exibirBotaoCadastro = input<boolean>(false);
 
   protected searchTermBanca = signal<string>('');
 
@@ -86,6 +95,36 @@ export class AutocompleteBanca implements OnInit {
   fecharAutocomplete(ac: AutoComplete) {
     this.searchBanca({ query: '' });
     Util.forcarFechamentoAutocompleteMultiselect(ac);
+  }
+
+  abrirModalCriacaoBanca(ac: AutoComplete): void {
+    Util.forcarFechamentoAutocompleteMultiselect(ac);
+
+    const ref = this.dialogService.open(BancasFormPage, {
+      header: 'Nova Banca',
+      width: this.layoutService.isMobile() ? '100vw' : '40vw',
+      closeOnEscape: true,
+      draggable: false,
+      closable: true,
+      maximizable: this.layoutService.isMobile(),
+      contentStyle: { overflow: 'auto' },
+      data: { mode: 'cadastro' } satisfies FormDialogData,
+    });
+
+    ref?.onClose.subscribe((bancaCriada?: Banca) => {
+      if (!bancaCriada) {
+        return;
+      }
+      this.consultarBancas().then(() => this.selecionarBancaCriada(bancaCriada));
+    });
+  }
+
+  private selecionarBancaCriada(banca: Banca): void {
+    if (this.form() && this.controlName()) {
+      this.controlForm().setValue(banca);
+      return;
+    }
+    this.bancaSelecionada.set(banca);
   }
 
   controlForm(): FormControl {

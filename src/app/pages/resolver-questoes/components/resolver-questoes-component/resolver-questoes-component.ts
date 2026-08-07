@@ -3,6 +3,7 @@ import { Component, computed, inject, input, output, signal } from '@angular/cor
 
 //Aplicação
 import { ResolverQuestoes } from '../../core/models/resolver-questoes.model';
+import { Questao } from '../../../questoes/core/models/questao.model';
 import { TimerService } from './../../../../core/timer/service/timer.service';
 import { ResolverQuestaoCard } from '../resolver-questao-card/resolver-questao-card';
 import { ResultadosResolucao } from '../resolver-questoes-page/resolver-questoes-page';
@@ -28,6 +29,7 @@ export class ResolverQuestoesComponent {
   encerrar = output();
   finalizar = output<ResultadosResolucao>();
   respondeu = output<{ questaoId: string; alternativaId: string; correta: boolean }>();
+  questaoAtualizada = output<Questao>();
 
   readonly indiceAtual = signal<number>(0);
 
@@ -113,6 +115,10 @@ export class ResolverQuestoesComponent {
       alternativaId: event.alternativaId,
       correta: event.correta,
     });
+  }
+
+  onQuestaoEditada(questao: Questao) {
+    this.questaoAtualizada.emit(questao);
   }
 
   onFinalizarRespostas() {
