@@ -115,7 +115,14 @@ export abstract class BaseRepository<T extends object> implements EntityReposito
   }
 
   async updateAll(ids: string[], changes: Partial<T>): Promise<void> {
-    await Promise.all(ids.map((id) => this.table.update(id, changes)));
+    // Tipagem estrutural mínima: o tipo real de Dexie.transaction() (overloads
+    // com TXWithTables<this>) causa TS2589 (recursão de tipo excessiva) neste
+    // contexto genérico.
+    const database: { transaction: Function } = this.database;
+
+    await database.transaction('rw', this.tableName, async () => {
+      await Promise.all(ids.map((id) => this.table.update(id, changes)));
+    });
   }
 
   async delete(id: string): Promise<void> {

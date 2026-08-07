@@ -193,7 +193,7 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 |---|---|---|
 | 11 | `startsWith`/`endsWith` no `QueryExecutor` fazem `.toLowerCase()` mas o `QueryBuilder` não documenta isso — comportamento implícito | `query/query-executor.ts` L190-203 |
 | 12 | Paginação do `QueryExecutor` em memória (slice) — carrega todos os dados antes de paginar, ineficiente para volumes grandes | `query/query-executor.ts` L29-36 |
-| 13 | `BaseRepository.updateAll` usa `Promise.all(ids.map(...))` — sem transação Dexie, pode falhar parcialmente | `base/base-repository.ts` L97-99 |
+| ~~13~~ | ~~`BaseRepository.updateAll` usa `Promise.all(ids.map(...))` — sem transação Dexie, pode falhar parcialmente~~ | ✅ Resolvido em 07/08 — envolvido em `database.transaction('rw', tableName, ...)`. Sem consumidor de UI hoje (assim como `findPaginated`/item 22), verificado apenas via type-check |
 | 14 | `orOperador` no `QueryExecutor.matchesConditions` aplica AND/OR de forma simplificada (não trata grupos de OR) | `query/query-executor.ts` L111-133 |
 
 ---
@@ -241,13 +241,20 @@ Os seguintes arquivos ainda usam `StorageService` (LocalStorage) e precisam ser 
 [x] 21. Verificar e ajustar injeção de IdGeneratorService em PersistentEntity
          (garantir compatibilidade com contexto de injeção Angular)      (já resolvido ao migrar `materia` — `id` gerado via `crypto.randomUUID()`, sem `inject()`)
 
-[ ] 22. Revisar paginação do QueryExecutor para usar `.offset().limit()` nativo do Dexie
-         (atualmente carrega tudo em memória antes de paginar)
+[-] 22. Revisar paginação do QueryExecutor para usar `.offset().limit()` nativo do Dexie
+         (atualmente carrega tudo em memória antes de paginar)         — descartado em 07/08: `findPaginated`/`.page()`/`.limit()`
+         não têm nenhum consumidor real (a paginação de Questões foi resolvida
+         no lado da exibição, ver nota de escopo no topo do documento); infra
+         sem uso não vale o custo de manutenção agora. Retomar se/quando surgir
+         um consumidor real.
 
-[ ] 23. Revisar updateAll para usar transação Dexie (db.transaction())
+[x] 23. Revisar updateAll para usar transação Dexie (db.transaction())    (concluído 07/08 — `BaseRepository.updateAll` envolvido em
+         `database.transaction('rw', tableName, ...)`; workaround de tipagem
+         estrutural mínima documentado no código para contornar TS2589 dos
+         overloads de `Dexie.transaction()`. Sem consumidor de UI hoje.)
 ```
 
-**Próximo passo recomendado:** todos os módulos de página (`materia`, `assunto`, `banca`, `questao`, `historico`) e o backup/restauração estão migrados; o `StorageService` legado foi removido do projeto. `resolver-questoes-page.ts` já grava histórico ao final de cada resolução (07/08). Resta apenas os itens 🟢 menores (22-23), refinamentos de performance/robustez sem urgência, e a página `pages/estatisticas/` (consumo de leitura do histórico), que é funcionalidade nova ainda não pedida.
+**Próximo passo recomendado:** todos os módulos de página (`materia`, `assunto`, `banca`, `questao`, `historico`) e o backup/restauração estão migrados; o `StorageService` legado foi removido do projeto. `resolver-questoes-page.ts` já grava histórico ao final de cada resolução (07/08). `updateAll` agora usa transação Dexie (07/08). O item 22 foi descartado por falta de consumidor real. Resta apenas a página `pages/estatisticas/` (consumo de leitura do histórico), que é funcionalidade nova ainda não pedida — a migração de persistência em si está concluída.
 
 > Existe agora uma skill reutilizável para conduzir essas migrações módulo a módulo:
 > `.claude/skills/migrate-module-to-dexie/SKILL.md`. Invocar como "analise/migre o módulo de assunto" (ou questao/historico/banca).
