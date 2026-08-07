@@ -1,6 +1,7 @@
 //Angular
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 
 //Aplicação
 import { ListBase } from '../../../../shared/components/list-base/list-base';
@@ -54,7 +55,15 @@ export class EstatisticasPage extends ListBase implements OnInit {
   protected readonly carregado = signal(false);
   protected readonly granularidade = signal<GranularidadeTemporal>(GranularidadeTemporal.DIA);
 
-  protected readonly formValue = toSignal(this.form.valueChanges, {
+  override form: FormGroup = this.fb.group({
+    dataInicioPeriodoConsulta: [null],
+    dataFimPeriodoConsulta: [null],
+    idMateria: [null],
+    idsAssuntos: [[]],
+    dificuldade: [null],
+  });
+
+  protected readonly formValue = toSignal<any>(this.form.valueChanges, {
     initialValue: this.form.getRawValue(),
   });
 
@@ -102,23 +111,8 @@ export class EstatisticasPage extends ListBase implements OnInit {
     () => this.carregado() && this.base().historicos.length > 0 && this.painel().vazio,
   );
 
-  constructor() {
-    super();
-    this.createForm(); // ANTES do toSignal acima (ordem importa)
-  }
-
   async ngOnInit(): Promise<void> {
     await this.carregar();
-  }
-
-  createForm(): void {
-    this.form = this.fb.group({
-      dataInicioPeriodoConsulta: [null],
-      dataFimPeriodoConsulta: [null],
-      idMateria: [null],
-      idsAssuntos: [[]],
-      dificuldade: [null],
-    });
   }
 
   protected async carregar(): Promise<void> {
