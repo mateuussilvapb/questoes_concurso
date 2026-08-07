@@ -102,7 +102,18 @@ export class MultiselectAssunto implements OnInit {
     return (control?.touched && control?.dirty && control?.invalid) ?? false;
   }
 
+  /**
+   * Enquanto true, bloqueia reaberturas do painel do multiselect. Necessário porque o
+   * MultiSelect do PrimeNG refoca o input interno em `onContainerClick` mesmo quando o clique
+   * ocorreu em conteúdo do próprio overlay (ex: botão "Novo Assunto"), o que dispara (onFocus)
+   * novamente e reabre o painel por cima do modal de cadastro que acabou de ser aberto.
+   */
+  private bloquearReaberturaMultiselect = false;
+
   abrirMultiselect(ac: MultiSelect) {
+    if (this.bloquearReaberturaMultiselect) {
+      return;
+    }
     this.searchAssunto({ query: '' } as any);
     Util.forcarAberturaAutocompleteMultiselect(ac);
   }
@@ -113,6 +124,7 @@ export class MultiselectAssunto implements OnInit {
   }
 
   abrirModalCriacaoAssunto(ac: MultiSelect): void {
+    this.bloquearReaberturaMultiselect = true;
     Util.forcarFechamentoAutocompleteMultiselect(ac);
 
     const materia = this.materiaParaNovoAssunto();
@@ -132,6 +144,8 @@ export class MultiselectAssunto implements OnInit {
     });
 
     ref?.onClose.subscribe((assuntoCriado?: Assunto) => {
+      this.bloquearReaberturaMultiselect = false;
+
       if (!assuntoCriado) {
         return;
       }
