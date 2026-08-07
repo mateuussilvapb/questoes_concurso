@@ -9,6 +9,7 @@ export interface CreateQuestaoDto {
   observacao: ObservacoesQuestoes;
   idMateria: string;
   idsAssuntos: string[];
+  idBanca?: string;
   nivelDificuldade: NivelDificuldade;
   tipo: TipoQuestao;
   alternativas: AlternativaDto[];

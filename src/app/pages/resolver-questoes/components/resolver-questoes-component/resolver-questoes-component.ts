@@ -3,6 +3,7 @@ import { Component, computed, inject, input, output, signal } from '@angular/cor
 
 //Aplicação
 import { ResolverQuestoes } from '../../core/models/resolver-questoes.model';
+import { Questao } from '../../../questoes/core/models/questao.model';
 import { TimerService } from './../../../../core/timer/service/timer.service';
 import { ResolverQuestaoCard } from '../resolver-questao-card/resolver-questao-card';
 import { ResultadosResolucao } from '../resolver-questoes-page/resolver-questoes-page';
@@ -27,9 +28,18 @@ export class ResolverQuestoesComponent {
 
   encerrar = output();
   finalizar = output<ResultadosResolucao>();
-  respondeu = output<{ questaoId: string; alternativaId: string; correta: boolean }>();
+  respondeu = output<{
+    questaoId: string;
+    alternativaId: string;
+    correta: boolean;
+    tempoResposta: number;
+    respondidaEm: string;
+  }>();
+  questaoAtualizada = output<Questao>();
 
   readonly indiceAtual = signal<number>(0);
+
+  private inicioQuestaoAtual = Date.now();
 
   readonly questaoAtual = computed(() => this.questoes()[this.indiceAtual()]);
 
@@ -60,6 +70,7 @@ export class ResolverQuestoesComponent {
 
   constructor() {
     this.timerService.startStopwatchDisabled();
+    this.timerService.hide();
   }
 
   private alterarIndice(indice: number) {
@@ -68,6 +79,7 @@ export class ResolverQuestoesComponent {
     }
 
     this.indiceAtual.set(indice);
+    this.inicioQuestaoAtual = Date.now();
   }
 
   proximaQuestao() {
@@ -96,7 +108,9 @@ export class ResolverQuestoesComponent {
       message: 'Tem certeza que deseja encerrar? Os resultados não serão persistidos no histórico.',
       header: 'Confirma?',
       icon: 'pi pi-exclamation-triangle',
-      rejectButtonStyleClass: 'p-button-secondary',
+      rejectLabel: 'Continuar',
+      rejectButtonStyleClass: 'p-button-primary',
+      acceptLabel: 'Cancelar',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.encerrar.emit();
@@ -106,11 +120,20 @@ export class ResolverQuestoesComponent {
   }
 
   onRespondeu(event: { alternativaId: string; correta: boolean }) {
+    const tempoResposta = Math.round((Date.now() - this.inicioQuestaoAtual) / 1000);
+
     this.respondeu.emit({
       questaoId: this.questaoAtual().questao.id,
       alternativaId: event.alternativaId,
       correta: event.correta,
+      tempoResposta,
+      respondidaEm: new Date().toISOString(),
     });
+  }
+
+  onQuestaoEditada(questao: Questao) {
+    this.inicioQuestaoAtual = Date.now();
+    this.questaoAtualizada.emit(questao);
   }
 
   onFinalizarRespostas() {

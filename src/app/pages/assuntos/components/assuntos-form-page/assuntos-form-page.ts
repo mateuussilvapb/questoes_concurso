@@ -15,7 +15,6 @@ import { AutocompleteMateria } from '../../../../shared/components/autocomplete-
 import { FormBase } from '../../../../shared/components/form-base/form-base';
 import { FormLabel } from '../../../../shared/components/form-label/form-label';
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
-import { Loading } from '../../../../shared/components/loading/loading';
 import { Util } from '../../../../shared/util/util';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { MateriaService } from '../../../materias/core/services/materia.service';
@@ -33,7 +32,6 @@ import { AssuntoService } from '../../core/services/assunto.service';
     ReactiveFormsModule,
 
     //Aplicação
-    Loading,
     FormLabel,
     LayoutBasePages,
     AutocompleteMateria,
@@ -87,10 +85,10 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     required: 'A matéria é obrigatória',
   };
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.createForm();
     if (!this.isCreateMode()) {
-      this.getAssuntoAndHandle();
+      await this.getAssuntoAndHandle();
     }
   }
 
@@ -118,15 +116,20 @@ export class AssuntosFormPage extends FormBase implements OnInit {
         [Validators.required],
       ],
     });
+
+    const valoresIniciais = this.dialogData()?.valoresIniciais;
+    if (this.isCreateMode() && valoresIniciais) {
+      this.form.patchValue(valoresIniciais);
+    }
   }
 
-  getAssuntoAndHandle() {
-    this.assunto.set(this.assuntoService.buscarPorId(this.pageId()));
-    this.patchValueOnForm();
+  async getAssuntoAndHandle(): Promise<void> {
+    this.assunto.set(await this.assuntoService.buscarPorId(this.pageId()));
+    await this.patchValueOnForm();
   }
 
-  patchValueOnForm() {
-    const materia = this.materiaService.buscarPorId(this.assunto()?.idMateria ?? '');
+  async patchValueOnForm(): Promise<void> {
+    const materia = await this.materiaService.buscarPorId(this.assunto()?.idMateria ?? '');
     this.form.patchValue({
       nome: this.assunto()?.nome,
       descricao: this.assunto()?.descricao,
@@ -149,7 +152,7 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     this.messageService.showInfo('Formulário inválido. Preencha o formulário corretamente.');
   }
 
-  onCreate() {
+  async onCreate() {
     const rawValue = this.form.getRawValue();
     const dto: CreateAssuntoDto = {
       nome: rawValue.nome,
@@ -158,12 +161,14 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     };
 
     try {
-      this.assuntoService.criar(dto);
+      const assuntoCriado = await this.assuntoService.criar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
-        'Assunto criado com sucesso. Você será redirecionado para listagem.',
+        this.isDialogMode()
+          ? 'Assunto criado com sucesso.'
+          : 'Assunto criado com sucesso. Você será redirecionado para listagem.',
       );
-      this.router.navigate(['assunto']);
+      this.finalizar(assuntoCriado, ['assunto']);
       return;
     } catch (e: any) {
       console.error(e);
@@ -174,7 +179,7 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     }
   }
 
-  onUpdate() {
+  async onUpdate() {
     const rawValue = this.form.getRawValue();
     const dto: UpdateAssuntoDto = {
       id: this.assunto()?.id ?? '',
@@ -184,12 +189,14 @@ export class AssuntosFormPage extends FormBase implements OnInit {
     };
 
     try {
-      this.assuntoService.atualizar(dto);
+      const assuntoAtualizado = await this.assuntoService.atualizar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
-        'Assunto atualizado com sucesso. Você será redirecionado para listagem.',
+        this.isDialogMode()
+          ? 'Assunto atualizado com sucesso.'
+          : 'Assunto atualizado com sucesso. Você será redirecionado para listagem.',
       );
-      this.router.navigate(['assunto']);
+      this.finalizar(assuntoAtualizado, ['assunto']);
       return;
     } catch (e: any) {
       console.error(e);
@@ -201,6 +208,6 @@ export class AssuntosFormPage extends FormBase implements OnInit {
   }
 
   onVoltar() {
-    this.router.navigate(['/assunto']);
+    this.finalizar(undefined, ['/assunto']);
   }
 }

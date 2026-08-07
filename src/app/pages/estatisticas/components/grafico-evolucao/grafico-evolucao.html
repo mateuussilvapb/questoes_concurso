@@ -1,0 +1,19 @@
+<app-grafico-card
+  titulo="Evolução no Tempo"
+  subtitulo="Acompanhe sua evolução de aproveitamento ao longo do período"
+  icone="pi pi-chart-line"
+  [vazio]="vazio()"
+  mensagemVazio="Sem histórico no período selecionado."
+>
+  <div acoes>
+    <p-select
+      [options]="opcoesGranularidade"
+      optionLabel="label"
+      optionValue="value"
+      [ngModel]="granularidade()"
+      (ngModelChange)="granularidade.set($event)"
+    />
+  </div>
+
+  <p-chart type="bar" [data]="dadosGrafico()" [options]="opcoesGrafico()" height="320px" />
+</app-grafico-card>

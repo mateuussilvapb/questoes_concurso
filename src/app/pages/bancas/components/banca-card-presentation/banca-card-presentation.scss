@@ -1,0 +1,6 @@
+.conteudo-descricao {
+  display: -webkit-box;
+  -webkit-line-clamp: 5; /* Quantidade máxima de linhas */
+  -webkit-box-orient: vertical;
+  overflow: hidden; /* Esconde o texto que passar do limite */
+}

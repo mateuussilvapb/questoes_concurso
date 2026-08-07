@@ -24,7 +24,22 @@
         (onDropdownClick)="abrirAutocomplete(ac)"
         (completeMethod)="searchMateria($event)"
         emptyMessage="Nenhuma matéria encontrada"
-      />
+      >
+        @if (exibirBotaoCadastro()) {
+          <ng-template pTemplate="footer">
+            <div class="p-2">
+              <p-button
+                label="Nova Matéria"
+                icon="pi pi-plus"
+                size="small"
+                variant="text"
+                styleClass="w-full"
+                (onClick)="abrirModalCriacaoMateria(ac)"
+              />
+            </div>
+          </ng-template>
+        }
+      </p-autocomplete>
     </app-form-label>
   </ng-container>
 } @else {
@@ -45,5 +60,20 @@
     (completeMethod)="searchMateria($event)"
     (onDropdownClick)="abrirAutocomplete(ac)"
     emptyMessage="Nenhuma matéria encontrada"
-  />
+  >
+    @if (exibirBotaoCadastro()) {
+      <ng-template pTemplate="footer">
+        <div class="p-2">
+          <p-button
+            label="Nova Matéria"
+            icon="pi pi-plus"
+            size="small"
+            variant="text"
+            styleClass="w-full"
+            (onClick)="abrirModalCriacaoMateria(ac)"
+          />
+        </div>
+      </ng-template>
+    }
+  </p-autocomplete>
 }

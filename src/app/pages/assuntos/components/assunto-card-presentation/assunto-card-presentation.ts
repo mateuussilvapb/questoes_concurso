@@ -19,6 +19,7 @@ import { Materia } from '../../../materias/core/models/materia.model';
     TooltipModule,
   ],
   templateUrl: './assunto-card-presentation.html',
+  styleUrls: ['./assunto-card-presentation.scss'],
 })
 export class AssuntoCardPresentation extends ListBase {
   private readonly assuntoService = inject(AssuntoService);
@@ -51,9 +52,9 @@ export class AssuntoCardPresentation extends ListBase {
     });
   }
 
-  excluir() {
+  async excluir() {
     try {
-      this.assuntoService.remover(this.assunto().id);
+      await this.assuntoService.remover(this.assunto().id);
       this.messageService.showSuccess('Assunto excluída com sucesso!');
       this.exclusaoConcluida.emit(true);
     } catch (e: any) {

@@ -17,6 +17,7 @@
     (encerrar)="onEncerrar()"
     (finalizar)="onFinalizar($event)"
     (respondeu)="onRespondeu($event)"
+    (questaoAtualizada)="onQuestaoAtualizada($event)"
     [questoes]="questoesResolucao()"
   />
 } @else if (resultadosMode() && resultadoResolucao()) {

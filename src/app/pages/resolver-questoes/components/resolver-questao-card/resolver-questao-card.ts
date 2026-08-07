@@ -6,6 +6,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 //Aplicação
 import { Util } from '../../../../shared/util/util';
+import { Materia } from '../../../materias/core/models/materia.model';
 import { MateriaService } from '../../../materias/core/services/materia.service';
 import { Alternativa } from '../../../questoes/alternativas/core/models/alternativa.model';
 import {
@@ -15,6 +16,9 @@ import {
 } from '../../../questoes/core/enums/nivel-dificuldade.enum';
 import { ResolverQuestoes } from '../../core/models/resolver-questoes.model';
 import { ThemeService } from './../../../../core/services/theme.service';
+import { Questao } from '../../../questoes/core/models/questao.model';
+import { QuestaoFormPage } from '../../../questoes/components/questao-form-page/questao-form-page';
+import { FormDialogData } from '../../../../shared/components/form-base/form-base';
 
 //Externo
 import { ButtonModule } from 'primeng/button';
@@ -68,13 +72,14 @@ export class ResolverQuestaoCard {
   questaoAnterior = output();
   finalizarRespostas = output();
   respondeu = output<{ alternativaId: string; correta: boolean }>();
+  questaoAtualizada = output<Questao>();
 
   alternativaSelecionada = signal<AlternativaResolucao | null>(null);
 
   isDarkMode = computed(() => this.themeService.isDarkMode());
   dificuldadeQuestao = computed(() => this.questao().questao.nivelDificuldade);
   labelDificuldade = computed(() => NIVEL_DIFICULDADE_LABEL[this.dificuldadeQuestao()]);
-  materia = computed(() => this.materiaService.buscarPorId(this.questao().questao.idMateria));
+  materia = signal<Materia | null>(null);
 
   feedback = computed(() => {
     if (!this.questao().resolvida) return null;
@@ -110,6 +115,7 @@ export class ResolverQuestaoCard {
 
   constructor() {
     this.configureAlternativas();
+    this.configureMateria();
   }
 
   configureAlternativas() {
@@ -121,6 +127,14 @@ export class ResolverQuestaoCard {
           selecionada: false,
         })),
       );
+    });
+  }
+
+  configureMateria() {
+    effect(() => {
+      const idMateria = this.questao().questao.idMateria;
+
+      this.materiaService.buscarPorId(idMateria).then((materia) => this.materia.set(materia));
     });
   }
 
@@ -201,6 +215,26 @@ export class ResolverQuestaoCard {
       header: `Comentário`,
       draggable: false,
       closable: true,
+    });
+  }
+
+  onEditarQuestao() {
+    const ref = this.dialogService.open(QuestaoFormPage, {
+      header: 'Editar Questão',
+      width: this.layoutService.isMobile() ? '100vw' : '70vw',
+      closeOnEscape: true,
+      draggable: false,
+      closable: true,
+      maximizable: this.layoutService.isMobile(),
+      contentStyle: { overflow: 'auto' },
+      data: { mode: 'edicao', id: this.questao().questao.id } satisfies FormDialogData,
+    });
+
+    ref?.onClose.subscribe((questaoAtualizada?: Questao) => {
+      if (!questaoAtualizada) {
+        return;
+      }
+      this.questaoAtualizada.emit(questaoAtualizada);
     });
   }
 }

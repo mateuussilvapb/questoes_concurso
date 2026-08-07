@@ -1,0 +1,79 @@
+@if (form() && controlName()) {
+  <ng-container [formGroup]="form()!">
+    <app-form-label
+      [for]="idField()"
+      label="Banca"
+      [control]="controlForm()"
+      [errorMessages]="errorMessages()"
+    >
+      <p-autocomplete
+        #ac
+        fluid
+        dataKey="id"
+        [delay]="900"
+        [dropdown]="true"
+        optionLabel="nome"
+        [inputId]="idField()"
+        [invalid]="isInvalid()"
+        [forceSelection]="true"
+        [placeholder]="placeholder()"
+        (onFocus)="abrirAutocomplete(ac)"
+        [formControlName]="controlName()"
+        (onSelect)="fecharAutocomplete(ac)"
+        [suggestions]="bancasFiltradas()"
+        (onDropdownClick)="abrirAutocomplete(ac)"
+        (completeMethod)="searchBanca($event)"
+        emptyMessage="Nenhuma banca encontrada"
+      >
+        @if (exibirBotaoCadastro()) {
+          <ng-template pTemplate="footer">
+            <div class="p-2">
+              <p-button
+                label="Nova Banca"
+                icon="pi pi-plus"
+                size="small"
+                variant="text"
+                styleClass="w-full"
+                (onClick)="abrirModalCriacaoBanca(ac)"
+              />
+            </div>
+          </ng-template>
+        }
+      </p-autocomplete>
+    </app-form-label>
+  </ng-container>
+} @else {
+  <p-autocomplete
+    #ac
+    fluid
+    dataKey="id"
+    [delay]="900"
+    [dropdown]="true"
+    optionLabel="nome"
+    [inputId]="idField()"
+    [forceSelection]="true"
+    [placeholder]="placeholder()"
+    [(ngModel)]="bancaSelecionada"
+    (onFocus)="abrirAutocomplete(ac)"
+    (onSelect)="fecharAutocomplete(ac)"
+    [suggestions]="bancasFiltradas()"
+    (completeMethod)="searchBanca($event)"
+    (onDropdownClick)="abrirAutocomplete(ac)"
+    emptyMessage="Nenhuma banca encontrada"
+  >
+    @if (exibirBotaoCadastro()) {
+      <ng-template pTemplate="footer">
+        <div class="p-2">
+          <p-button
+            label="Nova Banca"
+            icon="pi pi-plus"
+            size="small"
+            variant="text"
+            styleClass="w-full"
+            (onClick)="abrirModalCriacaoBanca(ac)"
+          />
+        </div>
+      </ng-template>
+    }
+  </p-autocomplete>
+}

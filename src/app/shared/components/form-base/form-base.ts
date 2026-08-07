@@ -1,25 +1,56 @@
 //Angular
-import { computed, Directive, inject, signal } from '@angular/core';
+import { computed, Directive, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 //Aplicação
 import { ListBase } from '../list-base/list-base';
-import { ActivatedRoute } from '@angular/router';
+
+//Externo
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
+
+export interface FormDialogData {
+  mode?: 'cadastro' | 'edicao' | 'visualizacao';
+  id?: string;
+  valoresIniciais?: Record<string, any>;
+}
 
 @Directive({})
 export class FormBase extends ListBase {
   protected readonly route = inject(ActivatedRoute);
+  protected readonly dialogRef = inject(DynamicDialogRef, { optional: true });
 
-  isEditMode = signal(this.router.url.includes('edicao'));
-  isCreateMode = signal(this.router.url.includes('cadastro'));
-  isViewMode = signal(this.router.url.includes('visualizacao'));
+  protected dialogData = computed<FormDialogData | null>(() =>
+    this.dialogRef ? (this.dialogService.getInstance(this.dialogRef)?.data ?? null) : null,
+  );
 
-  pageId = computed<string>(() => {
-    const id = this.route.snapshot.paramMap.get('id');
-    return id ?? '';
-  });
+  isDialogMode = computed<boolean>(() => this.dialogRef !== null);
+
+  isEditMode = computed<boolean>(
+    () => this.dialogData()?.mode === 'edicao' || (!this.dialogData() && this.router.url.includes('edicao')),
+  );
+
+  isCreateMode = computed<boolean>(
+    () => this.dialogData()?.mode === 'cadastro' || (!this.dialogData() && this.router.url.includes('cadastro')),
+  );
+
+  isViewMode = computed<boolean>(
+    () =>
+      this.dialogData()?.mode === 'visualizacao' ||
+      (!this.dialogData() && this.router.url.includes('visualizacao')),
+  );
+
+  pageId = computed<string>(() => this.dialogData()?.id ?? this.route.snapshot.paramMap.get('id') ?? '');
 
   isInvalid(controlName: string): boolean {
     const control = this.form?.get(controlName);
     return (control?.touched && control?.dirty && control?.invalid) ?? false;
+  }
+
+  protected finalizar<T>(resultado: T | undefined, rotaFallback: string[]): void {
+    if (this.dialogRef) {
+      this.dialogRef.close(resultado);
+      return;
+    }
+    this.router.navigate(rotaFallback);
   }
 }

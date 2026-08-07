@@ -22,7 +22,22 @@
         (completeMethod)="searchAssunto($event)"
         emptyMessage="Nenhum assunto encontrado"
         (onDropdownClick)="abrirMultiselect(ac)"
-      />
+      >
+        @if (exibirBotaoCadastro()) {
+          <ng-template pTemplate="footer">
+            <div class="p-2">
+              <p-button
+                label="Novo Assunto"
+                icon="pi pi-plus"
+                size="small"
+                variant="text"
+                styleClass="w-full"
+                (onClick)="abrirModalCriacaoAssunto(ac)"
+              />
+            </div>
+          </ng-template>
+        }
+      </p-multiselect>
     </app-form-label>
   </ng-container>
 } @else {
@@ -39,5 +54,20 @@
     (onSelect)="fecharMultiselect(ac)"
     (completeMethod)="searchAssunto($event)"
     emptyMessage="Nenhum assunto encontrado"
-  />
+  >
+    @if (exibirBotaoCadastro()) {
+      <ng-template pTemplate="footer">
+        <div class="p-2">
+          <p-button
+            label="Novo Assunto"
+            icon="pi pi-plus"
+            size="small"
+            variant="text"
+            styleClass="w-full"
+            (onClick)="abrirModalCriacaoAssunto(ac)"
+          />
+        </div>
+      </ng-template>
+    }
+  </p-multiselect>
 }

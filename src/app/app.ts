@@ -5,6 +5,7 @@ import { RouterOutlet } from '@angular/router';
 //Aplicação
 import { Toast } from './shared/components/toast/toast';
 import { FloatingTimer } from './core/timer/components/floating-timer/floating-timer';
+import { LoadingOverlay } from './shared/components/loading-overlay/loading-overlay';
 
 //Externos
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -18,6 +19,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     //Aplicação
     Toast,
     FloatingTimer,
+    LoadingOverlay,
 
     //Externos
     ConfirmDialogModule,

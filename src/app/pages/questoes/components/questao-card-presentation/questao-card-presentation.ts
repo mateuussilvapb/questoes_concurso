@@ -13,6 +13,7 @@ import { Util } from '../../../../shared/util/util';
 import { Questao } from '../../core/models/questao.model';
 import { QuestaoService } from '../../core/services/questao.service';
 import { Assunto } from '../../../assuntos/core/models/assunto.model';
+import { Banca } from '../../../bancas/core/models/banca.model';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { ThemeService } from '../../../../core/services/theme.service';
 import { TIPO_QUESTAO_LABEL } from '../../core/enums/tipo-questao.enum';
@@ -49,6 +50,7 @@ export class QuestaoCardPresentation extends ListBase {
 
   questao = input.required<Questao>();
   materia = input.required<Materia>();
+  banca = input<Banca | undefined>(undefined);
   assuntosAssociados = input.required<Assunto[]>();
 
   exclusaoConcluida = output<boolean>();
@@ -69,9 +71,9 @@ export class QuestaoCardPresentation extends ListBase {
     });
   }
 
-  excluir() {
+  async excluir() {
     try {
-      this.questaoService.remover(this.questao().id);
+      await this.questaoService.remover(this.questao().id);
       this.messageService.showSuccess('Questão excluída com sucesso!');
       this.exclusaoConcluida.emit(true);
     } catch (e: any) {
@@ -104,10 +106,10 @@ export class QuestaoCardPresentation extends ListBase {
   //Botão Revisão
   isQuestaoMarcadaParaRevisao = computed<boolean>(() => this.questao().status.marcadaParaRevisao);
 
-  onToggleRevisao() {
+  async onToggleRevisao() {
     try {
-      this.questaoService.toggleMarcadaParaRevisao(this.questao().id);
       const statusMarcadaParaRevisaoAtual = this.questao().status.marcadaParaRevisao;
+      await this.questaoService.toggleMarcadaParaRevisao(this.questao().id);
       this.toogleStatus.emit(this.questao().id);
       const message = statusMarcadaParaRevisaoAtual
         ? 'Questão desmarcada para revisão!'
@@ -138,10 +140,10 @@ export class QuestaoCardPresentation extends ListBase {
   //Botão Favoritar
   isQuestaoMarcadaComoFavorita = computed<boolean>(() => this.questao().status.favorita);
 
-  onToggleFavoritar() {
+  async onToggleFavoritar() {
     try {
-      this.questaoService.toggleFavorita(this.questao().id);
       const statusFavoritaAtual = this.questao().status.favorita;
+      await this.questaoService.toggleFavorita(this.questao().id);
       this.toogleStatus.emit(this.questao().id);
       const message = statusFavoritaAtual ? 'Questão desfavoritada!' : 'Questão favoritada!';
       this.messageService.showSuccess(message, 'Sucesso!');

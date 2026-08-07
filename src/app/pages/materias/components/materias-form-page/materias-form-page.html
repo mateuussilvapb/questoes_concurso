@@ -1,4 +1,4 @@
-<app-layout-base-pages [title]="title()" [subtitle]="subtitle()">
+<ng-template #corpo>
   <p-card>
     @if (form) {
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -49,7 +49,7 @@
           class="pt-2 flex flex-wrap flex-column-reverse md:flex-row justify-content-end gap-2"
 
         >
-          <div class="col-12 p-0 md:col-2 xl:col-1">
+          <div class="col-12 p-0 md:w-auto">
             <p-button
               label="Voltar"
               class="w-full"
@@ -61,7 +61,7 @@
             />
           </div>
           @if (!isViewMode() && !submitting()) {
-            <div class="col-12 p-0 md:col-2 xl:col-1">
+            <div class="col-12 p-0 md:w-auto">
               <p-button
                 type="submit"
                 styleClass="w-full button-aplicacao-style"
@@ -71,11 +71,16 @@
               />
             </div>
           }
-          @if (submitting()) {
-            <app-loading></app-loading>
-          }
         </div>
       </form>
     }
   </p-card>
-</app-layout-base-pages>
+</ng-template>
+
+@if (isDialogMode()) {
+  <ng-container [ngTemplateOutlet]="corpo" />
+} @else {
+  <app-layout-base-pages [title]="title()" [subtitle]="subtitle()">
+    <ng-container [ngTemplateOutlet]="corpo" />
+  </app-layout-base-pages>
+}

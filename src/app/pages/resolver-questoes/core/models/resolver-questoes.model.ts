@@ -5,4 +5,6 @@ export interface ResolverQuestoes {
   resolvida: boolean;
   correta: boolean;
   alternativaId: string;
+  tempoResposta: number;
+  respondidaEm: string;
 }

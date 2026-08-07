@@ -1,0 +1,20 @@
+<app-grafico-card
+  [titulo]="titulo()"
+  icone="pi pi-exclamation-triangle"
+  [vazio]="vazio()"
+  [mensagemVazio]="mensagemVazia()"
+>
+  <div class="flex flex-column gap-3">
+    @for (item of itens(); track item.idGrupo) {
+      <div>
+        <div class="flex justify-content-between mb-1">
+          <span class="font-medium">{{ item.nomeGrupo }}</span>
+          <span class="text-secondary text-sm">
+            {{ percentual(item) }}% ({{ item.totalCorretas }}/{{ item.totalRespondidas }})
+          </span>
+        </div>
+        <p-progressbar [value]="percentual(item)" [showValue]="false" />
+      </div>
+    }
+  </div>
+</app-grafico-card>

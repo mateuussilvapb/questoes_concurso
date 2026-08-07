@@ -6,11 +6,17 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 //Aplicação
 import { Assunto } from '../../../pages/assuntos/core/models/assunto.model';
 import { AssuntoService } from '../../../pages/assuntos/core/services/assunto.service';
+import { AssuntosFormPage } from '../../../pages/assuntos/components/assuntos-form-page/assuntos-form-page';
+import { Materia } from '../../../pages/materias/core/models/materia.model';
+import { FormDialogData } from '../form-base/form-base';
 import { Util } from '../../util/util';
+import { LayoutService } from '../../../core/services/layout.service';
 import { FormLabel } from '../form-label/form-label';
 
 //Externo
 import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
+import { ButtonModule } from 'primeng/button';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-multiselect-assunto',
@@ -25,11 +31,14 @@ import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
 
     //Externos
     MultiSelectModule,
+    ButtonModule,
   ],
   templateUrl: './multiselect-assunto.html',
 })
 export class MultiselectAssunto implements OnInit {
   private readonly assuntoService = inject(AssuntoService);
+  private readonly dialogService = inject(DialogService);
+  private readonly layoutService = inject(LayoutService);
 
   form = input<FormGroup>();
   controlName = input<string>('');
@@ -40,6 +49,8 @@ export class MultiselectAssunto implements OnInit {
 
   idField = input.required<string>();
   placeholder = input.required<string>();
+  exibirBotaoCadastro = input<boolean>(false);
+  materiaParaNovoAssunto = input<Materia | null>(null);
 
   searchTermIdMateria = input<string | null>(null);
   protected searchTermAssunto = signal<string>('');
@@ -68,9 +79,9 @@ export class MultiselectAssunto implements OnInit {
     return listaOriginal;
   });
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     if ((this.form() && this.controlName()) || this.assuntoSelecionado() !== undefined) {
-      this.consultarAssuntos();
+      await this.consultarAssuntos();
       return;
     }
     throw new Error(
@@ -78,8 +89,8 @@ export class MultiselectAssunto implements OnInit {
     );
   }
 
-  consultarAssuntos() {
-    this.assuntos.set(this.assuntoService.listar());
+  async consultarAssuntos() {
+    this.assuntos.set(await this.assuntoService.listar());
   }
 
   searchAssunto(event: any) {
@@ -99,6 +110,42 @@ export class MultiselectAssunto implements OnInit {
   fecharMultiselect(ac: MultiSelect) {
     this.searchAssunto({ query: '' });
     Util.forcarFechamentoAutocompleteMultiselect(ac);
+  }
+
+  abrirModalCriacaoAssunto(ac: MultiSelect): void {
+    Util.forcarFechamentoAutocompleteMultiselect(ac);
+
+    const materia = this.materiaParaNovoAssunto();
+
+    const ref = this.dialogService.open(AssuntosFormPage, {
+      header: 'Novo Assunto',
+      width: this.layoutService.isMobile() ? '100vw' : '40vw',
+      closeOnEscape: true,
+      draggable: false,
+      closable: true,
+      maximizable: this.layoutService.isMobile(),
+      contentStyle: { overflow: 'auto' },
+      data: {
+        mode: 'cadastro',
+        valoresIniciais: materia ? { materia } : undefined,
+      } satisfies FormDialogData,
+    });
+
+    ref?.onClose.subscribe((assuntoCriado?: Assunto) => {
+      if (!assuntoCriado) {
+        return;
+      }
+      this.consultarAssuntos().then(() => this.selecionarAssuntoCriado(assuntoCriado));
+    });
+  }
+
+  private selecionarAssuntoCriado(assunto: Assunto): void {
+    if (this.form() && this.controlName()) {
+      const atuais: Assunto[] = this.controlForm().value ?? [];
+      this.controlForm().setValue([...atuais, assunto]);
+      return;
+    }
+    this.assuntoSelecionado.set(assunto);
   }
 
   controlForm(): FormControl {

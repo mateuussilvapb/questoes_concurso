@@ -12,7 +12,6 @@ import { InputTextModule } from 'primeng/inputtext';
 //Aplicação
 import { Materia } from '../../core/models/materia.model';
 import { MateriaService } from '../../core/services/materia.service';
-import { Loading } from '../../../../shared/components/loading/loading';
 import { CreateMateriaDto } from '../../core/dtos/create-materia.dto';
 import { UpdateMateriaDto } from '../../core/dtos/update-materia.dto';
 import { FormBase } from '../../../../shared/components/form-base/form-base';
@@ -28,7 +27,6 @@ import { LayoutBasePages } from '../../../../shared/components/layout-base-pages
     ReactiveFormsModule,
 
     //Aplicação
-    Loading,
     FormLabel,
     LayoutBasePages,
 
@@ -76,10 +74,10 @@ export class MateriasFormPage extends FormBase implements OnInit {
     maxlength: 'A descrição deve ter, no máximo, 500 caracteres',
   };
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.createForm();
     if (!this.isCreateMode()) {
-      this.getMateriaAndHandle();
+      await this.getMateriaAndHandle();
     }
   }
 
@@ -103,8 +101,8 @@ export class MateriasFormPage extends FormBase implements OnInit {
     });
   }
 
-  getMateriaAndHandle() {
-    this.materia.set(this.materiaService.buscarPorId(this.pageId()));
+  async getMateriaAndHandle(): Promise<void> {
+    this.materia.set(await this.materiaService.buscarPorId(this.pageId()));
     this.patchValueOnForm();
   }
 
@@ -130,7 +128,7 @@ export class MateriasFormPage extends FormBase implements OnInit {
     this.messageService.showInfo('Formulário inválido. Preencha o formulário corretamente.');
   }
 
-  onCreate() {
+  async onCreate(): Promise<void> {
     const rawValue = this.form.getRawValue();
     const dto: CreateMateriaDto = {
       nome: rawValue.nome,
@@ -138,12 +136,14 @@ export class MateriasFormPage extends FormBase implements OnInit {
     };
 
     try {
-      this.materiaService.criar(dto);
+      const materiaCriada = await this.materiaService.criar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
-        'Matéria criada com sucesso. Você será redirecionado para listagem.',
+        this.isDialogMode()
+          ? 'Matéria criada com sucesso.'
+          : 'Matéria criada com sucesso. Você será redirecionado para listagem.',
       );
-      this.router.navigate(['materia']);
+      this.finalizar(materiaCriada, ['materia']);
       return;
     } catch (e: any) {
       console.error(e);
@@ -154,7 +154,7 @@ export class MateriasFormPage extends FormBase implements OnInit {
     }
   }
 
-  onUpdate() {
+  async onUpdate(): Promise<void> {
     const rawValue = this.form.getRawValue();
     const dto: UpdateMateriaDto = {
       id: this.materia()?.id ?? '',
@@ -163,12 +163,14 @@ export class MateriasFormPage extends FormBase implements OnInit {
     };
 
     try {
-      this.materiaService.atualizar(dto);
+      const materiaAtualizada = await this.materiaService.atualizar(dto);
       this.submitting.set(false);
       this.messageService.showSuccess(
-        'Matéria atualizada com sucesso. Você será redirecionado para listagem.',
+        this.isDialogMode()
+          ? 'Matéria atualizada com sucesso.'
+          : 'Matéria atualizada com sucesso. Você será redirecionado para listagem.',
       );
-      this.router.navigate(['materia']);
+      this.finalizar(materiaAtualizada, ['materia']);
       return;
     } catch (e: any) {
       console.error(e);
@@ -180,6 +182,6 @@ export class MateriasFormPage extends FormBase implements OnInit {
   }
 
   onVoltar() {
-    this.router.navigate(['/materia']);
+    this.finalizar(undefined, ['/materia']);
   }
 }

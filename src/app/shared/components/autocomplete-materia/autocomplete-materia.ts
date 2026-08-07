@@ -6,11 +6,16 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 //Aplicação
 import { Materia } from '../../../pages/materias/core/models/materia.model';
 import { MateriaService } from '../../../pages/materias/core/services/materia.service';
+import { MateriasFormPage } from '../../../pages/materias/components/materias-form-page/materias-form-page';
+import { FormDialogData } from '../form-base/form-base';
 import { Util } from '../../util/util';
+import { LayoutService } from '../../../core/services/layout.service';
 import { FormLabel } from '../form-label/form-label';
 
 //Externo
 import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
+import { ButtonModule } from 'primeng/button';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-autocomplete-materia',
@@ -25,11 +30,14 @@ import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
 
     //Externos
     AutoCompleteModule,
+    ButtonModule,
   ],
   templateUrl: './autocomplete-materia.html',
 })
 export class AutocompleteMateria implements OnInit {
   private readonly materiaService = inject(MateriaService);
+  private readonly dialogService = inject(DialogService);
+  private readonly layoutService = inject(LayoutService);
 
   form = input<FormGroup>();
   controlName = input<string>('');
@@ -39,6 +47,7 @@ export class AutocompleteMateria implements OnInit {
 
   idField = input.required<string>();
   placeholder = input.required<string>();
+  exibirBotaoCadastro = input<boolean>(false);
 
   protected searchTermMateria = signal<string>('');
 
@@ -65,8 +74,8 @@ export class AutocompleteMateria implements OnInit {
     );
   }
 
-  consultarMaterias() {
-    this.materias.set(this.materiaService.listar());
+  async consultarMaterias(): Promise<void> {
+    this.materias.set(await this.materiaService.listar());
   }
 
   searchMateria(event: any) {
@@ -86,6 +95,36 @@ export class AutocompleteMateria implements OnInit {
   fecharAutocomplete(ac: AutoComplete) {
     this.searchMateria({ query: '' });
     Util.forcarFechamentoAutocompleteMultiselect(ac);
+  }
+
+  abrirModalCriacaoMateria(ac: AutoComplete): void {
+    Util.forcarFechamentoAutocompleteMultiselect(ac);
+
+    const ref = this.dialogService.open(MateriasFormPage, {
+      header: 'Nova Matéria',
+      width: this.layoutService.isMobile() ? '100vw' : '40vw',
+      closeOnEscape: true,
+      draggable: false,
+      closable: true,
+      maximizable: this.layoutService.isMobile(),
+      contentStyle: { overflow: 'auto' },
+      data: { mode: 'cadastro' } satisfies FormDialogData,
+    });
+
+    ref?.onClose.subscribe((materiaCriada?: Materia) => {
+      if (!materiaCriada) {
+        return;
+      }
+      this.consultarMaterias().then(() => this.selecionarMateriaCriada(materiaCriada));
+    });
+  }
+
+  private selecionarMateriaCriada(materia: Materia): void {
+    if (this.form() && this.controlName()) {
+      this.controlForm().setValue(materia);
+      return;
+    }
+    this.materiaSelecionada.set(materia);
   }
 
   controlForm(): FormControl {

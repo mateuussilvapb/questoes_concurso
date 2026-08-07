@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 $white: #ffffff;
 $scale: 14px;
 $transitionDuration: 0.3s;
@@ -12,8 +14,8 @@ $gradientApplication: linear-gradient(90deg, $gradientStartColor, $gradientMidCo
 
 
 //DarkMode
-$gradientStartColorDark: darken($gradientStartColor, 5%);
-$gradientMidColorDark: darken($gradientMidColor, 5%);
-$gradientLastColorDark: darken($gradientLastColor, 5%);
+$gradientStartColorDark: color.adjust($gradientStartColor, $lightness: -5%);
+$gradientMidColorDark: color.adjust($gradientMidColor, $lightness: -5%);
+$gradientLastColorDark: color.adjust($gradientLastColor, $lightness: -5%);
 
 $gradientApplicationDark: linear-gradient(90deg, $gradientStartColorDark, $gradientMidColorDark, $gradientLastColorDark);

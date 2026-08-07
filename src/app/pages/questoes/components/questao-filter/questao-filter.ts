@@ -8,6 +8,7 @@ import { OPCOES_TIPO_QUESTAO } from '../../core/enums/tipo-questao.enum';
 import { FormLabel } from '../../../../shared/components/form-label/form-label';
 import { OPCOES_NIVEL_DIFICULDADE } from '../../core/enums/nivel-dificuldade.enum';
 import { MultiselectAssunto } from '../../../../shared/components/multiselect-assunto/multiselect-assunto';
+import { AutocompleteBanca } from '../../../../shared/components/autocomplete-banca/autocomplete-banca';
 import { AutocompleteMateria } from '../../../../shared/components/autocomplete-materia/autocomplete-materia';
 
 //Externo
@@ -27,6 +28,7 @@ import { InputTextModule } from 'primeng/inputtext';
     //Aplicação
     FormLabel,
     MultiselectAssunto,
+    AutocompleteBanca,
     AutocompleteMateria,
 
     //Externo

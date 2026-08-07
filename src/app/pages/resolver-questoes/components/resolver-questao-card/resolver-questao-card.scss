@@ -8,6 +8,11 @@
 }
 
 
+.alternativa-texto p {
+  margin: 0;
+  padding: 0;
+}
+
 .word-wrap-text {
   overflow-wrap: break-word;
   word-break: break-all; /* Garante a quebra mesmo em strings contínuas gigantes */

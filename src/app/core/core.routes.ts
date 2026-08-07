@@ -24,6 +24,10 @@ export const CORE_ROUTES: Routes = [
       import('../pages/questoes/core/questoes.routes').then((c) => c.QUESTAO_ROUTES),
   },
   {
+    path: 'banca',
+    loadChildren: () => import('../pages/bancas/core/bancas.routes').then((c) => c.BANCAS_ROUTES),
+  },
+  {
     path: 'resolver-questoes',
     loadChildren: () =>
       import('../pages/resolver-questoes/core/resolver-questoes.routes').then(
@@ -34,6 +38,11 @@ export const CORE_ROUTES: Routes = [
     path: 'configuracoes',
     loadChildren: () =>
       import('../pages/configuracoes/core/assuntos.routes').then((c) => c.CONFIGURACOES_ROUTES),
+  },
+  {
+    path: 'estatistica',
+    loadChildren: () =>
+      import('../pages/estatisticas/core/estatisticas.routes').then((c) => c.ESTATISTICAS_ROUTES),
   },
   {
     path: '**',

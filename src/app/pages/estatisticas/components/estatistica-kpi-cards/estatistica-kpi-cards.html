@@ -1,0 +1,18 @@
+<div class="grid">
+  @for (card of cards(); track $index) {
+    <div class="col-12 sm:col-6 lg:col-4 xl:col-2">
+      <p-card [class]="card.backGroundColorCard + ' ' + card.textColorCard + ' font-bold h-full'">
+        <ng-template #title>
+          <div class="w-full flex flex-row gap-2 align-items-center m-0 p-0 text-sm">
+            <em [class]="card.icon + ' font-bold'"></em>
+            <h2 class="m-0 p-0">{{ card.titleCard }}</h2>
+          </div>
+        </ng-template>
+
+        <span class="text-xl">
+          {{ card.textCard }}
+        </span>
+      </p-card>
+    </div>
+  }
+</div>

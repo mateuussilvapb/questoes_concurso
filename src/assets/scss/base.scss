@@ -20,15 +20,9 @@ html.app-dark body {
   background: #101010;
 }
 
-.editor-content {
-  @import 'utils/quill-content';
-}
-
 .question-content {
   white-space: normal;
   word-break: normal;
   overflow-wrap: normal;
   hyphens: manual;
-
-  @extend .editor-content;
 }

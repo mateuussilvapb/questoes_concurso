@@ -1,12 +1,14 @@
 //Angular
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 
 //Aplicação
 import { Util } from '../../../../shared/util/util';
 import { Assunto } from '../../../assuntos/core/models/assunto.model';
+import { Questao } from '../../../questoes/core/models/questao.model';
 import { ResolverQuestoes } from '../../core/models/resolver-questoes.model';
 import { ListBase } from '../../../../shared/components/list-base/list-base';
+import { HistoricoService } from '../../../historico/core/services/historico.service';
 import { QuestaoFilter } from '../../../questoes/core/dtos/filter-questao.dto';
 import { QuestaoService } from './../../../questoes/core/services/questao.service';
 import { ResultadosResolucaoComponent } from '../resultados-resolucao/resultados-resolucao';
@@ -42,6 +44,7 @@ export interface ResultadosResolucao {
 })
 export class ResolverQuestoesPage extends ListBase {
   private readonly questaoService = inject(QuestaoService);
+  private readonly historicoService = inject(HistoricoService);
 
   protected readonly resolverMode = signal<boolean>(false);
   protected readonly resultadosMode = signal<boolean>(false);
@@ -56,28 +59,31 @@ export class ResolverQuestoesPage extends ListBase {
     this.formValue = toSignal(this.form.valueChanges, {
       initialValue: this.form.getRawValue(),
     });
+
+    effect(() => {
+      const value = this.formValue();
+
+      const filtro: QuestaoFilter = {
+        ...value,
+        tipo: value.tipo?.value,
+        favorita: value.favorita?.value,
+        revisada: value.revisada?.value,
+        nivelDificuldade: value.nivelDificuldade?.value,
+        marcadaParaRevisao: value.marcadaParaRevisao?.value,
+        idMateria: value.idMateria?.id,
+        idsAssuntos: value.idsAssuntos?.map((a: Assunto) => a.id),
+        idBanca: value.idBanca?.id,
+      };
+
+      this.questaoService.pesquisar(filtro).then((questoes) => this.questoes.set(questoes));
+    });
   }
 
   protected formValue = toSignal(this.form.valueChanges, {
     initialValue: this.form.getRawValue(),
   });
 
-  protected questoes = computed(() => {
-    const value = this.formValue();
-
-    const filtro: QuestaoFilter = {
-      ...value,
-      tipo: value.tipo?.value,
-      favorita: value.favorita?.value,
-      revisada: value.revisada?.value,
-      nivelDificuldade: value.nivelDificuldade?.value,
-      marcadaParaRevisao: value.marcadaParaRevisao?.value,
-      idMateria: value.idMateria?.id,
-      idsAssuntos: value.idsAssuntos?.map((a: Assunto) => a.id),
-    };
-
-    return this.questaoService.pesquisar(filtro);
-  });
+  protected questoes = signal<Questao[]>([]);
 
   createForm() {
     this.form = this.fb.group({
@@ -85,6 +91,7 @@ export class ResolverQuestoesPage extends ListBase {
       observacao: [null],
       idMateria: [null],
       idsAssuntos: [[]],
+      idBanca: [null],
       tipo: [null],
       nivelDificuldade: [null],
       favorita: [null],
@@ -109,6 +116,8 @@ export class ResolverQuestoesPage extends ListBase {
       resolvida: false,
       correta: false,
       alternativaId: '',
+      tempoResposta: 0,
+      respondidaEm: '',
     }));
 
     this.questoesResolucao.set(questoes);
@@ -129,11 +138,42 @@ export class ResolverQuestoesPage extends ListBase {
     this.resolverMode.set(false);
   }
 
-  onRespondeu(event: { questaoId: string; alternativaId: string; correta: boolean }) {
+  onRespondeu(event: {
+    questaoId: string;
+    alternativaId: string;
+    correta: boolean;
+    tempoResposta: number;
+    respondidaEm: string;
+  }) {
     this.questoesResolucao.update((questoes) =>
       questoes.map((q) =>
         q.questao.id == event.questaoId
-          ? { ...q, alternativaId: event.alternativaId, correta: event.correta, resolvida: true }
+          ? {
+              ...q,
+              alternativaId: event.alternativaId,
+              correta: event.correta,
+              resolvida: true,
+              tempoResposta: event.tempoResposta,
+              respondidaEm: event.respondidaEm,
+            }
+          : q,
+      ),
+    );
+  }
+
+  onQuestaoAtualizada(questaoAtualizada: Questao) {
+    this.questoesResolucao.update((questoes) =>
+      questoes.map((q) =>
+        q.questao.id === questaoAtualizada.id
+          ? {
+              ...q,
+              questao: questaoAtualizada,
+              resolvida: false,
+              correta: false,
+              alternativaId: '',
+              tempoResposta: 0,
+              respondidaEm: '',
+            }
           : q,
       ),
     );
@@ -144,12 +184,30 @@ export class ResolverQuestoesPage extends ListBase {
     this.resultadosMode.set(true);
   }
 
-  onEncerrarVisualizacaoResultados() {
-    //TODO: Implementar persistência de histórico
+  async onEncerrarVisualizacaoResultados() {
+    await this.persistirHistorico();
+
     this.form.reset();
     this.form.updateValueAndValidity();
     this.resultadoResolucao.set(null);
     this.resultadosMode.set(false);
     this.resolverMode.set(false);
+  }
+
+  private async persistirHistorico() {
+    const resolvidas = this.questoesResolucao().filter((q) => q.resolvida);
+
+    for (const resolucao of resolvidas) {
+      await this.historicoService.criar({
+        idQuestao: resolucao.questao.id,
+        respondidaEm: resolucao.respondidaEm,
+        idAlternativaSelecionada: resolucao.alternativaId,
+        correta: resolucao.correta,
+        tempoResposta: resolucao.tempoResposta,
+        dificuldade: resolucao.questao.nivelDificuldade,
+        idMateria: resolucao.questao.idMateria,
+        idsAssuntos: resolucao.questao.idsAssuntos,
+      });
+    }
   }
 }
