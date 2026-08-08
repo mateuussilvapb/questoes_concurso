@@ -109,7 +109,7 @@ export class ResolverQuestoesComponent {
       header: 'Confirma?',
       icon: 'pi pi-exclamation-triangle',
       rejectLabel: 'Continuar',
-      rejectButtonStyleClass: 'p-button-primary',
+      rejectButtonStyleClass: 'p-button-secondary',
       acceptLabel: 'Cancelar',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
