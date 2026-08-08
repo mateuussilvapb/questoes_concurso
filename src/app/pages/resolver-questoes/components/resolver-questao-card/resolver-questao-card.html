@@ -4,17 +4,30 @@
       <p-tag severity="info" class="text-xs" [value]="materia()?.nome ?? ''" /> |
       <p-tag [ngClass]="classByNivelDificuldade()" class="text-xs" [value]="labelDificuldade()" />
     </div>
-    <p-button
-      size="small"
-      variant="text"
-      rounded="true"
-      severity="info"
-      icon="pi pi-pencil"
-      tooltipPosition="top"
-      (onClick)="onEditarQuestao()"
-      pTooltip="Editar Questão"
-      aria-label="Editar Questão"
-    />
+    <div class="flex flex-row gap-1">
+      <p-button
+        size="small"
+        variant="text"
+        rounded="true"
+        severity="contrast"
+        icon="pi pi-comment"
+        tooltipPosition="top"
+        (onClick)="onEditarComentario()"
+        pTooltip="Comentário"
+        aria-label="Comentário"
+      />
+      <p-button
+        size="small"
+        variant="text"
+        rounded="true"
+        severity="info"
+        icon="pi pi-pencil"
+        tooltipPosition="top"
+        (onClick)="onEditarQuestao()"
+        pTooltip="Editar Questão"
+        aria-label="Editar Questão"
+      />
+    </div>
   </div>
   <div class="w-full">
     <div class="question-content" [innerHTML]="enunciadoBypassSanitizer()"></div>

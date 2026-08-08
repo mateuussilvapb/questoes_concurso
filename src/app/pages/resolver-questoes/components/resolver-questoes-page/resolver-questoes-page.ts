@@ -132,7 +132,11 @@ export class ResolverQuestoesPage extends ListBase {
     return `${this.questoesLength()} questões disponíveis`;
   });
 
-  onEncerrar() {
+  async onEncerrar(event: { persistir: boolean }) {
+    if (event.persistir) {
+      await this.persistirHistorico();
+    }
+
     this.form.reset();
     this.form.updateValueAndValidity();
     this.resolverMode.set(false);
@@ -175,6 +179,14 @@ export class ResolverQuestoesPage extends ListBase {
               respondidaEm: '',
             }
           : q,
+      ),
+    );
+  }
+
+  onComentarioAtualizado(questaoAtualizada: Questao) {
+    this.questoesResolucao.update((questoes) =>
+      questoes.map((q) =>
+        q.questao.id === questaoAtualizada.id ? { ...q, questao: questaoAtualizada } : q,
       ),
     );
   }
