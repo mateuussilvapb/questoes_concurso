@@ -1,0 +1,31 @@
+<div class="flex flex-column gap-4">
+  <span>
+    Existem questões ainda não respondidas. O que deseja fazer com o que já foi resolvido até
+    agora?
+  </span>
+
+  <div class="flex flex-column-reverse md:flex-row justify-content-end gap-2">
+    <p-button
+      label="Descartar e voltar"
+      class="w-full md:w-auto"
+      styleClass="w-full"
+      variant="outlined"
+      severity="danger"
+      (onClick)="escolher('descartar')"
+    />
+    <p-button
+      label="Continuar respondendo"
+      class="w-full md:w-auto"
+      styleClass="w-full"
+      variant="outlined"
+      severity="secondary"
+      (onClick)="escolher('continuar')"
+    />
+    <p-button
+      label="Encerrar e salvar histórico"
+      class="w-full md:w-auto button-aplicacao-style"
+      styleClass="w-full"
+      (onClick)="escolher('persistir')"
+    />
+  </div>
+</div>

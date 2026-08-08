@@ -6,6 +6,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 //Aplicação
 import { Util } from '../../../../shared/util/util';
+import { MessageService } from '../../../../shared/services/message.service';
 import { Materia } from '../../../materias/core/models/materia.model';
 import { MateriaService } from '../../../materias/core/services/materia.service';
 import { Alternativa } from '../../../questoes/alternativas/core/models/alternativa.model';
@@ -17,6 +18,7 @@ import {
 import { ResolverQuestoes } from '../../core/models/resolver-questoes.model';
 import { ThemeService } from './../../../../core/services/theme.service';
 import { Questao } from '../../../questoes/core/models/questao.model';
+import { QuestaoService } from '../../../questoes/core/services/questao.service';
 import { QuestaoFormPage } from '../../../questoes/components/questao-form-page/questao-form-page';
 import { FormDialogData } from '../../../../shared/components/form-base/form-base';
 
@@ -27,6 +29,7 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogService } from 'primeng/dynamicdialog';
 import { DialogComentario } from '../../../questoes/components/dialog-comentario/dialog-comentario';
+import { DialogEditarComentario } from '../../../questoes/components/dialog-editar-comentario/dialog-editar-comentario';
 
 export interface AlternativaResolucao extends Alternativa {
   eliminada: boolean;
@@ -62,6 +65,8 @@ export class ResolverQuestaoCard {
   private readonly dialogService = inject(DialogService);
   private readonly layoutService = inject(LayoutService);
   private readonly materiaService = inject(MateriaService);
+  private readonly questaoService = inject(QuestaoService);
+  private readonly messageService = inject(MessageService);
 
   finalizado = input.required<boolean>();
   ultimaQuestao = input.required<boolean>();
@@ -73,6 +78,7 @@ export class ResolverQuestaoCard {
   finalizarRespostas = output();
   respondeu = output<{ alternativaId: string; correta: boolean }>();
   questaoAtualizada = output<Questao>();
+  comentarioAtualizado = output<Questao>();
 
   alternativaSelecionada = signal<AlternativaResolucao | null>(null);
 
@@ -215,6 +221,38 @@ export class ResolverQuestaoCard {
       header: `Comentário`,
       draggable: false,
       closable: true,
+    });
+  }
+
+  onEditarComentario() {
+    const ref = this.dialogService.open(DialogEditarComentario, {
+      header: 'Comentário',
+      width: this.layoutService.isMobile() ? '100vw' : '50vw',
+      closeOnEscape: true,
+      data: { comentario: this.questao().questao.observacao?.observacoes ?? '' },
+      contentStyle: { overflow: 'auto' },
+      maximizable: this.layoutService.isMobile(),
+      draggable: false,
+      closable: true,
+    });
+
+    ref?.onClose.subscribe(async (comentario?: string) => {
+      if (comentario === undefined) {
+        return;
+      }
+
+      try {
+        const questaoAtualizada = await this.questaoService.atualizarAnotacoes(
+          this.questao().questao.id,
+          { observacoes: comentario, favorita: this.questao().questao.observacao?.favorita ?? false },
+        );
+        this.messageService.showSuccess('Comentário salvo com sucesso.');
+        this.comentarioAtualizado.emit(questaoAtualizada);
+      } catch (e: any) {
+        console.error(e);
+        const mensagem = e?.message ?? 'Erro ao salvar comentário. Tente novamente';
+        this.messageService.showError(mensagem);
+      }
     });
   }
 

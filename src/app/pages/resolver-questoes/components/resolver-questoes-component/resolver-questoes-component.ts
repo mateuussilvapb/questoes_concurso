@@ -5,12 +5,17 @@ import { Component, computed, inject, input, output, signal } from '@angular/cor
 import { ResolverQuestoes } from '../../core/models/resolver-questoes.model';
 import { Questao } from '../../../questoes/core/models/questao.model';
 import { TimerService } from './../../../../core/timer/service/timer.service';
+import { LayoutService } from './../../../../core/services/layout.service';
 import { ResolverQuestaoCard } from '../resolver-questao-card/resolver-questao-card';
 import { ResultadosResolucao } from '../resolver-questoes-page/resolver-questoes-page';
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
+import {
+  DialogEncerrarResolucao,
+  EncerrarResolucaoOpcao,
+} from '../dialog-encerrar-resolucao/dialog-encerrar-resolucao';
 
 //Externo
-import { ConfirmationService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
 @Component({
   selector: 'app-resolver-questoes-component',
   imports: [
@@ -22,11 +27,12 @@ import { ConfirmationService } from 'primeng/api';
 })
 export class ResolverQuestoesComponent {
   private readonly timerService = inject(TimerService);
-  private readonly confirmationService = inject(ConfirmationService);
+  private readonly dialogService = inject(DialogService);
+  private readonly layoutService = inject(LayoutService);
 
   questoes = input.required<ResolverQuestoes[]>();
 
-  encerrar = output();
+  encerrar = output<{ persistir: boolean }>();
   finalizar = output<ResultadosResolucao>();
   respondeu = output<{
     questaoId: string;
@@ -36,6 +42,7 @@ export class ResolverQuestoesComponent {
     respondidaEm: string;
   }>();
   questaoAtualizada = output<Questao>();
+  comentarioAtualizado = output<Questao>();
 
   readonly indiceAtual = signal<number>(0);
 
@@ -95,27 +102,32 @@ export class ResolverQuestoesComponent {
   }
 
   onEncerrar() {
-    if (this.podeEncerrar()) {
-      this.encerrar.emit();
+    if (this.totalQuestoesResolvidas() === 0) {
+      this.encerrar.emit({ persistir: false });
       this.timerService.stop();
-    } else {
-      this.confirmarEncerrar();
+      return;
     }
+
+    this.confirmarEncerrar();
   }
 
   confirmarEncerrar() {
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja encerrar? Os resultados não serão persistidos no histórico.',
-      header: 'Confirma?',
-      icon: 'pi pi-exclamation-triangle',
-      rejectLabel: 'Continuar',
-      rejectButtonStyleClass: 'p-button-secondary',
-      acceptLabel: 'Cancelar',
-      acceptButtonStyleClass: 'p-button-danger',
-      accept: () => {
-        this.encerrar.emit();
-        this.timerService.stop();
-      },
+    const ref = this.dialogService.open(DialogEncerrarResolucao, {
+      header: 'Encerrar resolução',
+      width: this.layoutService.isMobile() ? '100vw' : '40vw',
+      closeOnEscape: true,
+      draggable: false,
+      closable: true,
+      maximizable: this.layoutService.isMobile(),
+    });
+
+    ref?.onClose.subscribe((opcao?: EncerrarResolucaoOpcao) => {
+      if (!opcao || opcao === 'continuar') {
+        return;
+      }
+
+      this.encerrar.emit({ persistir: opcao === 'persistir' });
+      this.timerService.stop();
     });
   }
 
@@ -134,6 +146,10 @@ export class ResolverQuestoesComponent {
   onQuestaoEditada(questao: Questao) {
     this.inicioQuestaoAtual = Date.now();
     this.questaoAtualizada.emit(questao);
+  }
+
+  onComentarioAtualizado(questao: Questao) {
+    this.comentarioAtualizado.emit(questao);
   }
 
   onFinalizarRespostas() {

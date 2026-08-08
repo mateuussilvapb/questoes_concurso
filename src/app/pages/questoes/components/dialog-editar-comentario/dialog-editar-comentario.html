@@ -1,0 +1,37 @@
+<div class="flex flex-column gap-3">
+  <app-form-label
+    label="Comentários"
+    for="comentario-questao"
+    [control]="comentarioControl"
+    [errorMessages]="errorComentarioMessages"
+  >
+    <p-editor
+      [formControl]="comentarioControl"
+      [style]="{ height: '320px' }"
+      placeholder="Digite os comentários da questão"
+    />
+  </app-form-label>
+
+  <div class="flex flex-wrap flex-column-reverse md:flex-row justify-content-end gap-2">
+    <div class="col-12 p-0 md:w-auto">
+      <p-button
+        label="Cancelar"
+        class="w-full"
+        variant="outlined"
+        styleClass="w-full"
+        severity="contrast"
+        (onClick)="cancelar()"
+        [disabled]="submitting()"
+      />
+    </div>
+    <div class="col-12 p-0 md:w-auto">
+      <p-button
+        label="Salvar"
+        (onClick)="salvar()"
+        styleClass="w-full button-aplicacao-style"
+        class="w-full button-aplicacao-style"
+        [disabled]="comentarioControl.invalid || submitting()"
+      />
+    </div>
+  </div>
+</div>

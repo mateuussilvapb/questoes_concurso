@@ -14,10 +14,11 @@
   </app-layout-base-pages>
 } @else if (resolverMode() && !resultadosMode() && questoesResolucao().length) {
   <app-resolver-questoes-component
-    (encerrar)="onEncerrar()"
+    (encerrar)="onEncerrar($event)"
     (finalizar)="onFinalizar($event)"
     (respondeu)="onRespondeu($event)"
     (questaoAtualizada)="onQuestaoAtualizada($event)"
+    (comentarioAtualizado)="onComentarioAtualizado($event)"
     [questoes]="questoesResolucao()"
   />
 } @else if (resultadosMode() && resultadoResolucao()) {
