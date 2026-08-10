@@ -7,4 +7,5 @@ export interface ResolverQuestoes {
   alternativaId: string;
   tempoResposta: number;
   respondidaEm: string;
+  idHistorico: string | null;
 }

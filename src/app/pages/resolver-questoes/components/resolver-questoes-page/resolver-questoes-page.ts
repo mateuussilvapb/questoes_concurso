@@ -118,6 +118,7 @@ export class ResolverQuestoesPage extends ListBase {
       alternativaId: '',
       tempoResposta: 0,
       respondidaEm: '',
+      idHistorico: null,
     }));
 
     this.questoesResolucao.set(questoes);
@@ -133,8 +134,8 @@ export class ResolverQuestoesPage extends ListBase {
   });
 
   async onEncerrar(event: { persistir: boolean }) {
-    if (event.persistir) {
-      await this.persistirHistorico();
+    if (!event.persistir) {
+      await this.descartarHistoricoSessao();
     }
 
     this.form.reset();
@@ -142,13 +143,30 @@ export class ResolverQuestoesPage extends ListBase {
     this.resolverMode.set(false);
   }
 
-  onRespondeu(event: {
+  async onRespondeu(event: {
     questaoId: string;
     alternativaId: string;
     correta: boolean;
     tempoResposta: number;
     respondidaEm: string;
   }) {
+    const item = this.questoesResolucao().find((q) => q.questao.id === event.questaoId);
+
+    if (!item) {
+      return;
+    }
+
+    const historico = await this.historicoService.criar({
+      idQuestao: item.questao.id,
+      respondidaEm: event.respondidaEm,
+      idAlternativaSelecionada: event.alternativaId,
+      correta: event.correta,
+      tempoResposta: event.tempoResposta,
+      dificuldade: item.questao.nivelDificuldade,
+      idMateria: item.questao.idMateria,
+      idsAssuntos: item.questao.idsAssuntos,
+    });
+
     this.questoesResolucao.update((questoes) =>
       questoes.map((q) =>
         q.questao.id == event.questaoId
@@ -159,13 +177,20 @@ export class ResolverQuestoesPage extends ListBase {
               resolvida: true,
               tempoResposta: event.tempoResposta,
               respondidaEm: event.respondidaEm,
+              idHistorico: historico.id,
             }
           : q,
       ),
     );
   }
 
-  onQuestaoAtualizada(questaoAtualizada: Questao) {
+  async onQuestaoAtualizada(questaoAtualizada: Questao) {
+    const item = this.questoesResolucao().find((q) => q.questao.id === questaoAtualizada.id);
+
+    if (item?.idHistorico) {
+      await this.historicoService.remover(item.idHistorico);
+    }
+
     this.questoesResolucao.update((questoes) =>
       questoes.map((q) =>
         q.questao.id === questaoAtualizada.id
@@ -177,6 +202,7 @@ export class ResolverQuestoesPage extends ListBase {
               alternativaId: '',
               tempoResposta: 0,
               respondidaEm: '',
+              idHistorico: null,
             }
           : q,
       ),
@@ -196,9 +222,7 @@ export class ResolverQuestoesPage extends ListBase {
     this.resultadosMode.set(true);
   }
 
-  async onEncerrarVisualizacaoResultados() {
-    await this.persistirHistorico();
-
+  onEncerrarVisualizacaoResultados() {
     this.form.reset();
     this.form.updateValueAndValidity();
     this.resultadoResolucao.set(null);
@@ -206,20 +230,11 @@ export class ResolverQuestoesPage extends ListBase {
     this.resolverMode.set(false);
   }
 
-  private async persistirHistorico() {
-    const resolvidas = this.questoesResolucao().filter((q) => q.resolvida);
+  private async descartarHistoricoSessao() {
+    const persistidas = this.questoesResolucao().filter((q) => q.idHistorico);
 
-    for (const resolucao of resolvidas) {
-      await this.historicoService.criar({
-        idQuestao: resolucao.questao.id,
-        respondidaEm: resolucao.respondidaEm,
-        idAlternativaSelecionada: resolucao.alternativaId,
-        correta: resolucao.correta,
-        tempoResposta: resolucao.tempoResposta,
-        dificuldade: resolucao.questao.nivelDificuldade,
-        idMateria: resolucao.questao.idMateria,
-        idsAssuntos: resolucao.questao.idsAssuntos,
-      });
+    for (const resolucao of persistidas) {
+      await this.historicoService.remover(resolucao.idHistorico!);
     }
   }
 }
