@@ -390,6 +390,8 @@ export class QuestaoFormPage extends FormBase implements OnInit {
   onAceitarContinuarAdicionando() {
     this.enunciadoControl?.setValue('');
     this.comentarioControl?.setValue('');
+    this.dificuldadeControl?.setValue(null);
+    this.bancaControl?.setValue(null);
     if (this.tipoQuestaoControl?.value?.value == TipoQuestao.MULTIPLA_ESCOLHA) {
       this.alternativasFormArray.controls.forEach((alternativa) => {
         alternativa.get('texto')?.setValue('');
@@ -459,6 +461,10 @@ export class QuestaoFormPage extends FormBase implements OnInit {
 
   get materiaControl(): FormControl {
     return this.form.get('materia') as FormControl;
+  }
+
+  get bancaControl(): FormControl {
+    return this.form.get('banca') as FormControl;
   }
 
   get dificuldadeControl(): FormControl {
