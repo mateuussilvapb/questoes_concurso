@@ -43,6 +43,7 @@ export class ResolverQuestoesComponent {
   }>();
   questaoAtualizada = output<Questao>();
   comentarioAtualizado = output<Questao>();
+  statusAtualizado = output<Questao>();
 
   readonly indiceAtual = signal<number>(0);
 
@@ -150,6 +151,10 @@ export class ResolverQuestoesComponent {
 
   onComentarioAtualizado(questao: Questao) {
     this.comentarioAtualizado.emit(questao);
+  }
+
+  onStatusAtualizado(questao: Questao) {
+    this.statusAtualizado.emit(questao);
   }
 
   onFinalizarRespostas() {

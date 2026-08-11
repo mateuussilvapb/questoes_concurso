@@ -23,7 +23,7 @@ import { QuestaoFormPage } from '../../../questoes/components/questao-form-page/
 import { FormDialogData } from '../../../../shared/components/form-base/form-base';
 
 //Externo
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
@@ -79,6 +79,7 @@ export class ResolverQuestaoCard {
   respondeu = output<{ alternativaId: string; correta: boolean }>();
   questaoAtualizada = output<Questao>();
   comentarioAtualizado = output<Questao>();
+  statusAtualizado = output<Questao>();
 
   alternativaSelecionada = signal<AlternativaResolucao | null>(null);
 
@@ -255,6 +256,74 @@ export class ResolverQuestaoCard {
       }
     });
   }
+
+  //Botão Favoritar
+  isQuestaoMarcadaComoFavorita = computed<boolean>(() => this.questao().questao.status.favorita);
+
+  async onToggleFavoritar() {
+    try {
+      const statusFavoritaAtual = this.questao().questao.status.favorita;
+      const questaoAtualizada = await this.questaoService.toggleFavorita(this.questao().questao.id);
+      this.statusAtualizado.emit(questaoAtualizada);
+      const message = statusFavoritaAtual ? 'Questão desfavoritada!' : 'Questão favoritada!';
+      this.messageService.showSuccess(message, 'Sucesso!');
+    } catch (e: any) {
+      console.error(e);
+      const mensagem = e?.message ?? 'Erro ao alterar status da questão. Tente novamente.';
+      this.messageService.showError(mensagem);
+    }
+  }
+
+  labelBtnFavoritar = computed<string>(() => {
+    if (this.isQuestaoMarcadaComoFavorita()) {
+      return 'Desmarcar como favorita';
+    }
+    return 'Marcar como favorita';
+  });
+
+  severityBtnFavoritar = computed<ButtonSeverity>(() => {
+    if (this.isQuestaoMarcadaComoFavorita()) {
+      return 'warn';
+    }
+    return 'contrast';
+  });
+
+  //Botão Revisão
+  isQuestaoMarcadaParaRevisao = computed<boolean>(
+    () => this.questao().questao.status.marcadaParaRevisao,
+  );
+
+  async onToggleRevisao() {
+    try {
+      const statusMarcadaParaRevisaoAtual = this.questao().questao.status.marcadaParaRevisao;
+      const questaoAtualizada = await this.questaoService.toggleMarcadaParaRevisao(
+        this.questao().questao.id,
+      );
+      this.statusAtualizado.emit(questaoAtualizada);
+      const message = statusMarcadaParaRevisaoAtual
+        ? 'Questão desmarcada para revisão!'
+        : 'Questão marcada para revisão!';
+      this.messageService.showSuccess(message, 'Sucesso!');
+    } catch (e: any) {
+      console.error(e);
+      const mensagem = e?.message ?? 'Erro ao alterar status da questão. Tente novamente.';
+      this.messageService.showError(mensagem);
+    }
+  }
+
+  labelBtnRevisao = computed<string>(() => {
+    if (this.isQuestaoMarcadaParaRevisao()) {
+      return 'Desmarcar para revisão';
+    }
+    return 'Marcar para revisão';
+  });
+
+  severityBtnRevisao = computed<ButtonSeverity>(() => {
+    if (this.isQuestaoMarcadaParaRevisao()) {
+      return 'primary';
+    }
+    return 'contrast';
+  });
 
   onEditarQuestao() {
     const ref = this.dialogService.open(QuestaoFormPage, {

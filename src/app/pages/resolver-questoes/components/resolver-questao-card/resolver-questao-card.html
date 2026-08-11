@@ -9,6 +9,28 @@
         size="small"
         variant="text"
         rounded="true"
+        icon="pi pi-star"
+        tooltipPosition="top"
+        (onClick)="onToggleFavoritar()"
+        [pTooltip]="labelBtnFavoritar()"
+        [aria-label]="labelBtnFavoritar()"
+        [severity]="severityBtnFavoritar()"
+      />
+      <p-button
+        size="small"
+        variant="text"
+        rounded="true"
+        icon="pi pi-bookmark"
+        tooltipPosition="top"
+        (onClick)="onToggleRevisao()"
+        [pTooltip]="labelBtnRevisao()"
+        [severity]="severityBtnRevisao()"
+        [aria-label]="labelBtnRevisao()"
+      />
+      <p-button
+        size="small"
+        variant="text"
+        rounded="true"
         severity="contrast"
         icon="pi pi-comment"
         tooltipPosition="top"

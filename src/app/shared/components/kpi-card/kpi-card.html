@@ -1,0 +1,19 @@
+<p-card class="h-full block" styleClass="h-full">
+  <div class="flex align-items-center gap-3">
+    <span
+      class="flex align-items-center justify-content-center border-round-lg flex-shrink-0"
+      [class]="classesIcone()"
+      style="width: 2.75rem; height: 2.75rem"
+    >
+      <em [class]="icone()"></em>
+    </span>
+
+    <div class="flex flex-column min-w-0">
+      <span class="text-sm text-color-secondary line-height-2">{{ titulo() }}</span>
+      <span class="text-2xl font-bold line-height-2">{{ valor() }}</span>
+      @if (descricao()) {
+        <span class="text-xs text-color-secondary line-height-2">{{ descricao() }}</span>
+      }
+    </div>
+  </div>
+</p-card>
