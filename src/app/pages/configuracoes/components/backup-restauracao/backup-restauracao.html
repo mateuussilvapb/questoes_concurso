@@ -14,6 +14,13 @@
           <span>Gera um arquivo JSON com matérias, assuntos, bancas, questões e histórico. </span>
         </div>
 
+        @if (ultimaExportacaoEm()) {
+          <div class="mb-3 text-sm text-color-secondary">
+            <em class="pi pi-clock mr-1"></em>
+            <span>Última exportação em {{ ultimaExportacaoEm() | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        }
+
         <p-button
           [label]="'Exportar'"
           (onClick)="backup()"
@@ -45,6 +52,41 @@
         />
       </p-card>
     </div>
+
+    <!-- Resumo da última importação -->
+    @if (linhasResumoImportacao().length) {
+      <div class="col-12 lg:col-10">
+        <p-card>
+          <ng-template #title>
+            <div class="w-full flex flex-row gap-2 align-items-center m-0 p-0 text-sm">
+              <em class="pi pi-list-check"></em>
+              <h2 class="m-0 p-0">Resumo da última importação</h2>
+            </div>
+          </ng-template>
+
+          <div class="w-full overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="text-left text-color-secondary text-sm">
+                  <th class="pb-2">Entidade</th>
+                  <th class="pb-2">Importados</th>
+                  <th class="pb-2">Ignorados (já existiam)</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (linha of linhasResumoImportacao(); track linha.label) {
+                  <tr class="border-top-1 border-300">
+                    <td class="py-2">{{ linha.label }}</td>
+                    <td class="py-2">{{ linha.imported }}</td>
+                    <td class="py-2">{{ linha.ignored }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </p-card>
+      </div>
+    }
   </div>
 </app-layout-base-pages>
 
