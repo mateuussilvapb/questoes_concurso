@@ -57,6 +57,9 @@ export class GraficoAcertosErros {
 
     return {
       ...base,
+      // Gráfico de rosca não usa eixos cartesianos — remove os eixos x/y herdados
+      // de opcoesBase() (pensados para gráficos de barra/linha).
+      scales: {},
       cutout: '68%',
       plugins: {
         ...base.plugins,
