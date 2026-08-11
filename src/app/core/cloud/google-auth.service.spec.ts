@@ -74,6 +74,25 @@ describe('GoogleAuthService', () => {
     expect(service.estaAutenticado()).toBe(false);
   });
 
+  it('rejeita e não trava se o usuário fechar o popup de consentimento sem o Google chamar o callback', async () => {
+    vi.useFakeTimers();
+    try {
+      requestAccessTokenMock.mockImplementation(() => {
+        // Simula o popup fechado pelo usuário sem disparar callback de sucesso ou erro.
+      });
+
+      const promessa = service.signIn();
+      const expectativa = expect(promessa).rejects.toThrow();
+
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000);
+      await expectativa;
+
+      expect(service.estaAutenticado()).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('revoga o token e limpa a conta conectada em signOut()', async () => {
     await service.signIn();
     await service.signOut();

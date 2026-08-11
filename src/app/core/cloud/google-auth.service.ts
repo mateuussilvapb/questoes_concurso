@@ -22,6 +22,16 @@ const ESCOPOS = 'https://www.googleapis.com/auth/drive.file openid email profile
  */
 const TIMEOUT_RENOVACAO_SILENCIOSA_MS = 4000;
 
+/**
+ * Rede de segurança para signIn(): se o usuário fechar o popup de
+ * consentimento sem decidir, o Identity Services às vezes também não chama
+ * o callback — sem isso, o botão "Conectar" ficaria carregando para sempre
+ * (Fase 5 do plano: recusa de consentimento não pode travar a aplicação).
+ * O valor é alto porque aqui, ao contrário da renovação silenciosa, a
+ * demora pode ser o próprio usuário decidindo na tela do Google.
+ */
+const TIMEOUT_CONSENTIMENTO_MS = 5 * 60 * 1000;
+
 interface TokenCache {
   accessToken: string;
   expiraEm: number;
@@ -51,7 +61,11 @@ export class GoogleAuthService {
 
   async signIn(): Promise<void> {
     await this.carregarScript();
-    await this.solicitarToken('consent');
+    await this.comTimeout(
+      this.solicitarToken('consent'),
+      TIMEOUT_CONSENTIMENTO_MS,
+      'A conexão com o Google demorou demais e foi cancelada. Tente novamente.',
+    );
     await this.carregarConta();
   }
 
