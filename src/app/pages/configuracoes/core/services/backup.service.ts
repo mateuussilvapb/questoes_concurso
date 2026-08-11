@@ -28,6 +28,7 @@ import { BackupValidatorService } from './backup-validator.service';
 import { BACKUP_VERSION } from '../../../../shared/types/types-const';
 import { BackupData, ImportMode, ImportResult, MergeResult } from '../../../../core/storage/backup.models';
 import { LoadingOverlayService } from '../../../../shared/services/loading-overlay.service';
+import { FileDownloadService } from '../../../../shared/services/file-download.service';
 
 @Injectable({
   providedIn: 'root',
@@ -47,31 +48,24 @@ export class BackupService {
 
   private readonly backupValidator = inject(BackupValidatorService);
   private readonly loadingOverlay = inject(LoadingOverlayService);
+  private readonly fileDownload = inject(FileDownloadService);
 
   async export(): Promise<void> {
     return this.loadingOverlay.wrap(async () => {
       const backup = await this.buildBackup();
 
-      const blob = new Blob([JSON.stringify(backup, null, 2)], {
-        type: 'application/json',
-      });
-
-      const url = URL.createObjectURL(blob);
-
-      const anchor = document.createElement('a');
-
-      anchor.href = url;
-      anchor.download = this.generateFileName();
-
-      anchor.click();
-
-      URL.revokeObjectURL(url);
+      this.fileDownload.downloadJson(backup, this.generateFileName());
     });
   }
 
   async import(file: File, mode: ImportMode): Promise<MergeResult> {
+    const backupBruto = await this.readFile(file);
+
+    return this.importarDeBackup(backupBruto, mode);
+  }
+
+  async importarDeBackup(backupBruto: BackupData, mode: ImportMode): Promise<MergeResult> {
     return this.loadingOverlay.wrap(async () => {
-      const backupBruto = await this.readFile(file);
       const backup = this.normalizarVersaoLegada(backupBruto);
 
       this.backupValidator.validate(backup);
@@ -96,7 +90,7 @@ export class BackupService {
   // EXPORTAÇÃO
   // ======================================================
 
-  private async buildBackup(): Promise<BackupData> {
+  async buildBackup(): Promise<BackupData> {
     const [materias, assuntos, bancas, questoes, historicos] = await Promise.all([
       this.materiaService.listar(),
       this.assuntoService.listar(),
