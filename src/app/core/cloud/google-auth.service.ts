@@ -14,6 +14,14 @@ const USERINFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo';
  */
 const ESCOPOS = 'https://www.googleapis.com/auth/drive.file openid email profile';
 
+/**
+ * Sem sessão Google ativa, requestAccessToken({ prompt: '' }) pode nunca
+ * chamar o callback (nem sucesso, nem erro) em vez de falhar rápido — por
+ * isso a renovação silenciosa precisa de um timeout próprio (§6.1 do plano:
+ * o fallback manual depende de detectar essa ausência de sessão sem travar).
+ */
+const TIMEOUT_RENOVACAO_SILENCIOSA_MS = 4000;
+
 interface TokenCache {
   accessToken: string;
   expiraEm: number;
@@ -67,13 +75,38 @@ export class GoogleAuthService {
     }
 
     await this.carregarScript();
-    await this.solicitarToken('');
+    await this.comTimeout(
+      this.solicitarToken(''),
+      TIMEOUT_RENOVACAO_SILENCIOSA_MS,
+      'Renovação silenciosa do acesso ao Google Drive expirou.',
+    );
 
     if (!this.tokenValido()) {
       throw new Error('Não foi possível renovar o acesso ao Google Drive. Conecte-se novamente.');
     }
 
+    if (!this.contaConectadaSignal()) {
+      await this.carregarConta();
+    }
+
     return this.tokenCache!.accessToken;
+  }
+
+  private comTimeout<T>(promessa: Promise<T>, ms: number, mensagem: string): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const temporizador = setTimeout(() => reject(new Error(mensagem)), ms);
+
+      promessa.then(
+        (valor) => {
+          clearTimeout(temporizador);
+          resolve(valor);
+        },
+        (erro) => {
+          clearTimeout(temporizador);
+          reject(erro);
+        },
+      );
+    });
   }
 
   private tokenValido(): boolean {

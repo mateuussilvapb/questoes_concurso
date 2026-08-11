@@ -105,4 +105,31 @@ describe('GoogleAuthService', () => {
     expect(token).toBe('token-renovado');
     expect(requestAccessTokenMock).toHaveBeenLastCalledWith({ prompt: '' });
   });
+
+  it('rejeita rápido (não trava) quando a renovação silenciosa nunca chama o callback do Google', async () => {
+    vi.useFakeTimers();
+    try {
+      requestAccessTokenMock.mockImplementation(() => {
+        // Simula o Google nunca respondendo (nem sucesso, nem erro) — cenário real sem sessão ativa.
+      });
+
+      const promessa = service.obterAccessToken();
+      const expectativa = expect(promessa).rejects.toThrow();
+
+      await vi.advanceTimersByTimeAsync(5000);
+      await expectativa;
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('carrega a conta ao renovar o token silenciosamente sem signIn() prévio (ex.: após reload da página)', async () => {
+    expect(service.contaConectada()).toBeNull();
+
+    const token = await service.obterAccessToken();
+
+    expect(token).toBe('token-abc');
+    expect(requestAccessTokenMock).toHaveBeenCalledWith({ prompt: '' });
+    expect(service.contaConectada()).toBe('fulano@gmail.com');
+  });
 });

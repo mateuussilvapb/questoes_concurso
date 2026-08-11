@@ -304,7 +304,7 @@ a chave) ou backend de verdade. Não construir tela de login esperando seguranç
 - [x] **Fase 1** — `revisao`/`dispositivoId`/`dispositivoNome` em `BackupData`; `DispositivoService`; validator tolerante
 - [x] **Fase 2** — projeto no Google Cloud; Drive API ativada; OAuth Client ID; `src/environments/`; `core/cloud/` (4 serviços)
 - [x] **Fase 3** — bloco "Backup na nuvem" em `backup-restauracao`; lista de revisões; nome do dispositivo
-- [ ] **Fase 4** — verificação pós-render; diálogo de restauração; fallback manual; detecção de troca de conta
+- [x] **Fase 4** — verificação pós-render; diálogo de restauração; fallback manual; detecção de troca de conta
 - [ ] **Fase 5** — consentimento em Production; política de privacidade publicada; hospedagem com domínio fixo; nome/logo; estado vazio de primeiro acesso
 - [ ] **Fase 6** — (opcional) envio automático com debounce
 

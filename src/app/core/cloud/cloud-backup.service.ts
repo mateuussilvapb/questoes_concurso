@@ -41,6 +41,16 @@ interface ManifestLido {
 }
 
 /**
+ * Resultado da verificação passiva feita na abertura do app (§3.2/Fase 4).
+ * Nunca força autenticação — só aproveita uma sessão/token já válidos.
+ */
+export type StatusVerificacaoNuvem =
+  | { tipo: 'sem-sessao' }
+  | { tipo: 'atualizado' }
+  | { tipo: 'troca-de-conta'; contaAnterior: string; contaAtual: string }
+  | { tipo: 'atualizacao-disponivel'; manifestRemoto: ManifestBackup; revisaoLocal: number };
+
+/**
  * Backup remoto é mais novo que a última revisão que este dispositivo
  * enviou ou restaurou (§3.1 do plano) — quem chama decide se restaura antes
  * de enviar ou sobrescreve (enviarBackup({ forcar: true })).
@@ -101,6 +111,58 @@ export class CloudBackupService {
     await this.podarRevisoesAntigas(pastaId);
 
     return manifest;
+  }
+
+  /**
+   * Chamada após o primeiro render (Fase 4), nunca em boot bloqueante.
+   * Só aproveita uma sessão já válida (token em cache ou renovável em
+   * silêncio) — se não houver, retorna 'sem-sessao' em vez de abrir o
+   * popup de consentimento (§6.1: fallback manual é parte do desenho).
+   */
+  async verificarAtualizacoes(): Promise<StatusVerificacaoNuvem> {
+    try {
+      await this.googleAuth.obterAccessToken();
+    } catch {
+      return { tipo: 'sem-sessao' };
+    }
+
+    const conta = this.googleAuth.contaConectada();
+
+    if (!conta) {
+      return { tipo: 'sem-sessao' };
+    }
+
+    const contaAnterior = this.syncState.contaAtual();
+
+    if (contaAnterior && contaAnterior !== conta) {
+      return { tipo: 'troca-de-conta', contaAnterior, contaAtual: conta };
+    }
+
+    this.syncState.definirContaAtual(conta);
+
+    const pastaId = await this.buscarPastaSeExistir();
+
+    if (!pastaId) {
+      return { tipo: 'atualizado' };
+    }
+
+    const manifestAtual = await this.lerManifest(pastaId);
+
+    if (!manifestAtual) {
+      return { tipo: 'atualizado' };
+    }
+
+    const revisaoLocal = this.syncState.obterRevisaoSincronizada(conta);
+
+    if (manifestAtual.manifest.revisao > revisaoLocal) {
+      return {
+        tipo: 'atualizacao-disponivel',
+        manifestRemoto: manifestAtual.manifest,
+        revisaoLocal,
+      };
+    }
+
+    return { tipo: 'atualizado' };
   }
 
   async listarRevisoes(): Promise<RevisaoRemota[]> {
@@ -196,13 +258,22 @@ export class CloudBackupService {
   private async garantirPasta(): Promise<string> {
     if (this.pastaIdCache) return this.pastaIdCache;
 
+    const existente = await this.buscarPastaSeExistir();
+
+    this.pastaIdCache = existente ?? (await this.driveClient.criarPasta(NOME_PASTA));
+
+    return this.pastaIdCache;
+  }
+
+  /** Só busca, nunca cria — usado pela verificação passiva (não deve ter esse efeito colateral). */
+  private async buscarPastaSeExistir(): Promise<string | null> {
+    if (this.pastaIdCache) return this.pastaIdCache;
+
     const encontradas = await this.driveClient.listarArquivos(
       `name = '${NOME_PASTA}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`,
     );
 
-    this.pastaIdCache = encontradas[0]?.id ?? (await this.driveClient.criarPasta(NOME_PASTA));
-
-    return this.pastaIdCache;
+    return encontradas[0]?.id ?? null;
   }
 
   private async garantirAutenticado(): Promise<void> {

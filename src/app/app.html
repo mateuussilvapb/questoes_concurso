@@ -3,4 +3,18 @@
 <app-floating-timer/>
 <app-loading-overlay />
 
+@if (mostrarVerificacaoManual()) {
+  <div class="fixed bottom-0 right-0 m-3" style="z-index: 1000">
+    <p-button
+      label="Verificar backup na nuvem"
+      icon="pi pi-cloud"
+      severity="secondary"
+      size="small"
+      [text]="true"
+      [loading]="verificandoManualmente()"
+      (onClick)="verificarNuvemManualmente()"
+    />
+  </div>
+}
+
 <router-outlet />

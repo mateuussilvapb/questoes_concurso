@@ -2,7 +2,7 @@
 import { TestBed } from '@angular/core/testing';
 
 //Aplicação
-import { CloudBackupService, ConflitoRevisaoError, ManifestBackup } from './cloud-backup.service';
+import { CloudBackupService, ConflitoRevisaoError, ManifestBackup, StatusVerificacaoNuvem } from './cloud-backup.service';
 import { GoogleAuthService } from './google-auth.service';
 import { GoogleDriveClient, DriveFile } from './google-drive.client';
 import { SyncStateService } from '../sync/sync-state.service';
@@ -16,6 +16,7 @@ describe('CloudBackupService', () => {
     estaAutenticado: ReturnType<typeof vi.fn>;
     signIn: ReturnType<typeof vi.fn>;
     contaConectada: ReturnType<typeof vi.fn>;
+    obterAccessToken: ReturnType<typeof vi.fn>;
   };
   let driveClient: {
     listarArquivos: ReturnType<typeof vi.fn>;
@@ -56,6 +57,7 @@ describe('CloudBackupService', () => {
       estaAutenticado: vi.fn(() => true),
       signIn: vi.fn(() => Promise.resolve()),
       contaConectada: vi.fn(() => 'fulano@gmail.com'),
+      obterAccessToken: vi.fn(() => Promise.resolve('token-abc')),
     };
 
     driveClient = {
@@ -292,6 +294,98 @@ describe('CloudBackupService', () => {
 
       expect(backupService.importarDeBackup).toHaveBeenCalledWith(backupRemoto, ImportMode.REPLACE);
       expect(syncState.definirRevisaoSincronizada).toHaveBeenCalledWith('fulano@gmail.com', 3);
+    });
+  });
+
+  describe('verificarAtualizacoes', () => {
+    it('retorna sem-sessao sem tentar autenticar quando não há token válido nem renovável', async () => {
+      googleAuth.obterAccessToken.mockRejectedValue(new Error('sem token'));
+
+      const status: StatusVerificacaoNuvem = await service.verificarAtualizacoes();
+
+      expect(status).toEqual({ tipo: 'sem-sessao' });
+      expect(googleAuth.signIn).not.toHaveBeenCalled();
+    });
+
+    it('retorna troca-de-conta quando a conta conectada difere da última usada neste dispositivo', async () => {
+      syncState.contaAtual.mockReturnValue('outra-conta@gmail.com');
+
+      const status = await service.verificarAtualizacoes();
+
+      expect(status).toEqual({
+        tipo: 'troca-de-conta',
+        contaAnterior: 'outra-conta@gmail.com',
+        contaAtual: 'fulano@gmail.com',
+      });
+      expect(driveClient.listarArquivos).not.toHaveBeenCalled();
+    });
+
+    it('retorna atualizado quando a pasta do app ainda não existe no Drive', async () => {
+      syncState.contaAtual.mockReturnValue(null);
+      driveClient.listarArquivos.mockResolvedValue([]);
+
+      const status = await service.verificarAtualizacoes();
+
+      expect(status).toEqual({ tipo: 'atualizado' });
+      expect(driveClient.criarPasta).not.toHaveBeenCalled();
+    });
+
+    it('retorna atualizacao-disponivel quando a revisão remota é mais nova que a local', async () => {
+      syncState.contaAtual.mockReturnValue('fulano@gmail.com');
+      syncState.obterRevisaoSincronizada.mockReturnValue(2);
+
+      const manifestRemoto: ManifestBackup = {
+        revisao: 5,
+        schemaVersao: 2,
+        exportadoEm: '2026-08-10T00:00:00.000Z',
+        dispositivoId: 'outro-dispositivo',
+        dispositivoNome: 'Celular',
+        arquivoId: 'x',
+        totais: { materias: 0, assuntos: 0, bancas: 0, questoes: 0, historicos: 0 },
+      };
+
+      driveClient.listarArquivos.mockImplementation((query: string) => {
+        if (query.includes("mimeType = 'application/vnd.google-apps.folder'")) {
+          return Promise.resolve([{ id: 'pasta-id', nome: 'Questões Concurso - Backups' }]);
+        }
+        return Promise.resolve([{ id: 'manifest-id', nome: 'manifest.json' }]);
+      });
+      driveClient.baixarConteudo.mockResolvedValue(JSON.stringify(manifestRemoto));
+
+      const status = await service.verificarAtualizacoes();
+
+      expect(status).toEqual({
+        tipo: 'atualizacao-disponivel',
+        manifestRemoto,
+        revisaoLocal: 2,
+      });
+    });
+
+    it('retorna atualizado quando a revisão remota já foi sincronizada por este dispositivo', async () => {
+      syncState.contaAtual.mockReturnValue('fulano@gmail.com');
+      syncState.obterRevisaoSincronizada.mockReturnValue(5);
+
+      const manifestRemoto: ManifestBackup = {
+        revisao: 5,
+        schemaVersao: 2,
+        exportadoEm: '2026-08-10T00:00:00.000Z',
+        dispositivoId: 'dispositivo-1',
+        dispositivoNome: 'Notebook',
+        arquivoId: 'x',
+        totais: { materias: 0, assuntos: 0, bancas: 0, questoes: 0, historicos: 0 },
+      };
+
+      driveClient.listarArquivos.mockImplementation((query: string) => {
+        if (query.includes("mimeType = 'application/vnd.google-apps.folder'")) {
+          return Promise.resolve([{ id: 'pasta-id', nome: 'Questões Concurso - Backups' }]);
+        }
+        return Promise.resolve([{ id: 'manifest-id', nome: 'manifest.json' }]);
+      });
+      driveClient.baixarConteudo.mockResolvedValue(JSON.stringify(manifestRemoto));
+
+      const status = await service.verificarAtualizacoes();
+
+      expect(status).toEqual({ tipo: 'atualizado' });
     });
   });
 });
