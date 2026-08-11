@@ -165,6 +165,24 @@ export class CloudBackupService {
     return { tipo: 'atualizado' };
   }
 
+  /**
+   * Importar um arquivo local em modo REPLACE troca o conteúdo do
+   * dispositivo sem nenhuma relação com a revisão da nuvem — o
+   * `revisaoSincronizada` continuaria apontando para uma proveniência que
+   * não existe mais. Zera o marcador da conta conectada (se houver) para
+   * que o próximo envio veja a nuvem como "mais nova" e exija confirmação
+   * antes de sobrescrevê-la (mesmo diálogo de ConflitoRevisaoError), em vez
+   * de subir silenciosamente um conteúdo que pode ser mais antigo ou
+   * completamente diferente do que já estava lá.
+   */
+  invalidarSincronizacaoAposImportacaoLocal(): void {
+    const conta = this.googleAuth.contaConectada();
+
+    if (conta) {
+      this.syncState.definirRevisaoSincronizada(conta, 0);
+    }
+  }
+
   async listarRevisoes(): Promise<RevisaoRemota[]> {
     await this.garantirAutenticado();
 

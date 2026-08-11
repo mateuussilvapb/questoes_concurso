@@ -297,6 +297,22 @@ describe('CloudBackupService', () => {
     });
   });
 
+  describe('invalidarSincronizacaoAposImportacaoLocal', () => {
+    it('zera a revisão sincronizada da conta conectada', () => {
+      service.invalidarSincronizacaoAposImportacaoLocal();
+
+      expect(syncState.definirRevisaoSincronizada).toHaveBeenCalledWith('fulano@gmail.com', 0);
+    });
+
+    it('não faz nada quando não há conta conectada', () => {
+      googleAuth.contaConectada.mockReturnValue(null);
+
+      service.invalidarSincronizacaoAposImportacaoLocal();
+
+      expect(syncState.definirRevisaoSincronizada).not.toHaveBeenCalled();
+    });
+  });
+
   describe('verificarAtualizacoes', () => {
     it('retorna sem-sessao sem tentar autenticar quando não há token válido nem renovável', async () => {
       googleAuth.obterAccessToken.mockRejectedValue(new Error('sem token'));

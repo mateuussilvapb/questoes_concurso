@@ -141,10 +141,19 @@ export class BackupRestauracao {
     try {
       const result = await this.backupService.import(file!, importMode);
 
+      if (importMode === ImportMode.REPLACE && this.contaConectada()) {
+        this.cloudBackupService.invalidarSincronizacaoAposImportacaoLocal();
+      }
+
+      const avisoNuvem =
+        importMode === ImportMode.REPLACE && this.contaConectada()
+          ? ' Como os dados locais foram substituídos, a próxima vez que você enviar ou verificar o backup na nuvem vai pedir confirmação antes de sobrescrevê-lo.'
+          : '';
+
       const mensagem =
-        result.versaoOrigem === 1
+        (result.versaoOrigem === 1
           ? 'Arquivo importado com sucesso! É um backup de uma versão anterior do sistema — as bancas não estavam presentes nele.'
-          : 'Arquivo importado com sucesso!';
+          : 'Arquivo importado com sucesso!') + avisoNuvem;
 
       this.messageService.showSuccess(mensagem, 'Sucesso!');
       this.ultimoResultadoImportacao.set(result);
