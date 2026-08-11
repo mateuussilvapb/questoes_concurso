@@ -29,6 +29,7 @@ import { BACKUP_VERSION } from '../../../../shared/types/types-const';
 import { BackupData, ImportMode, ImportResult, MergeResult } from '../../../../core/storage/backup.models';
 import { LoadingOverlayService } from '../../../../shared/services/loading-overlay.service';
 import { FileDownloadService } from '../../../../shared/services/file-download.service';
+import { DispositivoService } from '../../../../core/sync/dispositivo.service';
 
 @Injectable({
   providedIn: 'root',
@@ -49,6 +50,7 @@ export class BackupService {
   private readonly backupValidator = inject(BackupValidatorService);
   private readonly loadingOverlay = inject(LoadingOverlayService);
   private readonly fileDownload = inject(FileDownloadService);
+  private readonly dispositivoService = inject(DispositivoService);
 
   async export(): Promise<void> {
     return this.loadingOverlay.wrap(async () => {
@@ -102,6 +104,8 @@ export class BackupService {
     return {
       versao: BACKUP_VERSION,
       exportadoEm: new Date().toISOString(),
+      dispositivoId: this.dispositivoService.obterId(),
+      dispositivoNome: this.dispositivoService.nome(),
       materias,
       assuntos,
       bancas,

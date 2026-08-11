@@ -8,6 +8,13 @@ export interface BackupData {
   versao: number;
   exportadoEm: string;
 
+  /** Contador monotônico de envios à nuvem, independente de `versao`. Ausente em backups locais e em backups anteriores à Fase 1. */
+  revisao?: number;
+  /** Id do dispositivo que gerou este backup (ver DispositivoService). Ausente em backups anteriores à Fase 1. */
+  dispositivoId?: string;
+  /** Nome amigável do dispositivo que gerou este backup. Ausente em backups anteriores à Fase 1. */
+  dispositivoNome?: string;
+
   materias: Materia[];
   assuntos: Assunto[];
   bancas: Banca[];

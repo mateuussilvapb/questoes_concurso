@@ -301,7 +301,7 @@ a chave) ou backend de verdade. Não construir tela de login esperando seguranç
 ## 7. Checklist de execução
 
 - [x] **Fase 0** — `buildBackup()` acessível; `importarDeBackup()` extraído; `FileDownloadService` criado
-- [ ] **Fase 1** — `revisao`/`dispositivoId`/`dispositivoNome` em `BackupData`; `DispositivoService`; validator tolerante
+- [x] **Fase 1** — `revisao`/`dispositivoId`/`dispositivoNome` em `BackupData`; `DispositivoService`; validator tolerante
 - [ ] **Fase 2** — projeto no Google Cloud; Drive API ativada; OAuth Client ID; `src/environments/`; `core/cloud/` (4 serviços)
 - [ ] **Fase 3** — bloco "Backup na nuvem" em `backup-restauracao`; lista de revisões; nome do dispositivo
 - [ ] **Fase 4** — verificação pós-render; diálogo de restauração; fallback manual; detecção de troca de conta

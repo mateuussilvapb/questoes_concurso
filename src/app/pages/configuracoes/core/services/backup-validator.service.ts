@@ -62,6 +62,20 @@ export class BackupValidatorService {
       throw new Error('Data de exportação inválida.');
     }
 
+    // Campos da Fase 1 (revisao/dispositivoId/dispositivoNome) são opcionais:
+    // backups anteriores a essa fase não os têm. Só validamos o tipo quando presentes.
+    if (backup.revisao !== undefined && typeof backup.revisao !== 'number') {
+      throw new Error('Revisão do backup inválida.');
+    }
+
+    if (backup.dispositivoId !== undefined && typeof backup.dispositivoId !== 'string') {
+      throw new Error('Id de dispositivo inválido.');
+    }
+
+    if (backup.dispositivoNome !== undefined && typeof backup.dispositivoNome !== 'string') {
+      throw new Error('Nome de dispositivo inválido.');
+    }
+
     if (!Array.isArray(backup.materias)) {
       throw new Error('Matérias inválidas.');
     }
