@@ -1,7 +1,7 @@
 <div class="flex flex-column gap-4">
   <span>
-    Existem questões ainda não respondidas. O que deseja fazer com o que já foi resolvido até
-    agora?
+    Existem questões ainda não respondidas. As respostas já dadas foram salvas no histórico. O que
+    deseja fazer?
   </span>
 
   <div class="flex flex-column-reverse md:flex-row justify-content-end gap-2">
@@ -22,7 +22,7 @@
       (onClick)="escolher('continuar')"
     />
     <p-button
-      label="Encerrar e salvar histórico"
+      label="Encerrar e manter histórico"
       class="w-full md:w-auto button-aplicacao-style"
       styleClass="w-full"
       (onClick)="escolher('persistir')"

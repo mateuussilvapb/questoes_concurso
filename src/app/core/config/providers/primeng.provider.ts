@@ -7,37 +7,37 @@ import { providePrimeNG } from 'primeng/config';
 import { primeNgTranslation } from '../../../i18n/primeng-pt';
 
 /**
- * Preset alinhado à identidade visual do projeto (gradiente vermelho→laranja
+ * Preset alinhado à identidade visual do projeto (gradiente índigo→violeta→fúcsia
  * de $gradientStartColor/$gradientMidColor/$gradientLastColor em
- * assets/scss/utils/_variables.scss). A escala abaixo é ancorada em
- * $gradientStartColor (#E11F47), a cor dominante do gradiente.
+ * assets/scss/utils/_variables.scss). A escala abaixo é a escala Índigo (Tailwind),
+ * usada como matiz único para os componentes padrão do PrimeNG.
  */
 const QuestoesConcursoPreset = definePreset(Aura, {
   semantic: {
     primary: {
-      50: '#fef1f4',
-      100: '#fcdee4',
-      200: '#f8b9c6',
-      300: '#f3869d',
-      400: '#ed4568',
-      500: '#e11f47',
-      600: '#be193b',
-      700: '#92122c',
-      800: '#660c1e',
-      900: '#380610',
-      950: '#1c0308',
+      50: '#eef2ff',
+      100: '#e0e7ff',
+      200: '#c7d2fe',
+      300: '#a5b4fc',
+      400: '#818cf8',
+      500: '#6366f1',
+      600: '#4f46e5',
+      700: '#4338ca',
+      800: '#3730a3',
+      900: '#312e81',
+      950: '#1e1b4b',
     },
     colorScheme: {
       light: {
         primary: {
-          color: '{primary.500}',
+          color: '{primary.600}',
           contrastColor: '#ffffff',
-          hoverColor: '{primary.600}',
-          activeColor: '{primary.700}',
+          hoverColor: '{primary.700}',
+          activeColor: '{primary.800}',
         },
         highlight: {
-          background: '{primary.500}',
-          focusBackground: '{primary.600}',
+          background: '{primary.600}',
+          focusBackground: '{primary.700}',
           color: '#ffffff',
           focusColor: '#ffffff',
         },

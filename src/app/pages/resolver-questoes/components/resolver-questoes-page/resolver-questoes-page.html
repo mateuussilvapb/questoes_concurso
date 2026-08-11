@@ -19,11 +19,20 @@
     (respondeu)="onRespondeu($event)"
     (questaoAtualizada)="onQuestaoAtualizada($event)"
     (comentarioAtualizado)="onComentarioAtualizado($event)"
+    (statusAtualizado)="onStatusAtualizado($event)"
     [questoes]="questoesResolucao()"
   />
 } @else if (resultadosMode() && resultadoResolucao()) {
   <app-resultados-resolucao
     [resultados]="resultadoResolucao()!"
+    [questoesErradas]="questoesErradas()"
+    [desempenhoPorMateria]="desempenhoPorMateria()"
+    [desempenhoPorDificuldade]="desempenhoPorDificuldade()"
+    [itensResolucao]="questoesResolucao()"
+    [nomesPorMateria]="nomesPorMateria()"
+    [comparativoHistorico]="comparativoHistorico()"
     (encerrar)="onEncerrarVisualizacaoResultados()"
+    (revisarErradasAgora)="onRevisarErradasAgora()"
+    (marcarErradasParaRevisao)="onMarcarErradasParaRevisao()"
   />
 }

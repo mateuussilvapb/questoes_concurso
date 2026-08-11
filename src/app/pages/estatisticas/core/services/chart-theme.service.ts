@@ -31,9 +31,9 @@ const FALLBACK_ESCURO: TokensGraficoTema = {
   tooltipBackground: '#0B0F19',
 };
 
-const MARCA_INICIO = { r: 0xe1, g: 0x1f, b: 0x47 };
-const MARCA_MEIO = { r: 0xdd, g: 0x4a, b: 0x27 };
-const MARCA_FIM = { r: 0xf5, g: 0x94, b: 0x13 };
+const MARCA_INICIO = { r: 0x4f, g: 0x46, b: 0xe5 };
+const MARCA_MEIO = { r: 0x7c, g: 0x3a, b: 0xed };
+const MARCA_FIM = { r: 0xc0, g: 0x26, b: 0xd3 };
 
 @Injectable({
   providedIn: 'root',
@@ -47,9 +47,9 @@ export class ChartThemeService {
   readonly cores = {
     acerto: '#22C55E',
     erro: '#EF4444',
-    marcaInicio: '#E11F47',
-    marcaMeio: '#DD4A27',
-    marcaFim: '#F59413',
+    marcaInicio: '#4F46E5',
+    marcaMeio: '#7C3AED',
+    marcaFim: '#C026D3',
   };
 
   readonly opcoesBase = computed<ChartOptions>(() => {
@@ -90,7 +90,7 @@ export class ChartThemeService {
     });
   }
 
-  /** Interpola em RGB entre as três cores da marca (#E11F47 → #DD4A27 → #F59413). */
+  /** Interpola em RGB entre as três cores da marca (#4F46E5 → #7C3AED → #C026D3). */
   paletaMarca(quantidade: number): string[] {
     if (quantidade <= 0) return [];
     if (quantidade === 1) return [this.cores.marcaInicio];

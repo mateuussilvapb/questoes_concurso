@@ -46,8 +46,8 @@
   }
 }
 
-// Suporte ao Dark Mode (Caso use a classe .dark no escopo superior)
-:host-context(.dark) ::ng-deep {
+// Suporte ao Dark Mode (classe .app-dark aplicada no <html>, ver ThemeService)
+:host-context(.app-dark) ::ng-deep {
   .p-button {
     background: $gradientApplicationDark !important;
 

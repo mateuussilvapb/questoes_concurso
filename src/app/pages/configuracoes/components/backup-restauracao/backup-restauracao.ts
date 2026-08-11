@@ -1,9 +1,10 @@
 //Angular
-import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
 
 //Aplicação
 import { BackupService } from '../../core/services/backup.service';
-import { ImportMode } from '../../../../core/storage/backup.models';
+import { ImportMode, MergeResult } from '../../../../core/storage/backup.models';
 import { MessageService } from '../../../../shared/services/message.service';
 import { LayoutBasePages } from '../../../../shared/components/layout-base-pages/layout-base-pages';
 
@@ -12,9 +13,28 @@ import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmationService } from 'primeng/api';
 
+interface LinhaResumoImportacao {
+  label: string;
+  imported: number;
+  ignored: number;
+}
+
+const CHAVE_ULTIMA_EXPORTACAO = 'questoes-concurso.ultima-exportacao-em';
+
+const LABELS_ENTIDADE: Record<keyof Omit<MergeResult, 'versaoOrigem'>, string> = {
+  materias: 'Matérias',
+  assuntos: 'Assuntos',
+  bancas: 'Bancas',
+  questoes: 'Questões',
+  historicos: 'Histórico',
+};
+
 @Component({
   selector: 'app-backup-restauracao',
   imports: [
+    //Angular
+    CommonModule,
+
     //Aplicação
     LayoutBasePages,
 
@@ -29,8 +49,30 @@ export class BackupRestauracao {
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
 
+  readonly ultimaExportacaoEm = signal<string | null>(
+    localStorage.getItem(CHAVE_ULTIMA_EXPORTACAO),
+  );
+
+  readonly ultimoResultadoImportacao = signal<MergeResult | null>(null);
+
+  readonly linhasResumoImportacao = computed<LinhaResumoImportacao[]>(() => {
+    const resultado = this.ultimoResultadoImportacao();
+
+    if (!resultado) return [];
+
+    return (Object.keys(LABELS_ENTIDADE) as (keyof typeof LABELS_ENTIDADE)[]).map((chave) => ({
+      label: LABELS_ENTIDADE[chave],
+      imported: resultado[chave].imported,
+      ignored: resultado[chave].ignored,
+    }));
+  });
+
   async backup(): Promise<void> {
     await this.backupService.export();
+
+    const agora = new Date().toISOString();
+    localStorage.setItem(CHAVE_ULTIMA_EXPORTACAO, agora);
+    this.ultimaExportacaoEm.set(agora);
   }
 
   async onFileSelected(event: Event): Promise<void> {
@@ -78,7 +120,7 @@ export class BackupRestauracao {
           : 'Arquivo importado com sucesso!';
 
       this.messageService.showSuccess(mensagem, 'Sucesso!');
-      console.log(result);
+      this.ultimoResultadoImportacao.set(result);
     } catch (error) {
       console.error(error);
       this.messageService.showError('Erro ao importar arquivo. Tente novamente', 'Erro!');
