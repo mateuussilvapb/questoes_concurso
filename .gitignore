@@ -42,3 +42,6 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Credenciais baixadas do Google Cloud Console — nunca versionar
+client_secret*.json

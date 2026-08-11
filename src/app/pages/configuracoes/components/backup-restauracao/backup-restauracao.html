@@ -53,6 +53,132 @@
       </p-card>
     </div>
 
+    <!-- Backup na nuvem -->
+    <div class="col-12 lg:col-10">
+      <p-card>
+        <ng-template #title>
+          <div class="w-full flex flex-row gap-2 align-items-center m-0 p-0 text-sm">
+            <em class="pi pi-cloud"></em>
+            <h2 class="m-0 p-0">Backup na nuvem</h2>
+          </div>
+        </ng-template>
+
+        <div class="mt-3 mb-3 text-color-secondary">
+          <span
+            >Envie backups versionados para o seu Google Drive e restaure de qualquer
+            dispositivo.</span
+          >
+        </div>
+
+        @if (contaConectada()) {
+          <div class="flex flex-column gap-3">
+            <div class="flex flex-row align-items-center justify-content-between flex-wrap gap-2">
+              <div class="flex align-items-center gap-2">
+                <p-tag severity="success" value="Conectado" />
+                <span class="text-color-secondary text-sm">{{ contaConectada() }}</span>
+              </div>
+              <p-button
+                label="Desconectar"
+                severity="secondary"
+                [text]="true"
+                (onClick)="desconectar()"
+              />
+            </div>
+
+            <div class="flex align-items-center gap-2 flex-wrap">
+              <span class="text-color-secondary text-sm">Este dispositivo:</span>
+
+              @if (editandoNomeDispositivo()) {
+                <input
+                  pInputText
+                  type="text"
+                  maxlength="60"
+                  [value]="nomeDispositivoEmEdicao()"
+                  (input)="atualizarNomeDispositivoEmEdicao($any($event.target).value)"
+                  (keyup.enter)="salvarNomeDispositivo()"
+                  class="text-sm"
+                  style="max-width: 220px"
+                />
+                <p-button icon="pi pi-check" [text]="true" (onClick)="salvarNomeDispositivo()" />
+                <p-button
+                  icon="pi pi-times"
+                  severity="secondary"
+                  [text]="true"
+                  (onClick)="cancelarEdicaoNomeDispositivo()"
+                />
+              } @else {
+                <span class="font-medium">{{ nomeDispositivo() }}</span>
+                <p-button
+                  icon="pi pi-pencil"
+                  severity="secondary"
+                  [text]="true"
+                  (onClick)="iniciarEdicaoNomeDispositivo()"
+                />
+              }
+            </div>
+
+            <p-button
+              label="Enviar para o Drive"
+              icon="pi pi-cloud-upload"
+              [loading]="enviandoBackup()"
+              (onClick)="enviarParaDrive()"
+              class="w-full button-aplicacao-style"
+              styleClass="w-full button-aplicacao-style"
+            />
+
+            @if (ultimoManifestEnviado(); as manifest) {
+              <div class="text-sm text-color-secondary">
+                <em class="pi pi-check-circle mr-1"></em>
+                <span
+                  >Revisão {{ manifest.revisao }} enviada em
+                  {{ manifest.exportadoEm | date: 'dd/MM/yyyy HH:mm' }}</span
+                >
+              </div>
+            }
+
+            @if (carregandoRevisoes()) {
+              <div class="text-sm text-color-secondary">Carregando revisões...</div>
+            } @else if (revisoes().length) {
+              <div class="w-full overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="text-left text-color-secondary text-sm">
+                      <th class="pb-2">Revisões disponíveis</th>
+                      <th class="pb-2"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (revisao of revisoes(); track revisao.arquivoId) {
+                      <tr class="border-top-1 border-300">
+                        <td class="py-2">Revisão {{ revisao.revisao }}</td>
+                        <td class="py-2 text-right">
+                          <p-button
+                            label="Restaurar"
+                            severity="danger"
+                            [text]="true"
+                            (onClick)="confirmarRestauracao(revisao)"
+                          />
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        } @else {
+          <p-button
+            label="Conectar ao Google Drive"
+            icon="pi pi-google"
+            [loading]="conectando()"
+            (onClick)="conectar()"
+            class="w-full button-aplicacao-style"
+            styleClass="w-full button-aplicacao-style"
+          />
+        }
+      </p-card>
+    </div>
+
     <!-- Resumo da última importação -->
     @if (linhasResumoImportacao().length) {
       <div class="col-12 lg:col-10">
