@@ -305,7 +305,7 @@ a chave) ou backend de verdade. Não construir tela de login esperando seguranç
 - [x] **Fase 2** — projeto no Google Cloud; Drive API ativada; OAuth Client ID; `src/environments/`; `core/cloud/` (4 serviços)
 - [x] **Fase 3** — bloco "Backup na nuvem" em `backup-restauracao`; lista de revisões; nome do dispositivo
 - [x] **Fase 4** — verificação pós-render; diálogo de restauração; fallback manual; detecção de troca de conta
-- [ ] **Fase 5** — consentimento em Production; política de privacidade publicada; hospedagem com domínio fixo; nome/logo; estado vazio de primeiro acesso
+- [ ] **Fase 5** — consentimento em Production; política de privacidade publicada; hospedagem com domínio fixo; nome/logo; estado vazio de primeiro acesso (feito: página `/privacidade` com o texto da política, pronta para publicar; timeout de segurança em `signIn()` para recusa de consentimento não travar a UI — falta: hospedagem com domínio fixo, cadastrar a URL pública da política e publicar o consentimento em Production no Google Cloud Console — tudo ação externa; "estado vazio de primeiro acesso" depende da tela de Dashboard, hoje um placeholder "Página em construção", e foi deixado para decisão à parte do usuário por ser um escopo maior que backup em nuvem)
 - [ ] **Fase 6** — (opcional) envio automático com debounce
 
 **Ordem recomendada:** Fases 0 e 1 são autocontidas, melhoram o código independentemente e não
