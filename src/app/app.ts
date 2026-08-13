@@ -1,5 +1,5 @@
 //Angular
-import { Component, afterNextRender, inject, signal } from '@angular/core';
+import { Component, afterNextRender, effect, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 //Aplicação
@@ -43,17 +43,27 @@ export class App {
   private readonly messageService = inject(MessageService);
 
   /** Fallback do §6.1: sem sessão válida, oferece um jeito manual em vez de insistir em autenticar. */
-  readonly mostrarVerificacaoManual = signal(false);
-  readonly verificandoManualmente = signal(false);
+  readonly mostrarVerificacaoNuvem = signal(false);
+  readonly verificandoNuvem = signal(false);
 
   constructor() {
     afterNextRender(() => {
+      // Quem nunca conectou não deve ver nada de nuvem na abertura: o único
+      // ponto de login é "Conectar ao Google Drive" em Configurações.
+      if (!this.googleAuth.jaConsentiu()) return;
+
       void this.verificarBackupNaNuvem();
+    });
+
+    effect(() => {
+      if (this.googleAuth.contaConectada()) {
+        this.mostrarVerificacaoNuvem.set(false);
+      }
     });
   }
 
   async verificarNuvemManualmente(): Promise<void> {
-    this.verificandoManualmente.set(true);
+    this.verificandoNuvem.set(true);
 
     try {
       await this.googleAuth.signIn();
@@ -72,7 +82,7 @@ export class App {
       console.error(error);
       this.messageService.showError('Não foi possível conectar ao Google. Tente novamente', 'Erro!');
     } finally {
-      this.verificandoManualmente.set(false);
+      this.verificandoNuvem.set(false);
     }
   }
 
@@ -83,7 +93,9 @@ export class App {
   }
 
   private tratarStatus(status: StatusVerificacaoNuvem): void {
-    this.mostrarVerificacaoManual.set(status.tipo === 'sem-sessao');
+    this.mostrarVerificacaoNuvem.set(
+      status.tipo === 'sem-sessao' && this.googleAuth.jaConsentiu(),
+    );
 
     if (status.tipo === 'troca-de-conta') {
       this.messageService.showWarning(

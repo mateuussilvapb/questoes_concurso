@@ -166,7 +166,17 @@
               </div>
             }
           </div>
+        } @else if (restaurandoSessao()) {
+          <div class="text-sm text-color-secondary">
+            <em class="pi pi-spin pi-spinner mr-2"></em>Retomando a sessão do Google...
+          </div>
         } @else {
+          @if (jaConsentiu()) {
+            <div class="mb-2 text-sm text-color-secondary">
+              A sessão do Google expirou. Reconecte para enviar ou restaurar backups.
+            </div>
+          }
+
           <p-button
             label="Conectar ao Google Drive"
             icon="pi pi-google"
