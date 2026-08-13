@@ -11,6 +11,8 @@ describe('GoogleAuthService', () => {
   let respostaSimulada: GoogleTokenResponse;
 
   beforeEach(() => {
+    localStorage.clear();
+
     respostaSimulada = { access_token: 'token-abc', expires_in: 3600 };
 
     requestAccessTokenMock = vi.fn(() => {
@@ -52,6 +54,7 @@ describe('GoogleAuthService', () => {
   afterEach(() => {
     delete window.google;
     vi.unstubAllGlobals();
+    localStorage.clear();
   });
 
   it('começa desautenticado, sem conta conectada', () => {
@@ -126,6 +129,9 @@ describe('GoogleAuthService', () => {
   });
 
   it('rejeita rápido (não trava) quando a renovação silenciosa nunca chama o callback do Google', async () => {
+    await service.signIn();
+    vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 2 * 3600 * 1000);
+
     vi.useFakeTimers();
     try {
       requestAccessTokenMock.mockImplementation(() => {
@@ -142,7 +148,17 @@ describe('GoogleAuthService', () => {
     }
   });
 
-  it('carrega a conta ao renovar o token silenciosamente sem signIn() prévio (ex.: após reload da página)', async () => {
+  it('lança sem consentimento prévio, sem chamar o Google', async () => {
+    await expect(service.obterAccessToken()).rejects.toThrow();
+    expect(requestAccessTokenMock).not.toHaveBeenCalled();
+  });
+
+  it('carrega a conta ao renovar o token silenciosamente com consentimento prévio (ex.: após reload da página)', async () => {
+    localStorage.setItem('questoes-concurso.cloud.consentimentoConcedido', 'true');
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ providers: [GoogleAuthService] });
+    service = TestBed.inject(GoogleAuthService);
+
     expect(service.contaConectada()).toBeNull();
 
     const token = await service.obterAccessToken();
@@ -150,5 +166,64 @@ describe('GoogleAuthService', () => {
     expect(token).toBe('token-abc');
     expect(requestAccessTokenMock).toHaveBeenCalledWith({ prompt: '' });
     expect(service.contaConectada()).toBe('fulano@gmail.com');
+  });
+
+  describe('jaConsentiu / tentarRestaurarSessao', () => {
+    it('começa false quando não há marcador em localStorage', () => {
+      expect(service.jaConsentiu()).toBe(false);
+    });
+
+    it('signIn() grava o marcador de consentimento', async () => {
+      await service.signIn();
+
+      expect(service.jaConsentiu()).toBe(true);
+      expect(localStorage.getItem('questoes-concurso.cloud.consentimentoConcedido')).toBe('true');
+    });
+
+    it('signOut() remove o marcador de consentimento', async () => {
+      await service.signIn();
+      await service.signOut();
+
+      expect(service.jaConsentiu()).toBe(false);
+      expect(localStorage.getItem('questoes-concurso.cloud.consentimentoConcedido')).toBeNull();
+    });
+
+    it('tentarRestaurarSessao() retorna false e não toca no Google sem consentimento prévio', async () => {
+      const resultado = await service.tentarRestaurarSessao();
+
+      expect(resultado).toBe(false);
+      expect(requestAccessTokenMock).not.toHaveBeenCalled();
+    });
+
+    it('tentarRestaurarSessao() retorna true reaproveitando o token em cache', async () => {
+      await service.signIn();
+      requestAccessTokenMock.mockClear();
+
+      const resultado = await service.tentarRestaurarSessao();
+
+      expect(resultado).toBe(true);
+      expect(requestAccessTokenMock).not.toHaveBeenCalled();
+    });
+
+    it('tentarRestaurarSessao() renova em silêncio quando o token expirou e há consentimento', async () => {
+      await service.signIn();
+      vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 2 * 3600 * 1000);
+      respostaSimulada = { access_token: 'token-renovado', expires_in: 3600 };
+
+      const resultado = await service.tentarRestaurarSessao();
+
+      expect(resultado).toBe(true);
+      expect(requestAccessTokenMock).toHaveBeenLastCalledWith({ prompt: '' });
+    });
+
+    it('tentarRestaurarSessao() retorna false quando a renovação silenciosa falha', async () => {
+      await service.signIn();
+      vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 2 * 3600 * 1000);
+      respostaSimulada = { access_token: '', expires_in: 0, error: 'access_denied' };
+
+      const resultado = await service.tentarRestaurarSessao();
+
+      expect(resultado).toBe(false);
+    });
   });
 });

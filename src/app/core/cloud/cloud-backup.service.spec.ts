@@ -17,6 +17,7 @@ describe('CloudBackupService', () => {
     signIn: ReturnType<typeof vi.fn>;
     contaConectada: ReturnType<typeof vi.fn>;
     obterAccessToken: ReturnType<typeof vi.fn>;
+    tentarRestaurarSessao: ReturnType<typeof vi.fn>;
   };
   let driveClient: {
     listarArquivos: ReturnType<typeof vi.fn>;
@@ -58,6 +59,7 @@ describe('CloudBackupService', () => {
       signIn: vi.fn(() => Promise.resolve()),
       contaConectada: vi.fn(() => 'fulano@gmail.com'),
       obterAccessToken: vi.fn(() => Promise.resolve('token-abc')),
+      tentarRestaurarSessao: vi.fn(() => Promise.resolve(true)),
     };
 
     driveClient = {
@@ -219,10 +221,20 @@ describe('CloudBackupService', () => {
 
     it('autentica automaticamente quando ainda não há sessão', async () => {
       googleAuth.estaAutenticado.mockReturnValue(false);
+      googleAuth.tentarRestaurarSessao.mockResolvedValue(false);
 
       await service.enviarBackup();
 
       expect(googleAuth.signIn).toHaveBeenCalled();
+    });
+
+    it('retoma a sessão em silêncio (sem signIn) quando a renovação silenciosa funciona', async () => {
+      googleAuth.estaAutenticado.mockReturnValue(false);
+      googleAuth.tentarRestaurarSessao.mockResolvedValue(true);
+
+      await service.enviarBackup();
+
+      expect(googleAuth.signIn).not.toHaveBeenCalled();
     });
 
     it('lança erro claro quando não há conta conectada', async () => {
@@ -315,7 +327,7 @@ describe('CloudBackupService', () => {
 
   describe('verificarAtualizacoes', () => {
     it('retorna sem-sessao sem tentar autenticar quando não há token válido nem renovável', async () => {
-      googleAuth.obterAccessToken.mockRejectedValue(new Error('sem token'));
+      googleAuth.tentarRestaurarSessao.mockResolvedValue(false);
 
       const status: StatusVerificacaoNuvem = await service.verificarAtualizacoes();
 

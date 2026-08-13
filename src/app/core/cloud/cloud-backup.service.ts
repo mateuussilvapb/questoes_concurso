@@ -120,9 +120,8 @@ export class CloudBackupService {
    * popup de consentimento (§6.1: fallback manual é parte do desenho).
    */
   async verificarAtualizacoes(): Promise<StatusVerificacaoNuvem> {
-    try {
-      await this.googleAuth.obterAccessToken();
-    } catch {
+    // Só aproveita sessão retomável em silêncio; nunca inicia login.
+    if (!(await this.googleAuth.tentarRestaurarSessao())) {
       return { tipo: 'sem-sessao' };
     }
 
@@ -296,6 +295,7 @@ export class CloudBackupService {
 
   private async garantirAutenticado(): Promise<void> {
     if (this.googleAuth.estaAutenticado()) return;
+    if (await this.googleAuth.tentarRestaurarSessao()) return;
 
     await this.googleAuth.signIn();
   }

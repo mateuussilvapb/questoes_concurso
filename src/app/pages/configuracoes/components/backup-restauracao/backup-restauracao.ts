@@ -1,6 +1,6 @@
 //Angular
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, afterNextRender, computed, inject, signal } from '@angular/core';
 
 //Aplicação
 import { BackupService } from '../../core/services/backup.service';
@@ -72,6 +72,8 @@ export class BackupRestauracao {
 
   readonly contaConectada = this.googleAuth.contaConectada;
   readonly nomeDispositivo = this.dispositivoService.nome;
+  readonly restaurandoSessao = this.googleAuth.restaurandoSessao;
+  readonly jaConsentiu = this.googleAuth.jaConsentiu;
 
   readonly conectando = signal(false);
   readonly enviandoBackup = signal(false);
@@ -93,6 +95,18 @@ export class BackupRestauracao {
       ignored: resultado[chave].ignored,
     }));
   });
+
+  constructor() {
+    afterNextRender(() => {
+      void this.retomarSessaoSeHouver();
+    });
+  }
+
+  private async retomarSessaoSeHouver(): Promise<void> {
+    if (await this.googleAuth.tentarRestaurarSessao()) {
+      await this.carregarRevisoes();
+    }
+  }
 
   async backup(): Promise<void> {
     await this.backupService.export();

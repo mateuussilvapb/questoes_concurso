@@ -3,16 +3,16 @@
 <app-floating-timer/>
 <app-loading-overlay />
 
-@if (mostrarVerificacaoManual()) {
+@if (mostrarVerificacaoNuvem()) {
   <div class="fixed bottom-0 right-0 m-3" style="z-index: 1000">
     <p-button
-      label="Verificar backup na nuvem"
-      icon="pi pi-cloud"
-      severity="secondary"
+      label="Verificar dados na nuvem"
+      icon="pi pi-cloud-download"
       size="small"
-      [text]="true"
-      [loading]="verificandoManualmente()"
+      [loading]="verificandoNuvem()"
       (onClick)="verificarNuvemManualmente()"
+      class="button-nuvem-flutuante"
+      styleClass="button-nuvem-flutuante"
     />
   </div>
 }

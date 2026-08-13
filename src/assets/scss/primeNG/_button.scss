@@ -46,6 +46,34 @@
   }
 }
 
+/**
+ * Botão flutuante de verificação da nuvem (canto inferior direito). Usa o
+ * gradiente da identidade visual com transparência + blur para não "cobrir"
+ * o conteúdo da tela por trás dele.
+ */
+.button-nuvem-flutuante .p-button {
+  background: linear-gradient(
+    90deg,
+    rgba($gradientStartColor, 0.78),
+    rgba($gradientMidColor, 0.78),
+    rgba($gradientLastColor, 0.78)
+  ) !important;
+  color: $white !important;
+  font-weight: 600 !important;
+  border: none !important;
+  border-radius: 999px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+  backdrop-filter: blur(6px);
+  transition:
+    opacity $transitionDuration,
+    box-shadow $transitionDuration !important;
+
+  &:hover:not(:disabled) {
+    opacity: 1;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.32) !important;
+  }
+}
+
 // Suporte ao Dark Mode (classe .app-dark aplicada no <html>, ver ThemeService)
 :host-context(.app-dark) ::ng-deep {
   .p-button {
@@ -54,5 +82,14 @@
     &:hover:not(:disabled) {
       background: $gradientApplicationDark !important;
     }
+  }
+
+  .button-nuvem-flutuante .p-button {
+    background: linear-gradient(
+      90deg,
+      rgba($gradientStartColorDark, 0.78),
+      rgba($gradientMidColorDark, 0.78),
+      rgba($gradientLastColorDark, 0.78)
+    ) !important;
   }
 }

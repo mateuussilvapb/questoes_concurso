@@ -32,6 +32,8 @@ const TIMEOUT_RENOVACAO_SILENCIOSA_MS = 4000;
  */
 const TIMEOUT_CONSENTIMENTO_MS = 5 * 60 * 1000;
 
+const CHAVE_CONSENTIMENTO = 'questoes-concurso.cloud.consentimentoConcedido';
+
 interface TokenCache {
   accessToken: string;
   expiraEm: number;
@@ -51,6 +53,17 @@ export class GoogleAuthService {
 
   readonly contaConectada = this.contaConectadaSignal.asReadonly();
 
+  /**
+   * Marca que este navegador já concedeu consentimento ao app alguma vez.
+   * É só um marcador — nenhum token é persistido. Sem ele, o app não pode
+   * nem tentar falar com o GIS na abertura, sob pena de abrir a janela de
+   * autorização sem o usuário ter pedido.
+   */
+  readonly jaConsentiu = signal(localStorage.getItem(CHAVE_CONSENTIMENTO) === 'true');
+
+  /** true enquanto a retomada silenciosa de sessão está em andamento (ex.: após F5). */
+  readonly restaurandoSessao = signal(false);
+
   private tokenClient: GoogleTokenClient | null = null;
   private tokenCache: TokenCache | null = null;
   private scriptCarregado: Promise<void> | null = null;
@@ -67,6 +80,7 @@ export class GoogleAuthService {
       'A conexão com o Google demorou demais e foi cancelada. Tente novamente.',
     );
     await this.carregarConta();
+    this.registrarConsentimento(true);
   }
 
   async signOut(): Promise<void> {
@@ -76,6 +90,29 @@ export class GoogleAuthService {
 
     this.tokenCache = null;
     this.contaConectadaSignal.set(null);
+    this.registrarConsentimento(false);
+  }
+
+  /**
+   * Tenta reobter um access token SEM nenhuma interface visível, aproveitando
+   * a sessão Google do navegador + o consentimento já concedido. Retorna
+   * false (sem lançar) quando não há como retomar: quem chama decide se
+   * oferece o caminho manual. Nunca abre popup para quem nunca consentiu.
+   */
+  async tentarRestaurarSessao(): Promise<boolean> {
+    if (!this.jaConsentiu()) return false;
+    if (this.tokenValido()) return true;
+
+    this.restaurandoSessao.set(true);
+
+    try {
+      await this.obterAccessToken();
+      return true;
+    } catch {
+      return false;
+    } finally {
+      this.restaurandoSessao.set(false);
+    }
   }
 
   /**
@@ -86,6 +123,12 @@ export class GoogleAuthService {
   async obterAccessToken(): Promise<string> {
     if (this.tokenValido()) {
       return this.tokenCache!.accessToken;
+    }
+
+    // Sem consentimento anterior, pedir token abriria a janela do Google por
+    // conta própria. Quem precisa de acesso deve chamar signIn().
+    if (!this.jaConsentiu()) {
+      throw new Error('Nenhuma conta Google conectada. Conecte-se em Backup e Restauração.');
     }
 
     await this.carregarScript();
@@ -125,6 +168,16 @@ export class GoogleAuthService {
 
   private tokenValido(): boolean {
     return !!this.tokenCache && this.tokenCache.expiraEm > Date.now();
+  }
+
+  private registrarConsentimento(concedido: boolean): void {
+    if (concedido) {
+      localStorage.setItem(CHAVE_CONSENTIMENTO, 'true');
+    } else {
+      localStorage.removeItem(CHAVE_CONSENTIMENTO);
+    }
+
+    this.jaConsentiu.set(concedido);
   }
 
   private carregarScript(): Promise<void> {
